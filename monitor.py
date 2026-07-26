@@ -87,8 +87,17 @@ def load_checker_data():
     try:
         timestamp = int(time.time() * 1000)
         resp = session.get(f"{CHECKER_URL}?t={timestamp}", timeout=10)
-        if resp.status_code == 200: checker_data = resp.json()
-    except Exception as e: print(f"⚠️ チェッカーエラー: {e}")
+        if resp.status_code == 401:
+            perform_login()
+            resp = session.get(f"{CHECKER_URL}?t={timestamp}", timeout=10)
+            
+        if resp.status_code == 200:
+            checker_data = resp.json()
+            print("✅ チェッカーデータ取得成功！")
+        else:
+            print(f"⚠️ チェッカー取得失敗: HTTP {resp.status_code}")
+    except Exception as e:
+        print(f"⚠️ チェッカーエラー: {e}")
 
 def get_real_probabilities(toban, waku, time_diff_val):
     if not checker_data or not toban or str(toban) not in checker_data: return None
@@ -101,7 +110,7 @@ def get_real_probabilities(toban, waku, time_diff_val):
             return {"r1": float(row.get("r1", 0.0)), "r2": float(row.get("r2", 0.0)), "r3": float(row.get("r3", 0.0))}
     return {"r1": float(player_waku_data.get("t1", 0.0)), "r2": float(player_waku_data.get("t2", 0.0)), "r3": float(player_waku_data.get("t3", 0.0))}
 
-def generate_probability_eye(boats):
+def generate_probability_eye(boats, target_waku=None):
     if not isinstance(boats, list) or len(boats) < 6: return "算出不可", "対象なし"
     analyzed_boats = []
     has_valid = False
@@ -109,7 +118,15 @@ def generate_probability_eye(boats):
     for i, b in enumerate(boats):
         waku = i + 1
         b_str = json.dumps(b, ensure_ascii=False)
-        toban = next((b[k] for k in ['id', 'no', 'toban', 'touban'] if k in b and str(b[k]).isdigit() and 3000 <= int(b[k]) <= 6000), None)
+        
+        # 登録番号（登番）を取得
+        toban = None
+        if isinstance(b, dict):
+            toban = next((b[k] for k in ['id', 'no', 'toban', 'touban', 'racer_id'] if k in b and str(b[k]).isdigit() and 3000 <= int(b[k]) <= 6000), None)
+        if not toban:
+            # 文字列から4桁の登番を探す
+            found = re.findall(r'\b(3\d{3}|4\d{3}|5\d{3})\b', b_str)
+            if found: toban = found[0]
 
         time_diff_val = 0.0
         for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
@@ -126,29 +143,36 @@ def generate_probability_eye(boats):
             has_valid = True
             analyzed_boats.append({"waku": waku, "r1": probs["r1"], "r2": probs["r2"], "r3": probs["r3"], "tdiff": time_diff_val})
         else:
-            analyzed_boats.append({"waku": waku, "r1": 0.0, "r2": 0.0, "r3": 0.0, "tdiff": time_diff_val})
+            # チェッカーデータがない場合の簡易スコア計算（フォールバック）
+            analyzed_boats.append({"waku": waku, "r1": 10.0 if waku == target_waku else 5.0, "r2": 5.0, "r3": 5.0, "tdiff": time_diff_val})
 
-    if has_valid:
+    # 軸艇の設定（狙い枠が指定されている場合はそれを最優先軸にする）
+    if target_waku and any(b["waku"] == target_waku for b in analyzed_boats):
+        main_head = next(b for b in analyzed_boats if b["waku"] == target_waku)
+    else:
         main_head = max(analyzed_boats[1:], key=lambda x: x["r1"])
-        others = [b for b in analyzed_boats if b["waku"] != main_head["waku"]]
-        r2 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r2"], reverse=True)[:3])
-        r3 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r3"], reverse=True)[:3])
-        main_eye = f"{main_head['waku']}-{r2}-{r3}"
 
-        sub_pool = [b for b in analyzed_boats if b["waku"] > main_head["waku"]]
-        sub_eye = "対象なし"
-        if sub_pool:
-            sub_head = max(sub_pool, key=lambda x: x["r1"])
-            sub_others = [b for b in analyzed_boats if b["waku"] != sub_head["waku"]]
-            sr2 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r2"], reverse=True)[:3])
-            sr3 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r3"], reverse=True)[:3])
-            sub_eye = f"{sub_head['waku']}-{sr2}-{sr3}"
-        return main_eye, sub_eye
-    return "算出不可", "対象なし"
+    others = [b for b in analyzed_boats if b["waku"] != main_head["waku"]]
+    r2 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r2"], reverse=True)[:3])
+    r3 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r3"], reverse=True)[:3])
+    main_eye = f"{main_head['waku']}-{r2}-{r3}"
+
+    sub_pool = [b for b in analyzed_boats if b["waku"] > main_head["waku"]]
+    sub_eye = "対象なし"
+    if sub_pool:
+        sub_head = max(sub_pool, key=lambda x: x["r1"])
+        sub_others = [b for b in analyzed_boats if b["waku"] != sub_head["waku"]]
+        sr2 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r2"], reverse=True)[:3])
+        sr3 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r3"], reverse=True)[:3])
+        sub_eye = f"{sub_head['waku']}-{sr2}-{sr3}"
+
+    return main_eye, sub_eye
 
 # ==========================================
 # 🚀 3. 監視メイン
 # ==========================================
+import re
+
 def monitor_shinsum(venue_urls):
     global notified_races
     venue_name_map = {
@@ -230,7 +254,9 @@ def monitor_shinsum(venue_urls):
                     if max_val >= 10.0 or (w1_rate is not None and w1_rate < 0 and max_val >= 5.0):
                         is_chobatsu = max_val >= 10.0
                         title_str = "🌟 超抜チャンス到来！" if is_chobatsu else "🔥 イン飛び波乱警戒！"
-                        main_eye, sub_eye = generate_probability_eye(boats)
+                        
+                        # 狙い目枠（max_waku）をベースに買い目を確実に生成
+                        main_eye, sub_eye = generate_probability_eye(boats, target_waku=max_waku)
                         
                         fields = [
                             {"name": "📊 勝率データ", "value": f"1枠: `{w1_rate}%` ｜ 狙い `{max_waku}枠`: `+{max_val}%`", "inline": False},
