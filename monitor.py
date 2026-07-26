@@ -2,6 +2,7 @@ import json
 import os
 import time
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
@@ -93,7 +94,7 @@ def perform_login():
 
 
 def update_venues():
-    """全会場（住之江などの ?race=X パラメータ形式含む）のURLを取得"""
+    """全会場のURLを取得"""
     global today_venues
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
@@ -111,7 +112,6 @@ def update_venues():
             ):
                 continue
 
-            # パラメータ(?race=10等)を消さずにフルURLを構築
             if href.startswith("http") and "boatrace-shinsum.com" in href:
                 full_url = href
             elif href.startswith("/"):
@@ -119,7 +119,6 @@ def update_venues():
             else:
                 continue
 
-            # トップページ等以外の各会場・レースURLを格納
             if full_url not in [
                 DATA_URL,
                 DATA_URL + "/",
@@ -368,8 +367,14 @@ def monitor_shinsum(venue_urls):
     }
 
     for venue_url in venue_urls:
-        venue_id_name = venue_url.rstrip("/").split("/")[-1]
-        is_joshi = "/joshi/" in venue_url
+        # クエリパラメータ(?race=10等)を綺麗に除去したベースパスを生成
+        parsed = urlparse(venue_url)
+        clean_base_url = urlunparse(
+            (parsed.scheme, parsed.netloc, parsed.path.rstrip("/"), "", "", "")
+        )
+
+        venue_id_name = parsed.path.rstrip("/").split("/")[-1]
+        is_joshi = "/joshi/" in parsed.path
         venue_japanese = (
             f"[女子]{venue_name_map.get(venue_id_name, venue_id_name)}"
             if is_joshi
@@ -379,9 +384,10 @@ def monitor_shinsum(venue_urls):
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
 
+        # 正しいJSONのURLを呼び出す
         try:
             s_resp = session.get(
-                f"{venue_url.rstrip('/')}/shinsum.json?t={timestamp}",
+                f"{clean_base_url}/shinsum.json?t={timestamp}",
                 auth=AUTH,
                 timeout=8,
             )
@@ -389,19 +395,19 @@ def monitor_shinsum(venue_urls):
                 shinsum_data = s_resp.json()
             elif s_resp.status_code == 401:
                 perform_login()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"⚠️ {venue_japanese} shinsum.json 取得エラー: {e}")
 
         try:
             a_resp = session.get(
-                f"{venue_url.rstrip('/')}/arare.json?t={timestamp}",
+                f"{clean_base_url}/arare.json?t={timestamp}",
                 auth=AUTH,
                 timeout=8,
             )
             if a_resp.status_code == 200:
                 arare_data = a_resp.json()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
