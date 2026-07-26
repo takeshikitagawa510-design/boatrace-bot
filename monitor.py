@@ -36,7 +36,7 @@ def send_discord_embed(title, description, fields=[], color=0x00FFFF):
             "description": description,
             "color": color,
             "fields": fields,
-            "footer": {"text": "競艇研究会 リアルタイムAIシグナル"},
+            "footer": {"text": "NEXUS-X VIP AI Engine"},
             "timestamp": datetime.now(timezone.utc).isoformat()
         }]
     }
@@ -46,7 +46,6 @@ def send_discord_embed(title, description, fields=[], color=0x00FFFF):
         print(f"Discord通知エラー: {e}")
 
 def perform_login():
-    print("🔑 サイトにログインしています...")
     session.auth = (USER_ID, PASSWORD)
     try:
         session.post(LOGIN_URL, data={'id': USER_ID, 'pass': PASSWORD}, timeout=10)
@@ -67,30 +66,23 @@ def update_venues():
 
         for a in soup.find_all('a'):
             href = a.get('href')
-            if not href or any(skip in href for skip in ['login', 'logout', 'wp-']):
-                continue
+            if not href or any(skip in href for skip in ['login', 'logout', 'wp-']): continue
 
-            if href.startswith('http') and 'boatrace-shinsum.com' in href:
-                clean_url = href.split('?')[0]
-            elif href.startswith('/'):
-                clean_url = DATA_URL.rstrip('/') + href.split('?')[0]
-            else:
-                continue
+            if href.startswith('http') and 'boatrace-shinsum.com' in href: clean_url = href.split('?')[0]
+            elif href.startswith('/'): clean_url = DATA_URL.rstrip('/') + href.split('?')[0]
+            else: continue
 
             if clean_url != DATA_URL and clean_url != DATA_URL + '/' and clean_url not in today_venues:
-                if any(x in clean_url for x in ['/boatrace/', '/checker/']):
-                    continue
+                if any(x in clean_url for x in ['/boatrace/', '/checker/']): continue
                 today_venues.add(clean_url)
-                print(f"🆕 新しい会場を追加しました: {clean_url}")
     except Exception as e:
-        print(f"⚠️ 会場リスト更新エラー: {e}")
+        print(f"⚠️ 会場更新エラー: {e}")
 
 # ==========================================
-# 📊 2. チェッカー確率解析ロジック（買い目生成エンジン）
+# 📊 2. AI確率解析ロジック
 # ==========================================
 def load_checker_data():
     global checker_data
-    print("📡 チェッカーの最新マスターデータをロード中...")
     try:
         timestamp = int(time.time() * 1000)
         resp = session.get(f"{CHECKER_URL}?t={timestamp}", timeout=10)
@@ -100,26 +92,15 @@ def load_checker_data():
 
         if resp.status_code == 200:
             checker_data = resp.json()
-            print(f"✅ チェッカーデータロード完了 ({len(checker_data)}選手分)")
-        else:
-            print(f"⚠️ チェッカー取得失敗: HTTP {resp.status_code}")
     except Exception as e:
-        print(f"⚠️ チェッカーデータロードエラー: {e}")
+        print(f"⚠️ データロードエラー: {e}")
 
 def get_real_probabilities(toban, waku, time_diff_val):
-    if not checker_data or not toban or str(toban) not in checker_data:
-        return None
-    player_waku_data = None
-    for w_data in checker_data[str(toban)]:
-        if w_data.get("n") == waku:
-            player_waku_data = w_data
-            break
-    if not player_waku_data:
-        return None
-    if time_diff_val >= 0.5: target_range = "大プラス"
-    elif 0.0 <= time_diff_val < 0.5: target_range = "小プラス"
-    elif -0.5 <= time_diff_val < 0.0: target_range = "小マイナス"
-    else: target_range = "大マイナス"
+    if not checker_data or not toban or str(toban) not in checker_data: return None
+    player_waku_data = next((w for w in checker_data[str(toban)] if w.get("n") == waku), None)
+    if not player_waku_data: return None
+    
+    target_range = "大プラス" if time_diff_val >= 0.5 else "小プラス" if time_diff_val >= 0.0 else "小マイナス" if time_diff_val >= -0.5 else "大マイナス"
     for row in player_waku_data.get("rows", []):
         if row.get("name") == target_range:
             return {"r1": float(row.get("r1", 0.0)), "r2": float(row.get("r2", 0.0)), "r3": float(row.get("r3", 0.0))}
@@ -136,7 +117,6 @@ def generate_probability_eye(boats):
         waku = i + 1
         b_str = json.dumps(b, ensure_ascii=False)
 
-        # 登番抽出
         toban = None
         for exact_key in ['id', 'no', 'toban', 'register_id', 'player_id', 'touban']:
             if exact_key in b and str(b[exact_key]).isdigit() and 3000 <= int(b[exact_key]) <= 6000:
@@ -148,7 +128,6 @@ def generate_probability_eye(boats):
                     toban = v
                     break
 
-        # タイム差の数値化
         time_diff_val = 0.0
         for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
             if cand in b_str:
@@ -159,7 +138,7 @@ def generate_probability_eye(boats):
                     break
                 except: pass
 
-        is_alert_target = ("シン Imperial" in b_str or "シン・" in b_str or "舟足覚醒型" in b_str) and ("+" in b_str or "＋" in b_str)
+        is_alert_target = ("Imperial" in b_str or "覚醒" in b_str) and ("+" in b_str or "＋" in b_str)
 
         probs = get_real_probabilities(toban, waku, time_diff_val)
         if probs:
@@ -168,61 +147,39 @@ def generate_probability_eye(boats):
         else:
             analyzed_boats.append({"waku": waku, "r1": 0.0, "r2": 0.0, "r3": 0.0, "is_alert": is_alert_target, "tdiff": time_diff_val})
 
-    # ==========================================
-    # 🎯 パターンA: 確率データが正常に紐づいた場合
-    # ==========================================
     if has_valid_checker:
-        # 1着候補（1号艇以外で最も1着率r1が高い艇）
         pool_2to6 = analyzed_boats[1:]
         main_head = max(pool_2to6, key=lambda x: x["r1"])
 
-        # 軸艇以外の艇
         other_boats = [b for b in analyzed_boats if b["waku"] != main_head["waku"]]
-        
-        # 2着率（r2）が高い順に上位3艇を取得
         top_r2_boats = sorted(other_boats, key=lambda x: x["r2"], reverse=True)[:3]
-        # 3着率（r3）が高い順に上位3艇を取得
         top_r3_boats = sorted(other_boats, key=lambda x: x["r3"], reverse=True)[:3]
 
-        # 確率が高い順に数字を並べ替え
         r2_str = "".join(str(b["waku"]) for b in top_r2_boats)
         r3_str = "".join(str(b["waku"]) for b in top_r3_boats)
-        
         main_eye = f"{main_head['waku']}-{r2_str}-{r3_str}"
 
-        # サブ（対抗軸）の計算
         sub_pool = [b for b in analyzed_boats if b["waku"] > main_head["waku"]]
         sub_eye = "対象なし"
         if sub_pool:
             sub_head = max(sub_pool, key=lambda x: x["r1"])
             sub_others = [b for b in analyzed_boats if b["waku"] != sub_head["waku"]]
-            
             sub_r2_boats = sorted(sub_others, key=lambda x: x["r2"], reverse=True)[:3]
             sub_r3_boats = sorted(sub_others, key=lambda x: x["r3"], reverse=True)[:3]
-            
             sub_r2_str = "".join(str(b["waku"]) for b in sub_r2_boats)
             sub_r3_str = "".join(str(b["waku"]) for b in sub_r3_boats)
-            
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
             
         return main_eye, sub_eye
 
-    # ==========================================
-    # ⚠️ パターンB: バックアップ（タイム差順で選定）
-    # ==========================================
     else:
         pool_2to6 = [b for b in analyzed_boats[1:] if b["is_alert"]]
-        if not pool_2to6:
-            pool_2to6 = analyzed_boats[1:]
+        if not pool_2to6: pool_2to6 = analyzed_boats[1:]
 
         main_head = max(pool_2to6, key=lambda x: x["tdiff"])
-        
-        # タイム差が大きい順にソート
         other_boats = sorted([b for b in analyzed_boats if b["waku"] != main_head["waku"]], key=lambda x: x["tdiff"], reverse=True)
-        
         r2_str = "".join(str(b["waku"]) for b in other_boats[:3])
         r3_str = "".join(str(b["waku"]) for b in other_boats[:4])
-        
         main_eye = f"{main_head['waku']}-{r2_str}-{r3_str}"
 
         sub_pool = [b for b in analyzed_boats if b["waku"] > main_head["waku"]]
@@ -230,10 +187,8 @@ def generate_probability_eye(boats):
         if sub_pool:
             sub_head = max(sub_pool, key=lambda x: x["tdiff"])
             sub_others = sorted([b for b in analyzed_boats if b["waku"] != sub_head["waku"]], key=lambda x: x["tdiff"], reverse=True)
-            
             sub_r2_str = "".join(str(b["waku"]) for b in sub_others[:3])
             sub_r3_str = "".join(str(b["waku"]) for b in sub_others[:4])
-            
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
             
         return main_eye, sub_eye
@@ -262,19 +217,14 @@ def monitor_shinsum(venue_urls):
         
         try:
             s_resp = session.get(f"{venue_url.rstrip('/')}/shinsum.json?t={timestamp}", timeout=8)
-            if s_resp.status_code == 200: 
-                shinsum_data = s_resp.json()
-            elif s_resp.status_code == 401:
-                perform_login()
-        except Exception:
-            pass
+            if s_resp.status_code == 200: shinsum_data = s_resp.json()
+            elif s_resp.status_code == 401: perform_login()
+        except Exception: pass
 
         try:
             a_resp = session.get(f"{venue_url.rstrip('/')}/arare.json?t={timestamp}", timeout=8)
-            if a_resp.status_code == 200: 
-                arare_data = a_resp.json()
-        except Exception:
-            pass
+            if a_resp.status_code == 200: arare_data = a_resp.json()
+        except Exception: pass
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
@@ -297,9 +247,9 @@ def monitor_shinsum(venue_urls):
                     for i, b in enumerate(boats):
                         teiban = i + 1
                         b_str = json.dumps(b, ensure_ascii=False)
-                        if ("シン Imperial" in b_str or "シン・" in b_str or "舟足覚醒型" in b_str) and ("+" in b_str or "＋" in b_str):
+                        if ("Imperial" in b_str or "覚醒" in b_str) and ("+" in b_str or "＋" in b_str):
                             is_triggered = True
-                            type_label = "🔥シン・覚醒" if "シン・" in b_str else "🌟舟足覚醒"
+                            type_label = "🔥MAX覚醒" if "Imperial" in b_str else "🌟機力覚醒"
                             kakusei_alerts.append(f"{teiban}枠({type_label})")
                 if is_triggered:
                     main_eye, sub_eye = generate_probability_eye(boats)
@@ -309,8 +259,8 @@ def monitor_shinsum(venue_urls):
                         {"name": "⚡ 該当艇", "value": ", ".join(kakusei_alerts), "inline": False}
                     ]
                     send_discord_embed(
-                        title=f"🚨 覚醒タイム発動チャンス！ 【{venue_japanese} {rno_str}R】",
-                        description="対象艇の舟足・機力が大幅覚醒！高配当チャンスです。",
+                        title=f"🚨 機力覚醒シグナル検知！ 【{venue_japanese} {rno_str}R】",
+                        description="対象艇の舟足・機力が大幅覚醒！高配当ターゲットレースです。",
                         fields=fields,
                         color=0xFF0055
                     )
@@ -337,7 +287,7 @@ def monitor_shinsum(venue_urls):
                     is_in_tobi = (w1_rate is not None and w1_rate < 0 and other_max_val >= 5.0)
 
                     if is_chobatsu or is_in_tobi:
-                        title = "🌟 超抜チャンス到来！" if is_chobatsu else "🔥 イン飛びチャンス！"
+                        title = "🌟 超抜シグナル到来！" if is_chobatsu else "🔥 イン波乱警戒シグナル！"
                         w1_str = f"+{w1_rate}" if (w1_rate is not None and w1_rate > 0) else f"{w1_rate}" if w1_rate is not None else "不明"
                         other_str = f"+{other_max_val}" if other_max_val > 0 else f"{other_max_val}"
 
@@ -350,7 +300,7 @@ def monitor_shinsum(venue_urls):
                         ]
                         send_discord_embed(
                             title=f"{title} 【{venue_japanese} {rno_str}R】",
-                            description="AI勝率偏向データを検知しました。",
+                            description="AI解析により勝率偏向データを検知しました。",
                             fields=fields,
                             color=0xFFD700 if is_chobatsu else 0xFF4500
                         )
@@ -376,15 +326,15 @@ def monitor_shinsum(venue_urls):
                     
                     fields = [{"name": "⚡ スリット気配", "value": ", ".join(slit_msg_details), "inline": False}]
                     send_discord_embed(
-                        title=f"⚡ スリットアラート発生！ 【{venue_japanese} {rno_str}R】",
-                        description="展示・スリットデータでプラス気配を検知しました。",
+                        title=f"⚡ スリット気配検知！ 【{venue_japanese} {rno_str}R】",
+                        description="展示・スリットデータで良好な気配を検知しました。",
                         fields=fields,
                         color=0x00E5FF
                     )
                     notified_races.add(slit_race_id)
 
 # ==========================================
-# ⏱️ 4. 実行エントリポイント (GitHub Actions対応)
+# ⏱️ 4. 実行エントリポイント
 # ==========================================
 if __name__ == "__main__":
     perform_login()
@@ -392,7 +342,6 @@ if __name__ == "__main__":
     update_venues()
 
     start_time = time.time()
-    # GitHub Actionsのタイムアウト対策として約4分50秒巡回して終了
     while time.time() - start_time < 280:
         if today_venues:
             monitor_shinsum(list(today_venues))
