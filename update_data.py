@@ -114,7 +114,9 @@ if target_dates:
 print("🧠 直近180日間のデータから辞書(JSON)を再構築中...")
 
 df['日付_dt'] = pd.to_datetime(df['日付'].astype(str), format='%Y%m%d')
-half_year_ago = now - timedelta(days=180)
+
+# ⭕ 修正ポイント: tz_localize(None) でタイムゾーンを外してpandasと型を統一
+half_year_ago = (now - timedelta(days=180)).replace(tzinfo=None)
 df_recent = df[df['日付_dt'] >= half_year_ago]
 
 # 万舟演出者ポイント（立役者）
