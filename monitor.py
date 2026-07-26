@@ -70,7 +70,8 @@ def update_venues():
                 continue
 
             if clean_url != DATA_URL and clean_url != DATA_URL + '/' and clean_url not in today_venues:
-                if any(x in clean_url for x in ['/boatrace/', '/joshi/', '/checker/']):
+                # 💡 スキップ条件から '/joshi/' を除外（女子戦も取得可能に）
+                if any(x in clean_url for x in ['/boatrace/', '/checker/']):
                     continue
                 today_venues.add(clean_url)
                 print(f"🆕 新しい会場を追加しました: {clean_url}")
@@ -217,17 +218,25 @@ def monitor_shinsum(venue_urls):
 
     print(f"[{now.strftime('%H:%M:%S')}] ⏳ {len(venue_urls)}会場を巡回中...")
 
+    # 💡 住之江・鳴門・尼崎・唐津などを網羅して追加
     venue_name_map = {
         'kiryu': '桐生', 'toda': '戸田', 'edogawa': '江戸川', 'tokoname': '常滑',
         'mikuni': '三国', 'marugame': '丸亀', 'miyajima': '宮島', 'tokuyama': '徳山',
-        'ashiya': '芦屋', 'omura': '大村', 'gamagori': '蒲郡', 'hamanako_sg': '浜名湖',
+        'ashiya': '芦屋', 'omura': '大村', 'gamagori': '蒲郡', 'hamanako_sg': '浜名湖', 'hamanako': '浜名湖',
         'heiwajima': '平和島', 'tamagawa': '多摩川', 'tsu': '津', 'biwako': 'びわこ',
+        'suminoe': '住之江', 'amagasaki': '尼崎', 'naruto': '鳴門', 'karatsu': '唐津',
         'kojima': '児島', 'wakamatsu': '若松', 'fukuoka': '福岡'
     }
 
     for venue_url in venue_urls:
         venue_id_name = venue_url.rstrip('/').split('/')[-1]
+        
+        # 💡 女子戦の場合のプレフィックス対応 (例: [女子] 平和島)
+        is_joshi = '/joshi/' in venue_url
         venue_japanese = venue_name_map.get(venue_id_name, venue_id_name)
+        if is_joshi:
+            venue_japanese = f"[女子]{venue_japanese}"
+
         timestamp = int(time.time() * 1000)
 
         shinsum_data, arare_data = {}, {}
@@ -351,10 +360,8 @@ if __name__ == "__main__":
     load_checker_data()
     update_venues()
 
-    # 1回の起動で数回（約5分間）ループして即終了させる構成（GitHub Actions用）
     start_time = time.time()
-    # 約5分間巡回して終了する
     while time.time() - start_time < 280:
         if today_venues:
             monitor_shinsum(list(today_venues))
-        time.sleep(30) # 30秒ごとにチェック
+        time.sleep(30)
