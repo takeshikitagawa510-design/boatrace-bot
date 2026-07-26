@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import re
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
@@ -113,18 +114,15 @@ def get_real_probabilities(toban, waku, time_diff_val):
 def generate_probability_eye(boats, target_waku=None):
     if not isinstance(boats, list) or len(boats) < 6: return "算出不可", "対象なし"
     analyzed_boats = []
-    has_valid = False
 
     for i, b in enumerate(boats):
         waku = i + 1
         b_str = json.dumps(b, ensure_ascii=False)
         
-        # 登録番号（登番）を取得
         toban = None
         if isinstance(b, dict):
             toban = next((b[k] for k in ['id', 'no', 'toban', 'touban', 'racer_id'] if k in b and str(b[k]).isdigit() and 3000 <= int(b[k]) <= 6000), None)
         if not toban:
-            # 文字列から4桁の登番を探す
             found = re.findall(r'\b(3\d{3}|4\d{3}|5\d{3})\b', b_str)
             if found: toban = found[0]
 
@@ -140,39 +138,48 @@ def generate_probability_eye(boats, target_waku=None):
 
         probs = get_real_probabilities(toban, waku, time_diff_val)
         if probs:
-            has_valid = True
             analyzed_boats.append({"waku": waku, "r1": probs["r1"], "r2": probs["r2"], "r3": probs["r3"], "tdiff": time_diff_val})
         else:
-            # チェッカーデータがない場合の簡易スコア計算（フォールバック）
-            analyzed_boats.append({"waku": waku, "r1": 10.0 if waku == target_waku else 5.0, "r2": 5.0, "r3": 5.0, "tdiff": time_diff_val})
+            # データなし時もインコース偏重や出目順に逃げず、1着率・2着率・3着率のベース確率を設定
+            base_r1 = 15.0 if waku == target_waku else (50.0 if waku == 1 else 10.0)
+            base_r2 = 20.0 if waku != 1 else 15.0
+            base_r3 = 20.0
+            analyzed_boats.append({"waku": waku, "r1": base_r1, "r2": base_r2, "r3": base_r3, "tdiff": time_diff_val})
 
-    # 軸艇の設定（狙い枠が指定されている場合はそれを最優先軸にする）
+    # 1. 軸艇（1頭）の決定
     if target_waku and any(b["waku"] == target_waku for b in analyzed_boats):
         main_head = next(b for b in analyzed_boats if b["waku"] == target_waku)
     else:
         main_head = max(analyzed_boats[1:], key=lambda x: x["r1"])
 
+    # 2. 相手艇（2着・3着）をシンサム理論（r2 / r3 確率の高い順）で選定
     others = [b for b in analyzed_boats if b["waku"] != main_head["waku"]]
-    r2 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r2"], reverse=True)[:3])
-    r3 = "".join(str(b["waku"]) for b in sorted(others, key=lambda x: x["r3"], reverse=True)[:3])
-    main_eye = f"{main_head['waku']}-{r2}-{r3}"
+    
+    # 2着率（r2）が高い順に上位3艇を抽出して文字列化
+    top_r2_boats = sorted(others, key=lambda x: x["r2"], reverse=True)[:3]
+    r2_str = "".join(str(b["waku"]) for b in top_r2_boats)
+    
+    # 3着率（r3）が高い順に上位3艇を抽出して文字列化
+    top_r3_boats = sorted(others, key=lambda x: x["r3"], reverse=True)[:3]
+    r3_str = "".join(str(b["waku"]) for b in top_r3_boats)
+    
+    main_eye = f"{main_head['waku']}-{r2_str}-{r3_str}"
 
+    # 外枠サブ目の計算（軸より外側の艇で1着率最大を軸にする）
     sub_pool = [b for b in analyzed_boats if b["waku"] > main_head["waku"]]
     sub_eye = "対象なし"
     if sub_pool:
         sub_head = max(sub_pool, key=lambda x: x["r1"])
         sub_others = [b for b in analyzed_boats if b["waku"] != sub_head["waku"]]
-        sr2 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r2"], reverse=True)[:3])
-        sr3 = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r3"], reverse=True)[:3])
-        sub_eye = f"{sub_head['waku']}-{sr2}-{sr3}"
+        sr2_str = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r2"], reverse=True)[:3])
+        sr3_str = "".join(str(b["waku"]) for b in sorted(sub_others, key=lambda x: x["r3"], reverse=True)[:3])
+        sub_eye = f"{sub_head['waku']}-{sr2_str}-{sr3_str}"
 
     return main_eye, sub_eye
 
 # ==========================================
 # 🚀 3. 監視メイン
 # ==========================================
-import re
-
 def monitor_shinsum(venue_urls):
     global notified_races
     venue_name_map = {
@@ -234,7 +241,7 @@ def monitor_shinsum(venue_urls):
                         title=f"🚨 覚醒タイム発動！ 【{venue_japanese} {rno_str}R】",
                         description="対象艇の舟足・機力が大幅覚醒！高配当チャンスです。",
                         fields=fields,
-                        color=0xFF0055 # シアンピンク
+                        color=0xFF0055
                     )
                     notified_races.add(kakusei_race_id)
 
@@ -255,7 +262,6 @@ def monitor_shinsum(venue_urls):
                         is_chobatsu = max_val >= 10.0
                         title_str = "🌟 超抜チャンス到来！" if is_chobatsu else "🔥 イン飛び波乱警戒！"
                         
-                        # 狙い目枠（max_waku）をベースに買い目を確実に生成
                         main_eye, sub_eye = generate_probability_eye(boats, target_waku=max_waku)
                         
                         fields = [
@@ -267,7 +273,7 @@ def monitor_shinsum(venue_urls):
                             title=f"{title_str} 【{venue_japanese} {rno_str}R】",
                             description="AI勝率偏向データを検知しました。",
                             fields=fields,
-                            color=0xFFD700 if is_chobatsu else 0xFF4500 # ゴールド or 赤
+                            color=0xFFD700 if is_chobatsu else 0xFF4500
                         )
                         notified_races.add(rate_race_id)
 
@@ -288,7 +294,7 @@ def monitor_shinsum(venue_urls):
                         title=f"⚡ スリットアラート発生！ 【{venue_japanese} {rno_str}R】",
                         description="展示・スリットデータでプラス気配を検知しました。",
                         fields=fields,
-                        color=0x00E5FF # 水色
+                        color=0x00E5FF
                     )
                     notified_races.add(slit_race_id)
 
