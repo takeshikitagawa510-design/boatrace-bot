@@ -40,10 +40,10 @@ def send_discord_embed(title, description, fields, color=0xFF4500):
         "embeds": [{
             "title": title,
             "description": description,
-            "color": color, # 0xFF4500 = 濃いオレンジ/赤
+            "color": color,
             "fields": fields,
             "footer": {
-                "text": "競艇研究会 VIP AI Analysis Engine"
+                "text": "NEXUS-X VIP AI Analysis Engine"
             },
             "timestamp": datetime.now(timezone.utc).isoformat()
         }]
@@ -63,7 +63,7 @@ def send_discord_embed(title, description, fields, color=0xFF4500):
 # ==========================================
 def main():
     manshu_races = []
-    print(f"⚔️ 【万舟スキャナー】 {TARGET_DATE} 実行中...\n")
+    print(f"⚔️ 【高配当スキャナー】 {TARGET_DATE} 実行中...\n")
 
     for jcd in range(1, 25):
         jcd_str = f"{jcd:02d}"
@@ -130,15 +130,15 @@ def main():
     # ==========================================
     if not manshu_races:
         send_discord_embed(
-            title=f"📢 本日の万舟チャンスレース ({DISPLAY_DATE})",
+            title=f"📢 本日のチャンスレース ({DISPLAY_DATE})",
             description="本日は条件を満たす高期待値レースはありませんでした。",
             fields=[],
-            color=0x808080 # 灰色
+            color=0x808080
         )
     else:
         manshu_races.sort(key=lambda x: x['s'], reverse=True)
         fields = []
-        for r in manshu_races[:15]: # 見やすさのため上位15件厳選
+        for r in manshu_races[:15]:
             fields.append({
                 "name": f"🔥 【{r['v']} {r['r']}R】 (期待値スコア: {r['s']}点)",
                 "value": f"└ **崩し狙い:** {r['targets']}\n└ **1号艇:** {r['in_name']}",
@@ -146,10 +146,10 @@ def main():
             })
 
         send_discord_embed(
-            title=f"💣 本日の万舟・高回収率狙いレース ({DISPLAY_DATE})",
+            title=f"💣 本日の高回収率狙いレース ({DISPLAY_DATE})",
             description="AIスコア判定により抽出された**高波乱期待値レース**の一覧です。",
             fields=fields,
-            color=0xFF4500 # 朱赤
+            color=0xFF4500
         )
 
 if __name__ == '__main__':
