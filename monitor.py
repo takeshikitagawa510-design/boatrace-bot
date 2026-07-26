@@ -16,7 +16,28 @@ USER_ID = os.environ.get('SHINSUM_USER', 'sum')
 PASSWORD = os.environ.get('SHINSUM_PASS', 'art')
 DISCORD_WEBHOOK_URL = os.environ.get('MONITOR_DISCORD_WEBHOOK_URL')
 
+# ------------------------------------------
+# 💾 通知済みデータの永続化（ファイル読み込み）
+# ------------------------------------------
+CACHE_FILE = "notified_races.json"
 notified_races = set()
+
+if os.path.exists(CACHE_FILE):
+    try:
+        with open(CACHE_FILE, "r", encoding="utf-8") as f:
+            notified_races = set(json.load(f))
+        print(f"📦 過去の通知済みデータ ({len(notified_races)}件) を読み込みました。")
+    except Exception as e:
+        print(f"⚠️ キャッシュ読み込みエラー: {e}")
+
+def save_notified_races():
+    """通知済みデータをJSONファイルに保存"""
+    try:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(list(notified_races), f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ キャッシュ保存エラー: {e}")
+
 today_venues = set()
 checker_data = {}
 
@@ -265,6 +286,7 @@ def monitor_shinsum(venue_urls):
                         color=0xFF0055
                     )
                     notified_races.add(kakusei_race_id)
+                    save_notified_races()  # ← ★通知後に即時保存
 
             # ② 勝率判定（イン飛び・超抜チャンス）✕ 推奨買い目
             if rate_race_id not in notified_races:
@@ -305,6 +327,7 @@ def monitor_shinsum(venue_urls):
                             color=0xFFD700 if is_chobatsu else 0xFF4500
                         )
                         notified_races.add(rate_race_id)
+                        save_notified_races()  # ← ★通知後に即時保存
 
             # ③ スリットアラート
             if slit_race_id not in notified_races:
@@ -332,6 +355,7 @@ def monitor_shinsum(venue_urls):
                         color=0x00E5FF
                     )
                     notified_races.add(slit_race_id)
+                    save_notified_races()  # ← ★通知後に即時保存
 
 # ==========================================
 # ⏱️ 4. 実行エントリポイント
@@ -342,7 +366,8 @@ if __name__ == "__main__":
     update_venues()
 
     start_time = time.time()
-    while time.time() - start_time < 280:
+    # 5分（300秒）実行に合わせて 240秒ループへ変更
+    while time.time() - start_time < 240:
         if today_venues:
             monitor_shinsum(list(today_venues))
         time.sleep(30)
