@@ -7,7 +7,7 @@ on:
     - cron: '*/5 0-13 * * *'
   workflow_dispatch:
 
-# ★ 追加：リポジトリへコミット＆プッシュするための権限
+# ★ リポジトリへコミット＆プッシュするための権限
 permissions:
   contents: write
 
@@ -31,13 +31,15 @@ jobs:
       - name: Run Shinsum Monitor
         env:
           MONITOR_DISCORD_WEBHOOK_URL: ${{ secrets.MONITOR_DISCORD_WEBHOOK_URL }}
+          # ★ 1. 的中実績用のWebhook URLを追加で引き渡す
+          RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
         run: python monitor.py
 
-      # ★ 追加：通知済みレースキャッシュ（notified_races.json）を自動コミット＆保存
-      - name: Save notification cache
+      # ★ 2. pending_results.json も一緒に自動コミット＆保存するよう変更
+      - name: Save notification cache and pending results
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add notified_races.json
-          git commit -m "Auto-update notified races cache [skip ci]" || exit 0
+          git add notified_races.json pending_results.json
+          git commit -m "Auto-update cache and pending results [skip ci]" || exit 0
           git push
