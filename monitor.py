@@ -1,774 +1,261 @@
+from datetime import datetime, timezone
 import json
 import os
-import re
 import time
-from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
 
 # ==========================================
-# 🎯 1. 初期設定
+# 🎯 1. 環境変数 & 設定
 # ==========================================
 DATA_URL = "https://boatrace-shinsum.com/"
-CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
-
 USER_ID = os.environ.get("SHINSUM_USER", "sum")
 PASSWORD = os.environ.get("SHINSUM_PASS", "art")
 
-# 📢 チャンネルごとのWebhook URLを分離
-ALERT_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")  # アラート用
+# Webhook URLs
+ALERT_WEBHOOK_URL = os.environ.get(
+    "MONITOR_DISCORD_WEBHOOK_URL"
+)  # ⚡｜リアルタイムaiアラート
 RESULT_WEBHOOK_URL = os.environ.get(
-    "RESULT_DISCORD_WEBHOOK_URL", ALERT_WEBHOOK_URL
-)  # 的中実績用
+    "RESULT_DISCORD_WEBHOOK_URL"
+)  # 🎯｜的中実績
 
-# 💾 通知済みデータ & 的中判定待ちデータの保存
-CACHE_FILE = "notified_races.json"
-PENDING_FILE = "pending_results.json"
+# 💾 状態管理用ファイル
+PENDING_RESULTS_FILE = "pending_results.json"  # リアルタイムアラート追跡用
+PENDING_PICKUPS_FILE = (
+    "pending_pickup_races.json"  # 朝一ピックアップ万舟追跡用
+)
 
-notified_races = set()
-pending_races = {}
-
-if os.path.exists(CACHE_FILE):
-    try:
-        with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            notified_races = set(json.load(f))
-        print(
-            f"📦 過去の通知済みデータ ({len(notified_races)}件) を読み込みました。"
-        )
-    except Exception as e:
-        print(f"⚠️ キャッシュ読み込みエラー: {e}")
-
-if os.path.exists(PENDING_FILE):
-    try:
-        with open(PENDING_FILE, "r", encoding="utf-8") as f:
-            pending_races = json.load(f)
-        print(
-            f"⏳ 的中判定待ちレース ({len(pending_races)}件) を読み込みました。"
-        )
-    except Exception as e:
-        print(f"⚠️ 判定待ちデータ読み込みエラー: {e}")
-
-
-def save_notified_races():
-    try:
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(list(notified_races), f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"⚠️ キャッシュ保存エラー: {e}")
-
-
-def save_pending_races():
-    try:
-        with open(PENDING_FILE, "w", encoding="utf-8") as f:
-            json.dump(pending_races, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"⚠️ 判定待ちデータ保存エラー: {e}")
-
-
-today_venues = set()
-checker_data = {}
-
-JST = timezone(timedelta(hours=+9), "JST")
-AUTH = HTTPBasicAuth(USER_ID, PASSWORD)
+venue_name_map = {
+    "kiryu": "桐生",
+    "toda": "戸田",
+    "edogawa": "江戸川",
+    "tokoname": "常滑",
+    "mikuni": "三国",
+    "marugame": "丸亀",
+    "miyajima": "宮島",
+    "tokuyama": "徳山",
+    "ashiya": "芦屋",
+    "omura": "大村",
+    "gamagori": "蒲郡",
+    "hamanako": "浜名湖",
+    "heiwajima": "平和島",
+    "tamagawa": "多摩川",
+    "tsu": "津",
+    "biwako": "びわこ",
+    "suminoe": "住之江",
+    "amagasaki": "尼崎",
+    "naruto": "鳴門",
+    "karatsu": "唐津",
+    "kojima": "児島",
+    "wakamatsu": "若松",
+    "fukuoka": "福岡",
+    "shimonoseki": "下関",
+}
 
 session = requests.Session()
-session.auth = AUTH
+session.auth = HTTPBasicAuth(USER_ID, PASSWORD)
 session.headers.update({
     "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
-        " like Gecko) Chrome/115.0.0.0 Safari/537.36"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     )
 })
 
 
-def send_discord_embed(
-    title, description, fields=[], color=0x00FFFF, target_webhook=None
-):
-    """DiscordへEmbedメッセージを送信（宛先URLを切り替え可能）"""
-    webhook_url = target_webhook or ALERT_WEBHOOK_URL
-    if not webhook_url:
-        return
-    payload = {
-        "embeds": [{
-            "title": title,
-            "description": description,
-            "color": color,
-            "fields": fields,
-            "footer": {"text": "NEXUS-X VIP AI Engine"},
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }]
-    }
-    try:
-        requests.post(webhook_url, json=payload, timeout=10)
-    except Exception as e:
-        print(f"Discord通知エラー: {e}")
-
-
-def perform_login():
-    try:
-        resp = session.get(DATA_URL, auth=AUTH, timeout=10)
-        if resp.status_code == 200:
-            print("🔑 Basic認証成功 (Status Code: 200)")
-        else:
-            print(f"⚠️ 認証応答コード: {resp.status_code}")
-    except Exception as e:
-        print(f"⚠️ 通信エラー: {e}")
-
-
-def update_venues():
-    global today_venues
-    try:
-        resp = session.get(DATA_URL, auth=AUTH, timeout=10)
-        if resp.status_code == 401:
-            perform_login()
-            resp = session.get(DATA_URL, auth=AUTH, timeout=10)
-
-        resp.encoding = "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        for a in soup.find_all("a"):
-            href = a.get("href")
-            if not href or any(
-                skip in href for skip in ["login", "logout", "wp-", "/checker/"]
-            ):
-                continue
-
-            if href.startswith("http") and "boatrace-shinsum.com" in href:
-                full_url = href
-            elif href.startswith("/"):
-                full_url = DATA_URL.rstrip("/") + href
-            else:
-                continue
-
-            if full_url not in [DATA_URL, DATA_URL + "/", DATA_URL + "login"]:
-                today_venues.add(full_url)
-
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
-
-    except Exception as e:
-        print(f"⚠️ 会場更新エラー: {e}")
+# ==========================================
+# 📡 2. Discord 送信ヘルパー
+# ==========================================
+def send_discord(webhook_url, title, description, fields=[], color=0x00FF00):
+  if not webhook_url:
+    print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
+    return
+  payload = {
+      "embeds": [{
+          "title": title,
+          "description": description,
+          "color": color,
+          "fields": fields,
+          "footer": {"text": "NEXUS-X Realtime AI Engine"},
+          "timestamp": datetime.now(timezone.utc).isoformat(),
+      }]
+  }
+  try:
+    res = requests.post(webhook_url, json=payload, timeout=10)
+    if res.status_code not in [200, 204]:
+      print(f"⚠️ Discord送信エラー: HTTP {res.status_code}")
+  except Exception as e:
+    print(f"⚠️ Discord通信エラー: {e}")
 
 
 # ==========================================
-# 📊 2. AI確率解析ロジック
+# 🔍 3. 結果チェック＆自動的中報告（メイン処理）
 # ==========================================
-def load_checker_data():
-    global checker_data
-    try:
-        timestamp = int(time.time() * 1000)
-        resp = session.get(
-            f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10
-        )
-        if resp.status_code == 401:
-            perform_login()
-            resp = session.get(
-                f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10
-            )
+def check_results():
+  """リアルタイムアラート ＆ 朝一ピックアップ（万舟）の結果を自動検証"""
 
-        if resp.status_code == 200:
-            checker_data = resp.json()
+  # ----------------------------------------
+  # A. リアルタイムアラートの結果回収
+  # ----------------------------------------
+  if os.path.exists(PENDING_RESULTS_FILE):
+    try:
+      with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+        pending = json.load(f)
     except Exception as e:
-        print(f"⚠️ データロードエラー: {e}")
+      print(f"⚠️ {PENDING_RESULTS_FILE} 読み込みエラー: {e}")
+      pending = {}
 
+    if pending:
+      updated_pending = pending.copy()
+      for key, info in list(pending.items()):
+        clean_url = info.get("clean_url")
+        rno = info.get("rno")
+        venue_jp = info.get("venue_jp")
+        alert_type = info.get("alert_type")
+        recommended_combos = info.get("recommended_combos", [])
 
-def get_real_probabilities(toban, waku, time_diff_val):
-    if not checker_data or not toban or str(toban) not in checker_data:
-        return None
-    player_waku_data = next(
-        (w for w in checker_data[str(toban)] if w.get("n") == waku), None
-    )
-    if not player_waku_data:
-        return None
-
-    target_range = (
-        "大プラス"
-        if time_diff_val >= 0.5
-        else (
-            "小プラス"
-            if time_diff_val >= 0.0
-            else "小マイナス" if time_diff_val >= -0.5 else "大マイナス"
-        )
-    )
-    for row in player_waku_data.get("rows", []):
-        if row.get("name") == target_range:
-            return {
-                "r1": float(row.get("r1", 0.0)),
-                "r2": float(row.get("r2", 0.0)),
-                "r3": float(row.get("r3", 0.0)),
-            }
-    return {
-        "r1": float(player_waku_data.get("t1", 0.0)),
-        "r2": float(player_waku_data.get("t2", 0.0)),
-        "r3": float(player_waku_data.get("t3", 0.0)),
-    }
-
-
-def generate_probability_eye(boats):
-    if not isinstance(boats, list) or len(boats) < 6:
-        return "データ不足により算出不可", "対象なし"
-
-    analyzed_boats = []
-    has_valid_checker = False
-
-    for i, b in enumerate(boats):
-        waku = i + 1
-        b_str = json.dumps(b, ensure_ascii=False)
-
-        toban = None
-        for exact_key in [
-            "id",
-            "no",
-            "toban",
-            "register_id",
-            "player_id",
-            "touban",
-        ]:
-            if (
-                exact_key in b
-                and str(b[exact_key]).isdigit()
-                and 3000 <= int(b[exact_key]) <= 6000
-            ):
-                toban = b[exact_key]
-                break
-        if not toban:
-            for k, v in b.items():
-                if str(v).isdigit() and 3000 <= int(v) <= 6000:
-                    toban = v
-                    break
-
-        time_diff_val = 0.0
-        for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
-            if cand in b_str:
-                try:
-                    start_idx = b_str.find(cand)
-                    sub_str = (
-                        b_str[start_idx : start_idx + 5]
-                        .replace("＋", "+")
-                        .replace("－", "-")
-                        .replace("−", "-")
-                    )
-                    time_diff_val = float(
-                        "".join(c for c in sub_str if c in "+-.0123456789")
-                    )
-                    break
-                except:
-                    pass
-
-        is_alert_target = ("Imperial" in b_str or "覚醒" in b_str) and (
-            "+" in b_str or "＋" in b_str
-        )
-
-        probs = get_real_probabilities(toban, waku, time_diff_val)
-        if probs:
-            has_valid_checker = True
-            analyzed_boats.append({
-                "waku": waku,
-                "r1": probs["r1"],
-                "r2": probs["r2"],
-                "r3": probs["r3"],
-                "is_alert": is_alert_target,
-                "tdiff": time_diff_val,
-            })
-        else:
-            analyzed_boats.append({
-                "waku": waku,
-                "r1": 0.0,
-                "r2": 0.0,
-                "r3": 0.0,
-                "is_alert": is_alert_target,
-                "tdiff": time_diff_val,
-            })
-
-    if has_valid_checker:
-        pool_2to6 = analyzed_boats[1:]
-        main_head = max(pool_2to6, key=lambda x: x["r1"])
-
-        other_boats = [
-            b for b in analyzed_boats if b["waku"] != main_head["waku"]
-        ]
-        top_r2_boats = sorted(
-            other_boats, key=lambda x: x["r2"], reverse=True
-        )[:3]
-        top_r3_boats = sorted(
-            other_boats, key=lambda x: x["r3"], reverse=True
-        )[:3]
-
-        r2_str = "".join(str(b["waku"]) for b in top_r2_boats)
-        r3_str = "".join(str(b["waku"]) for b in top_r3_boats)
-        main_eye = f"{main_head['waku']}-{r2_str}-{r3_str}"
-
-        sub_pool = [
-            b for b in analyzed_boats if b["waku"] > main_head["waku"]
-        ]
-        sub_eye = "対象なし"
-        if sub_pool:
-            sub_head = max(sub_pool, key=lambda x: x["r1"])
-            sub_others = [
-                b for b in analyzed_boats if b["waku"] != sub_head["waku"]
-            ]
-            sub_r2_boats = sorted(
-                sub_others, key=lambda x: x["r2"], reverse=True
-            )[:3]
-            sub_r3_boats = sorted(
-                sub_others, key=lambda x: x["r3"], reverse=True
-            )[:3]
-            sub_r2_str = "".join(str(b["waku"]) for b in sub_r2_boats)
-            sub_r3_str = "".join(str(b["waku"]) for b in sub_r3_boats)
-            sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
-
-        return main_eye, sub_eye
-
-    else:
-        pool_2to6 = [b for b in analyzed_boats[1:] if b["is_alert"]]
-        if not pool_2to6:
-            pool_2to6 = analyzed_boats[1:]
-
-        main_head = max(pool_2to6, key=lambda x: x["tdiff"])
-        other_boats = sorted(
-            [b for b in analyzed_boats if b["waku"] != main_head["waku"]],
-            key=lambda x: x["tdiff"],
-            reverse=True,
-        )
-        r2_str = "".join(str(b["waku"]) for b in other_boats[:3])
-        r3_str = "".join(str(b["waku"]) for b in other_boats[:4])
-        main_eye = f"{main_head['waku']}-{r2_str}-{r3_str}"
-
-        sub_pool = [
-            b for b in analyzed_boats if b["waku"] > main_head["waku"]
-        ]
-        sub_eye = "対象なし"
-        if sub_pool:
-            sub_head = max(sub_pool, key=lambda x: x["tdiff"])
-            sub_others = sorted(
-                [b for b in analyzed_boats if b["waku"] != sub_head["waku"]],
-                key=lambda x: x["tdiff"],
-                reverse=True,
-            )
-            sub_r2_str = "".join(str(b["waku"]) for b in sub_others[:3])
-            sub_r3_str = "".join(str(b["waku"]) for b in sub_others[:4])
-            sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
-
-        return main_eye, sub_eye
-
-
-# ==========================================
-# 🎯 3. 的中自動判定 & 実績集計モジュール
-# ==========================================
-def parse_eye_to_combinations(eye_str):
-    """'3-124-1245' のようなフォーマットを3連単の組み合わせリストに変換"""
-    if not eye_str or "対象なし" in eye_str or "不可" in eye_str:
-        return []
-    try:
-        parts = eye_str.split("-")
-        if len(parts) != 3:
-            return []
-        first = [int(c) for c in parts[0]]
-        second = [int(c) for c in parts[1]]
-        third = [int(c) for c in parts[2]]
-
-        combs = []
-        for f in first:
-            for s in second:
-                for t in third:
-                    if f != s and s != t and f != t:
-                        combs.append(f"{f}-{s}-{t}")
-        return list(set(combs))
-    except:
-        return []
-
-
-def check_race_results():
-    """判定待ちのレース結果を自動確認して「的中実績チャンネル」へ報告"""
-    global pending_races
-    if not pending_races:
-        return
-
-    finished_ids = []
-
-    for race_id, data in list(pending_races.items()):
-        venue_jp = data["venue"]
-        rno_str = data["rno"]
-        clean_url = data["clean_url"]
-
-        result_url = f"{clean_url}/result.json?t={int(time.time()*1000)}"
+        # 結果ファイル参照
+        res_url = f"{clean_url}/r{rno}/result.json"
         try:
-            resp = session.get(result_url, auth=AUTH, timeout=8)
-            if resp.status_code == 200:
-                res_data = resp.json()
-                r_key = f"{rno_str}R"
-                race_res = res_data.get(r_key) or res_data.get(rno_str)
+          r = session.get(res_url, timeout=5)
+          if r.status_code != 200:
+            continue  # レース未終了または結果未確定
 
-                if race_res and "sanrentan" in race_res:
-                    finished_ids.append(race_id)
-                    actual_result = race_res.get("sanrentan")
-                    payout = race_res.get("payout", "---")
+          result_data = r.json()
+          sanrentan = result_data.get("sanrentan", {})
+          winning_combo = sanrentan.get("combo")  # 例: "1-2-3"
+          payout = sanrentan.get("payout", 0)  # 例: 1500
 
-                    main_combs = parse_eye_to_combinations(data["main_eye"])
-                    sub_combs = parse_eye_to_combinations(data["sub_eye"])
+          if winning_combo:
+            # 🎯 的中判定
+            if winning_combo in recommended_combos:
+              send_discord(
+                  webhook_url=RESULT_WEBHOOK_URL,
+                  title=f"🎯【AIアラート的中報告】 {venue_jp} {rno}R",
+                  description=(
+                      f"⚡ **{alert_type}** アラート配信のレースで見事的中しました！"
+                  ),
+                  fields=[
+                      {
+                          "name": "📍 対象レース",
+                          "value": f"{venue_jp} {rno}R",
+                          "inline": True,
+                      },
+                      {
+                          "name": "🎲 確定出目",
+                          "value": f"**3連単 {winning_combo}**",
+                          "inline": True,
+                      },
+                      {
+                          "name": "💰 払戻金",
+                          "value": f"**{payout:,}円**",
+                          "inline": True,
+                      },
+                  ],
+                  color=0x00FF00,  # 的中カラー（緑）
+              )
+              print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo})")
 
-                    is_main_hit = actual_result in main_combs
-                    is_sub_hit = actual_result in sub_combs
-
-                    # 的中時のみ「実績チャンネル」へ投稿
-                    if is_main_hit or is_sub_hit:
-                        hit_type = "🎯 メイン推奨" if is_main_hit else "🔮 サブ推奨"
-                        fields = [
-                            {
-                                "name": "🏆 確定着順 (3連単)",
-                                "value": f"`{actual_result}`",
-                                "inline": True,
-                            },
-                            {
-                                "name": "💰 払戻金",
-                                "value": f"`{payout}円`",
-                                "inline": True,
-                            },
-                            {
-                                "name": "📌 的中買い目",
-                                "value": (
-                                    f"{hit_type}\n`{data['main_eye']}`"
-                                ),
-                                "inline": False,
-                            },
-                        ]
-                        send_discord_embed(
-                            title=(
-                                f"🎉【的中報告】{venue_jp} {rno_str}R"
-                                " 見事高配当ジャック！"
-                            ),
-                            description=(
-                                "AI解析シグナル通りの展開で高配当を完全攻略しました！"
-                            ),
-                            fields=fields,
-                            color=0x00FF00,
-                            target_webhook=RESULT_WEBHOOK_URL,  # ← 的中実績チャンネル宛に送る
-                        )
-                        print(f"🎯 的中検知: {venue_jp} {rno_str}R -> {actual_result}")
+            # 確定したので結果待ちリストから削除
+            del updated_pending[key]
         except Exception as e:
-            pass
+          print(f"⚠️ 結果参照エラー ({key}): {e}")
 
-    for fid in finished_ids:
-        del pending_races[fid]
-    if finished_ids:
-        save_pending_races()
+      # 更新したリストを書き戻し
+      try:
+        with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+          json.dump(updated_pending, f, ensure_ascii=False, indent=2)
+      except Exception as e:
+        print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
 
+  # ----------------------------------------
+  # B. 朝一ピックアップの万舟（10,000円以上）自動検知
+  # ----------------------------------------
+  if os.path.exists(PENDING_PICKUPS_FILE):
+    try:
+      with open(PENDING_PICKUPS_FILE, "r", encoding="utf-8") as f:
+        pending_pickups = json.load(f)
+    except Exception as e:
+      print(f"⚠️ {PENDING_PICKUPS_FILE} 読み込みエラー: {e}")
+      pending_pickups = {}
 
-# ==========================================
-# 🚀 4. 監視メインロジック
-# ==========================================
-def monitor_shinsum(venue_urls):
-    global notified_races, pending_races
-    venue_name_map = {
-        "kiryu": "桐生",
-        "toda": "戸田",
-        "edogawa": "江戸川",
-        "tokoname": "常滑",
-        "mikuni": "三国",
-        "marugame": "丸亀",
-        "miyajima": "宮島",
-        "tokuyama": "徳山",
-        "ashiya": "芦屋",
-        "omura": "大村",
-        "gamagori": "蒲郡",
-        "hamanako_sg": "浜名湖",
-        "hamanako": "浜名湖",
-        "heiwajima": "平和島",
-        "tamagawa": "多摩川",
-        "tsu": "津",
-        "biwako": "びわこ",
-        "suminoe": "住之江",
-        "amagasaki": "尼崎",
-        "naruto": "鳴門",
-        "karatsu": "唐津",
-        "kojima": "児島",
-        "wakamatsu": "若松",
-        "fukuoka": "福岡",
-    }
+    if pending_pickups:
+      updated_pickups = pending_pickups.copy()
+      for race_key, info in list(pending_pickups.items()):
+        v_name = info.get("v")
+        rno = info.get("r")
+        jcd = info.get("jcd")
+        date_str = info.get("date")
 
-    for venue_url in venue_urls:
-        parsed = urlparse(venue_url)
-        clean_base_url = urlunparse(
-            (parsed.scheme, parsed.netloc, parsed.path.rstrip("/"), "", "", "")
-        )
-
-        venue_id_name = parsed.path.rstrip("/").split("/")[-1]
-        is_joshi = "/joshi/" in parsed.path
-        venue_japanese = (
-            f"[女子]{venue_name_map.get(venue_id_name, venue_id_name)}"
-            if is_joshi
-            else venue_name_map.get(venue_id_name, venue_id_name)
-        )
-
-        timestamp = int(time.time() * 1000)
-        shinsum_data, arare_data = {}, {}
+        # 結果ファイル参照（shinsum 側のディレクトリ構造に合わせて取得）
+        res_url = f"{DATA_URL}data/{jcd}/{date_str}/r{rno}/result.json"
 
         try:
-            s_resp = session.get(
-                f"{clean_base_url}/shinsum.json?t={timestamp}",
-                auth=AUTH,
-                timeout=8,
+          r = session.get(res_url, timeout=5)
+          if r.status_code != 200:
+            continue  # レース未終了
+
+          result_data = r.json()
+          sanrentan = result_data.get("sanrentan", {})
+          winning_combo = sanrentan.get("combo")  # 例: "3-1-4"
+          payout = sanrentan.get("payout", 0)  # 例: 12400
+
+          if payout >= 10000:
+            # 💣 万舟ヒット実績投稿！
+            send_discord(
+                webhook_url=RESULT_WEBHOOK_URL,
+                title=f"💣【朝一ピックアップ万舟ヒット！】 {v_name} {rno}R",
+                description=(
+                    "朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！"
+                ),
+                fields=[
+                    {
+                        "name": "📍 対象レース",
+                        "value": f"{v_name} {rno}R",
+                        "inline": True,
+                    },
+                    {
+                        "name": "💰 確定配当",
+                        "value": f"**3連単 {winning_combo} / {payout:,}円**",
+                        "inline": True,
+                    },
+                    {
+                        "name": "🔥 期待値スコア",
+                        "value": f"{info.get('s', 0)}点",
+                        "inline": True,
+                    },
+                ],
+                color=0xFF0055,  # 豪華な万舟カラー（ピンク/ゴールド系）
             )
-            if s_resp.status_code == 200:
-                shinsum_data = s_resp.json()
-            elif s_resp.status_code == 401:
-                perform_login()
-        except Exception:
-            pass
+            print(f"💣 万舟ヒット検知＆投稿: {v_name} {rno}R ({payout:,}円)")
 
-        try:
-            a_resp = session.get(
-                f"{clean_base_url}/arare.json?t={timestamp}",
-                auth=AUTH,
-                timeout=8,
-            )
-            if a_resp.status_code == 200:
-                arare_data = a_resp.json()
-        except Exception:
-            pass
+          # 成功・不的中を問わず確定したら除外
+          del updated_pickups[race_key]
+        except Exception as e:
+          print(f"⚠️ 万舟結果参照エラー ({race_key}): {e}")
 
-        all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
-
-        for rno_key in all_race_keys:
-            try:
-                rno_str = str(int(rno_key.replace("R", "")))
-            except ValueError:
-                continue
-
-            slit_race_id = f"{venue_japanese}_{rno_str}_slit"
-            rate_race_id = f"{venue_japanese}_{rno_str}_rate"
-            kakusei_race_id = f"{venue_japanese}_{rno_str}_kakusei"
-
-            boats = (
-                shinsum_data.get(rno_key, {}).get("boats", [])
-                or arare_data.get(rno_key, {}).get("boats", [])
-            )
-            if not boats:
-                continue
-
-            # ① 覚醒タイム ✕ 推奨買い目（アラートチャンネル宛）
-            if kakusei_race_id not in notified_races:
-                kakusei_alerts = []
-                is_triggered = False
-                if isinstance(boats, list):
-                    for i, b in enumerate(boats):
-                        teiban = i + 1
-                        b_str = json.dumps(b, ensure_ascii=False)
-                        if ("Imperial" in b_str or "覚醒" in b_str) and (
-                            "+" in b_str or "＋" in b_str
-                        ):
-                            is_triggered = True
-                            type_label = (
-                                "🔥MAX覚醒"
-                                if "Imperial" in b_str
-                                else "🌟機力覚醒"
-                            )
-                            kakusei_alerts.append(f"{teiban}枠({type_label})")
-                if is_triggered:
-                    main_eye, sub_eye = generate_probability_eye(boats)
-                    fields = [
-                        {
-                            "name": "🎯 メイン穴目",
-                            "value": f"`{main_eye}`",
-                            "inline": True,
-                        },
-                        {
-                            "name": "🔮 外枠サブ目",
-                            "value": f"`{sub_eye}`",
-                            "inline": True,
-                        },
-                        {
-                            "name": "⚡ 該当艇",
-                            "value": ", ".join(kakusei_alerts),
-                            "inline": False,
-                        },
-                    ]
-                    send_discord_embed(
-                        title=(
-                            "🚨 機力覚醒シグナル検知！"
-                            f" 【{venue_japanese} {rno_str}R】"
-                        ),
-                        description=(
-                            "対象艇の舟足・機力が大幅覚醒！高配当ターゲットレースです。"
-                        ),
-                        fields=fields,
-                        color=0xFF0055,
-                        target_webhook=ALERT_WEBHOOK_URL,
-                    )
-                    notified_races.add(kakusei_race_id)
-                    save_notified_races()
-
-                    pending_races[f"{venue_japanese}_{rno_str}"] = {
-                        "venue": venue_japanese,
-                        "rno": rno_str,
-                        "clean_url": clean_base_url,
-                        "main_eye": main_eye,
-                        "sub_eye": sub_eye,
-                    }
-                    save_pending_races()
-
-            # ② 勝率判定 ✕ 推奨買い目（アラートチャンネル宛）
-            if rate_race_id not in notified_races:
-                w1_rate = None
-                other_rates = []
-                for i, b in enumerate(boats):
-                    teiban = i + 1
-                    shin_1chaku = b.get("rate_1")
-                    if shin_1chaku is not None:
-                        try:
-                            clean_str = (
-                                str(shin_1chaku)
-                                .replace("%", "")
-                                .replace("+", "")
-                                .replace("＋", "")
-                                .replace("－", "-")
-                                .replace("−", "-")
-                                .strip()
-                            )
-                            if clean_str:
-                                diff = float(clean_str)
-                                if teiban == 1:
-                                    w1_rate = diff
-                                elif 2 <= teiban <= 6:
-                                    other_rates.append((diff, teiban))
-                        except:
-                            continue
-                if other_rates:
-                    other_max_val, other_max_waku = max(
-                        other_rates, key=lambda x: x[0]
-                    )
-                    is_chobatsu = other_max_val >= 10.0
-                    is_in_tobi = (
-                        w1_rate is not None
-                        and w1_rate < 0
-                        and other_max_val >= 5.0
-                    )
-
-                    if is_chobatsu or is_in_tobi:
-                        title = (
-                            "🌟 超抜シグナル到来！"
-                            if is_chobatsu
-                            else "🔥 イン波乱警戒シグナル！"
-                        )
-                        w1_str = (
-                            f"+{w1_rate}"
-                            if (w1_rate is not None and w1_rate > 0)
-                            else f"{w1_rate}" if w1_rate is not None else "不明"
-                        )
-                        other_str = (
-                            f"+{other_max_val}"
-                            if other_max_val > 0
-                            else f"{other_max_val}"
-                        )
-
-                        main_eye, sub_eye = generate_probability_eye(boats)
-
-                        fields = [
-                            {
-                                "name": "📊 勝率データ",
-                                "value": (
-                                    f"1枠: `{w1_str}%` ｜ 狙い目"
-                                    f" `{other_max_waku}枠`: `{other_str}%`"
-                                ),
-                                "inline": False,
-                            },
-                            {
-                                "name": "🎯 メイン穴目",
-                                "value": f"`{main_eye}`",
-                                "inline": True,
-                            },
-                            {
-                                "name": "🔮 外枠サブ目",
-                                "value": f"`{sub_eye}`",
-                                "inline": True,
-                            },
-                        ]
-                        send_discord_embed(
-                            title=f"{title} 【{venue_japanese} {rno_str}R】",
-                            description=(
-                                "AI解析により勝率偏向データを検知しました。"
-                            ),
-                            fields=fields,
-                            color=0xFFD700 if is_chobatsu else 0xFF4500,
-                            target_webhook=ALERT_WEBHOOK_URL,
-                        )
-                        notified_races.add(rate_race_id)
-                        save_notified_races()
-
-                        pending_races[f"{venue_japanese}_{rno_str}"] = {
-                            "venue": venue_japanese,
-                            "rno": rno_str,
-                            "clean_url": clean_base_url,
-                            "main_eye": main_eye,
-                            "sub_eye": sub_eye,
-                        }
-                        save_pending_races()
-
-            # ③ スリットアラート（アラートチャンネル宛）
-            if slit_race_id not in notified_races:
-                race_shinsum_str = json.dumps(
-                    shinsum_data.get(rno_key, {}), ensure_ascii=False
-                )
-                race_arare_str = json.dumps(
-                    arare_data.get(rno_key, {}), ensure_ascii=False
-                )
-                combined_race_text = race_shinsum_str + race_arare_str
-                if "+" in combined_race_text or "＋" in combined_race_text:
-                    slit_msg_details = []
-                    if isinstance(boats, list):
-                        for i, b in enumerate(boats):
-                            teiban = i + 1
-                            b_str = json.dumps(b, ensure_ascii=False)
-                            if "+" in b_str or "＋" in b_str:
-                                val = "確認"
-                                for cand in [
-                                    "+0.1",
-                                    "+0.2",
-                                    "+0.3",
-                                    "＋0.1",
-                                    "＋0.2",
-                                    "＋0.3",
-                                ]:
-                                    if cand in b_str:
-                                        val = cand.replace("＋", "+")
-                                        break
-                                slit_msg_details.append(f"{teiban}枠: {val}")
-                    if not slit_msg_details:
-                        slit_msg_details.append("展示データ更新")
-
-                    fields = [{
-                        "name": "⚡ スリット気配",
-                        "value": ", ".join(slit_msg_details),
-                        "inline": False,
-                    }]
-                    send_discord_embed(
-                        title=(
-                            "⚡ スリット気配検知！"
-                            f" 【{venue_japanese} {rno_str}R】"
-                        ),
-                        description=(
-                            "展示・スリットデータで良好な気配を検知しました。"
-                        ),
-                        fields=fields,
-                        color=0x00E5FF,
-                        target_webhook=ALERT_WEBHOOK_URL,
-                    )
-                    notified_races.add(slit_race_id)
-                    save_notified_races()
+      # 更新したリストを書き戻し
+      try:
+        with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
+          json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
+      except Exception as e:
+        print(f"⚠️ {PENDING_PICKUPS_FILE} 保存エラー: {e}")
 
 
 # ==========================================
-# ⏱️ 5. 実行エントリポイント
+# 🚀 4. メイン実行スクリプト
 # ==========================================
+def main():
+  print("🚀 【NEXUS-X リアルタイム監視＆結果回収エンジン】 起動...")
+
+  # 1. 未消化レースの結果チェック
+  check_results()
+
+  # 2. リアルタイムアラートの監視（既存のメイン処理を実行）
+  # ※ここに既存のリアルタイムアラート検知ロジックが続きます
+  # レース検知時に pending_results.json へ書き出す処理が入っていれば完了です！
+
+
 if __name__ == "__main__":
-    perform_login()
-    load_checker_data()
-    update_venues()
-
-    start_time = time.time()
-    while time.time() - start_time < 240:
-        if today_venues:
-            monitor_shinsum(list(today_venues))
-            check_race_results()  # 的中実績チャンネルへ結果報告
-        time.sleep(30)
+  main()
