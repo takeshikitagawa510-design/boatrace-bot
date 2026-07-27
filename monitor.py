@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse, urlunparse
@@ -15,13 +16,19 @@ CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
 USER_ID = os.environ.get("SHINSUM_USER", "sum")
 PASSWORD = os.environ.get("SHINSUM_PASS", "art")
-DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 
-# ------------------------------------------
-# 💾 通知済みデータの永続化（ファイル読み込み）
-# ------------------------------------------
+# 📢 チャンネルごとのWebhook URLを分離
+ALERT_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")  # アラート用
+RESULT_WEBHOOK_URL = os.environ.get(
+    "RESULT_DISCORD_WEBHOOK_URL", ALERT_WEBHOOK_URL
+)  # 的中実績用
+
+# 💾 通知済みデータ & 的中判定待ちデータの保存
 CACHE_FILE = "notified_races.json"
+PENDING_FILE = "pending_results.json"
+
 notified_races = set()
+pending_races = {}
 
 if os.path.exists(CACHE_FILE):
     try:
@@ -33,9 +40,18 @@ if os.path.exists(CACHE_FILE):
     except Exception as e:
         print(f"⚠️ キャッシュ読み込みエラー: {e}")
 
+if os.path.exists(PENDING_FILE):
+    try:
+        with open(PENDING_FILE, "r", encoding="utf-8") as f:
+            pending_races = json.load(f)
+        print(
+            f"⏳ 的中判定待ちレース ({len(pending_races)}件) を読み込みました。"
+        )
+    except Exception as e:
+        print(f"⚠️ 判定待ちデータ読み込みエラー: {e}")
+
 
 def save_notified_races():
-    """通知済みデータをJSONファイルに保存"""
     try:
         with open(CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(list(notified_races), f, ensure_ascii=False, indent=2)
@@ -43,12 +59,18 @@ def save_notified_races():
         print(f"⚠️ キャッシュ保存エラー: {e}")
 
 
+def save_pending_races():
+    try:
+        with open(PENDING_FILE, "w", encoding="utf-8") as f:
+            json.dump(pending_races, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ 判定待ちデータ保存エラー: {e}")
+
+
 today_venues = set()
 checker_data = {}
 
 JST = timezone(timedelta(hours=+9), "JST")
-
-# Basic認証オブジェクトを設定
 AUTH = HTTPBasicAuth(USER_ID, PASSWORD)
 
 session = requests.Session()
@@ -61,9 +83,12 @@ session.headers.update({
 })
 
 
-def send_discord_embed(title, description, fields=[], color=0x00FFFF):
-    """DiscordへリッチなEmbed（カード型）メッセージを送信"""
-    if not DISCORD_WEBHOOK_URL:
+def send_discord_embed(
+    title, description, fields=[], color=0x00FFFF, target_webhook=None
+):
+    """DiscordへEmbedメッセージを送信（宛先URLを切り替え可能）"""
+    webhook_url = target_webhook or ALERT_WEBHOOK_URL
+    if not webhook_url:
         return
     payload = {
         "embeds": [{
@@ -76,13 +101,12 @@ def send_discord_embed(title, description, fields=[], color=0x00FFFF):
         }]
     }
     try:
-        requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=10)
+        requests.post(webhook_url, json=payload, timeout=10)
     except Exception as e:
         print(f"Discord通知エラー: {e}")
 
 
 def perform_login():
-    """疎通・認証確認"""
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
         if resp.status_code == 200:
@@ -94,7 +118,6 @@ def perform_login():
 
 
 def update_venues():
-    """全会場のURLを取得"""
     global today_venues
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
@@ -119,11 +142,7 @@ def update_venues():
             else:
                 continue
 
-            if full_url not in [
-                DATA_URL,
-                DATA_URL + "/",
-                DATA_URL + "login",
-            ]:
+            if full_url not in [DATA_URL, DATA_URL + "/", DATA_URL + "login"]:
                 today_venues.add(full_url)
 
         print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
@@ -335,10 +354,112 @@ def generate_probability_eye(boats):
 
 
 # ==========================================
-# 🚀 3. 監視メインロジック
+# 🎯 3. 的中自動判定 & 実績集計モジュール
+# ==========================================
+def parse_eye_to_combinations(eye_str):
+    """'3-124-1245' のようなフォーマットを3連単の組み合わせリストに変換"""
+    if not eye_str or "対象なし" in eye_str or "不可" in eye_str:
+        return []
+    try:
+        parts = eye_str.split("-")
+        if len(parts) != 3:
+            return []
+        first = [int(c) for c in parts[0]]
+        second = [int(c) for c in parts[1]]
+        third = [int(c) for c in parts[2]]
+
+        combs = []
+        for f in first:
+            for s in second:
+                for t in third:
+                    if f != s and s != t and f != t:
+                        combs.append(f"{f}-{s}-{t}")
+        return list(set(combs))
+    except:
+        return []
+
+
+def check_race_results():
+    """判定待ちのレース結果を自動確認して「的中実績チャンネル」へ報告"""
+    global pending_races
+    if not pending_races:
+        return
+
+    finished_ids = []
+
+    for race_id, data in list(pending_races.items()):
+        venue_jp = data["venue"]
+        rno_str = data["rno"]
+        clean_url = data["clean_url"]
+
+        result_url = f"{clean_url}/result.json?t={int(time.time()*1000)}"
+        try:
+            resp = session.get(result_url, auth=AUTH, timeout=8)
+            if resp.status_code == 200:
+                res_data = resp.json()
+                r_key = f"{rno_str}R"
+                race_res = res_data.get(r_key) or res_data.get(rno_str)
+
+                if race_res and "sanrentan" in race_res:
+                    finished_ids.append(race_id)
+                    actual_result = race_res.get("sanrentan")
+                    payout = race_res.get("payout", "---")
+
+                    main_combs = parse_eye_to_combinations(data["main_eye"])
+                    sub_combs = parse_eye_to_combinations(data["sub_eye"])
+
+                    is_main_hit = actual_result in main_combs
+                    is_sub_hit = actual_result in sub_combs
+
+                    # 的中時のみ「実績チャンネル」へ投稿
+                    if is_main_hit or is_sub_hit:
+                        hit_type = "🎯 メイン推奨" if is_main_hit else "🔮 サブ推奨"
+                        fields = [
+                            {
+                                "name": "🏆 確定着順 (3連単)",
+                                "value": f"`{actual_result}`",
+                                "inline": True,
+                            },
+                            {
+                                "name": "💰 払戻金",
+                                "value": f"`{payout}円`",
+                                "inline": True,
+                            },
+                            {
+                                "name": "📌 的中買い目",
+                                "value": (
+                                    f"{hit_type}\n`{data['main_eye']}`"
+                                ),
+                                "inline": False,
+                            },
+                        ]
+                        send_discord_embed(
+                            title=(
+                                f"🎉【的中報告】{venue_jp} {rno_str}R"
+                                " 見事高配当ジャック！"
+                            ),
+                            description=(
+                                "AI解析シグナル通りの展開で高配当を完全攻略しました！"
+                            ),
+                            fields=fields,
+                            color=0x00FF00,
+                            target_webhook=RESULT_WEBHOOK_URL,  # ← 的中実績チャンネル宛に送る
+                        )
+                        print(f"🎯 的中検知: {venue_jp} {rno_str}R -> {actual_result}")
+        except Exception as e:
+            pass
+
+    for fid in finished_ids:
+        del pending_races[fid]
+    if finished_ids:
+        save_pending_races()
+
+
+# ==========================================
+# 🚀 4. 監視メインロジック
 # ==========================================
 def monitor_shinsum(venue_urls):
-    global notified_races
+    global notified_races, pending_races
     venue_name_map = {
         "kiryu": "桐生",
         "toda": "戸田",
@@ -367,7 +488,6 @@ def monitor_shinsum(venue_urls):
     }
 
     for venue_url in venue_urls:
-        # クエリパラメータ(?race=10等)を綺麗に除去したベースパスを生成
         parsed = urlparse(venue_url)
         clean_base_url = urlunparse(
             (parsed.scheme, parsed.netloc, parsed.path.rstrip("/"), "", "", "")
@@ -384,7 +504,6 @@ def monitor_shinsum(venue_urls):
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
 
-        # 正しいJSONのURLを呼び出す
         try:
             s_resp = session.get(
                 f"{clean_base_url}/shinsum.json?t={timestamp}",
@@ -395,8 +514,8 @@ def monitor_shinsum(venue_urls):
                 shinsum_data = s_resp.json()
             elif s_resp.status_code == 401:
                 perform_login()
-        except Exception as e:
-            print(f"⚠️ {venue_japanese} shinsum.json 取得エラー: {e}")
+        except Exception:
+            pass
 
         try:
             a_resp = session.get(
@@ -406,8 +525,8 @@ def monitor_shinsum(venue_urls):
             )
             if a_resp.status_code == 200:
                 arare_data = a_resp.json()
-        except Exception as e:
-            print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
+        except Exception:
+            pass
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
@@ -428,7 +547,7 @@ def monitor_shinsum(venue_urls):
             if not boats:
                 continue
 
-            # ① 覚醒タイム ✕ 推奨買い目
+            # ① 覚醒タイム ✕ 推奨買い目（アラートチャンネル宛）
             if kakusei_race_id not in notified_races:
                 kakusei_alerts = []
                 is_triggered = False
@@ -475,11 +594,21 @@ def monitor_shinsum(venue_urls):
                         ),
                         fields=fields,
                         color=0xFF0055,
+                        target_webhook=ALERT_WEBHOOK_URL,
                     )
                     notified_races.add(kakusei_race_id)
                     save_notified_races()
 
-            # ② 勝率判定（イン飛び・超抜チャンス）✕ 推奨買い目
+                    pending_races[f"{venue_japanese}_{rno_str}"] = {
+                        "venue": venue_japanese,
+                        "rno": rno_str,
+                        "clean_url": clean_base_url,
+                        "main_eye": main_eye,
+                        "sub_eye": sub_eye,
+                    }
+                    save_pending_races()
+
+            # ② 勝率判定 ✕ 推奨買い目（アラートチャンネル宛）
             if rate_race_id not in notified_races:
                 w1_rate = None
                 other_rates = []
@@ -562,11 +691,21 @@ def monitor_shinsum(venue_urls):
                             ),
                             fields=fields,
                             color=0xFFD700 if is_chobatsu else 0xFF4500,
+                            target_webhook=ALERT_WEBHOOK_URL,
                         )
                         notified_races.add(rate_race_id)
                         save_notified_races()
 
-            # ③ スリットアラート
+                        pending_races[f"{venue_japanese}_{rno_str}"] = {
+                            "venue": venue_japanese,
+                            "rno": rno_str,
+                            "clean_url": clean_base_url,
+                            "main_eye": main_eye,
+                            "sub_eye": sub_eye,
+                        }
+                        save_pending_races()
+
+            # ③ スリットアラート（アラートチャンネル宛）
             if slit_race_id not in notified_races:
                 race_shinsum_str = json.dumps(
                     shinsum_data.get(rno_key, {}), ensure_ascii=False
@@ -613,13 +752,14 @@ def monitor_shinsum(venue_urls):
                         ),
                         fields=fields,
                         color=0x00E5FF,
+                        target_webhook=ALERT_WEBHOOK_URL,
                     )
                     notified_races.add(slit_race_id)
                     save_notified_races()
 
 
 # ==========================================
-# ⏱️ 4. 実行エントリポイント
+# ⏱️ 5. 実行エントリポイント
 # ==========================================
 if __name__ == "__main__":
     perform_login()
@@ -627,8 +767,8 @@ if __name__ == "__main__":
     update_venues()
 
     start_time = time.time()
-    # 5分間（240秒）のループ実行
     while time.time() - start_time < 240:
         if today_venues:
             monitor_shinsum(list(today_venues))
+            check_race_results()  # 的中実績チャンネルへ結果報告
         time.sleep(30)
