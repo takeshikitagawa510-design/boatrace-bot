@@ -1,16 +1,17 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import json
 import os
 import time
-from urllib.parse import urlparse, urlunparse
-from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
+
+# 日本時間(JST)の取得
+JST = timezone(timedelta(hours=9))
 
 # ==========================================
 # 🎯 1. 環境変数 & 設定
 # ==========================================
-DATA_URL = "https://boatrace-shinsum.com/"
+DATA_URL = "https://boatrace-shinsum.com"  # 末尾のスラッシュを削除（二重スラッシュ防止）
 USER_ID = os.environ.get("SHINSUM_USER", "sum")
 PASSWORD = os.environ.get("SHINSUM_PASS", "art")
 
@@ -31,15 +32,12 @@ venue_name_map = {
     "kojima": "児島", "wakamatsu": "若松", "fukuoka": "福岡", "shimonoseki": "下関",
 }
 
-# 日本語場名から英語場名に変換する辞書（URL構築用）
 venue_en_map = {v: k for k, v in venue_name_map.items()}
 
 session = requests.Session()
 session.auth = HTTPBasicAuth(USER_ID, PASSWORD)
 session.headers.update({
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    )
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 })
 
 
@@ -63,33 +61,128 @@ def send_discord(webhook_url, title, description, fields=[], color=0x00FF00):
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
         print(f"📡 Discord送信結果: HTTP {res.status_code}")
-        if res.status_code not in [200, 204]:
-            print(f"⚠️ Discord送信エラー: HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
 
 # ==========================================
-# 🔍 3. 結果チェック＆自動的中報告（メイン処理）
+# ⚡ 3. リアルタイムレース解析＆アラート送信
+# ==========================================
+def run_realtime_monitor():
+    """本日の開催レースを巡回し、危険条件（イン飛び等）を検知して事前アラート送信"""
+    today_str = datetime.now(JST).strftime("%Y%m%d")
+    print(f"⚡ リアルタイム解析スキャン実行中... (日付: {today_str})")
+
+    # 古い追跡データの自動整理
+    pending = {}
+    if os.path.exists(PENDING_RESULTS_FILE):
+        try:
+            with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+                # 本日のデータのみ保持（日付が異なる古いデータは自動消去）
+                pending = {k: v for k, v in loaded.items() if v.get("date") == today_str}
+        except Exception:
+            pending = {}
+
+    # レースデータリスト取得 (例: race_list.json)
+    list_url = f"{DATA_URL}/data/race_list.json"
+    try:
+        r = session.get(list_url, timeout=10)
+        if r.status_code != 200:
+            print("⚠️ race_list.json の取得に失敗しました。")
+            return
+        races = r.json()
+    except Exception as e:
+        print(f"⚠️ リアルタイムスキャンエラー: {e}")
+        return
+
+    # 各レースの解析
+    for race in races:
+        v_raw = str(race.get("venue", race.get("v", ""))).strip()
+        rno = race.get("rno", race.get("r"))
+        date_str = str(race.get("date", today_str))
+
+        if date_str != today_str:
+            continue
+
+        venue_en = venue_en_map.get(v_raw, v_raw)
+        venue_jp = venue_name_map.get(venue_en, v_raw)
+        race_key = f"{venue_en}_{date_str}_{rno}r"
+
+        # 既に通知済みのレースはスキップ
+        if race_key in pending:
+            continue
+
+        # 個別レース詳細データの読み込み
+        race_detail_url = f"{DATA_URL}/data/{venue_en}/{date_str}/r{rno}/race.json"
+        try:
+            res = session.get(race_detail_url, timeout=5)
+            if res.status_code != 200:
+                continue
+            detail = res.json()
+
+            # --- 💡 AI判定ロジック ---
+            # 例: イン逃げ率スコア(ai_score)が低い、またはイン飛びフラグがある場合
+            is_in_danger = detail.get("in_danger", False) or detail.get("ai_in_score", 100) < 45
+            if is_in_danger:
+                alert_type = "⚠️ 1号機 イン飛び警戒アラート"
+                combos = detail.get("recommended_combos", ["2-1-3", "2-3-1", "3-1-2"])
+
+                print(f"⚡ アラート検知: {venue_jp} {rno}R")
+                send_discord(
+                    webhook_url=ALERT_WEBHOOK_URL,
+                    title=f"⚡【リアルタイムAIアラート】{venue_jp} {rno}R",
+                    description=f"**{alert_type}**\n1号機の信頼度が低下しています。波乱展開に注意！",
+                    fields=[
+                        {"name": "📍 対象", "value": f"{venue_jp} {rno}R", "inline": True},
+                        {"name": "🎯 推奨買い目", "value": ", ".join(combos), "inline": True},
+                    ],
+                    color=0xFF9900,
+                )
+
+                # 的中判定用に保存
+                pending[race_key] = {
+                    "clean_url": f"{DATA_URL}/data/{venue_en}/{date_str}",
+                    "rno": rno,
+                    "venue_jp": venue_jp,
+                    "alert_type": alert_type,
+                    "recommended_combos": combos,
+                    "date": date_str,
+                }
+        except Exception as e:
+            continue
+
+    # 更新された状態を書き込み
+    with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(pending, f, ensure_ascii=False, indent=2)
+
+
+# ==========================================
+# 🔍 4. 結果チェック＆自動的中・万舟報告
 # ==========================================
 def check_results():
-    """リアルタイムアラート ＆ 朝一ピックアップ（万舟）の結果を自動検証"""
+    """リアルタイムアラート的中 ＆ 朝一ピックアップ万舟の結果検証"""
+    today_str = datetime.now(JST).strftime("%Y%m%d")
 
     # ----------------------------------------
-    # A. リアルタイムアラートの結果回収
+    # A. リアルタイムアラートの的中判定・結果回収
     # ----------------------------------------
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
             with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
                 pending = json.load(f)
-        except Exception as e:
-            print(f"⚠️ {PENDING_RESULTS_FILE} 読み込みエラー: {e}")
+        except Exception:
             pending = {}
 
         if pending:
             print(f"🔍 【A】リアルタイムアラート監視件数: {len(pending)}件")
             updated_pending = pending.copy()
             for key, info in list(pending.items()):
+                # 日付が古いデータは無条件で削除
+                if info.get("date") != today_str:
+                    del updated_pending[key]
+                    continue
+
                 clean_url = info.get("clean_url")
                 rno = info.get("rno")
                 venue_jp = info.get("venue_jp")
@@ -100,7 +193,7 @@ def check_results():
                 try:
                     r = session.get(res_url, timeout=5)
                     if r.status_code != 200:
-                        continue  # レース未終了または結果未確定
+                        continue  # レース未確定
 
                     result_data = r.json()
                     sanrentan = result_data.get("sanrentan", {})
@@ -112,43 +205,22 @@ def check_results():
                             send_discord(
                                 webhook_url=RESULT_WEBHOOK_URL,
                                 title=f"🎯【AIアラート的中報告】 {venue_jp} {rno}R",
-                                description=(
-                                    f"⚡ **{alert_type}**"
-                                    " アラート配信のレースで見事的中しました！"
-                                ),
+                                description=f"⚡ **{alert_type}** アラート配信のレースで見事的中しました！",
                                 fields=[
-                                    {
-                                        "name": "📍 対象レース",
-                                        "value": f"{venue_jp} {rno}R",
-                                        "inline": True,
-                                    },
-                                    {
-                                        "name": "🎲 確定出目",
-                                        "value": f"**3連単 {winning_combo}**",
-                                        "inline": True,
-                                    },
-                                    {
-                                        "name": "💰 払戻金",
-                                        "value": f"**{payout:,}円**",
-                                        "inline": True,
-                                    },
+                                    {"name": "📍 対象レース", "value": f"{venue_jp} {rno}R", "inline": True},
+                                    {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
+                                    {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
                                 ],
                                 color=0x00FF00,
                             )
-                            print(
-                                f"🎯 的中報告送信: {venue_jp} {rno}R"
-                                f" ({winning_combo})"
-                            )
+                            print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo})")
 
                         del updated_pending[key]
                 except Exception as e:
                     print(f"⚠️ 結果参照エラー ({key}): {e}")
 
-            try:
-                with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
-                    json.dump(updated_pending, f, ensure_ascii=False, indent=2)
-            except Exception as e:
-                print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
+            with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+                json.dump(updated_pending, f, ensure_ascii=False, indent=2)
 
     # ----------------------------------------
     # B. 朝一ピックアップの万舟（10,000円以上）自動検知
@@ -157,19 +229,23 @@ def check_results():
         try:
             with open(PENDING_PICKUPS_FILE, "r", encoding="utf-8") as f:
                 pending_pickups = json.load(f)
-        except Exception as e:
-            print(f"⚠️ {PENDING_PICKUPS_FILE} 読み込みエラー: {e}")
+        except Exception:
             pending_pickups = {}
 
         if pending_pickups:
             print(f"🔍 【B】朝一ピックアップ監視件数: {len(pending_pickups)}件")
             updated_pickups = pending_pickups.copy()
             for race_key, info in list(pending_pickups.items()):
+                date_str = str(info.get("date", ""))
+
+                # 日付が今日以外の場合は古いデータとして消去
+                if date_str != today_str:
+                    del updated_pickups[race_key]
+                    continue
+
                 v_name = str(info.get("v", "")).strip()
                 rno = info.get("r")
-                date_str = info.get("date")
 
-                # 日本語名(三国)・英語名(mikuni) どちらが格納されていても安全に英語場名を取得
                 if v_name in venue_en_map:
                     venue_en = venue_en_map[v_name]
                     venue_jp = v_name
@@ -180,10 +256,8 @@ def check_results():
                     venue_en = v_name
                     venue_jp = v_name
 
-                # 結果データURLの組み立て
-                res_url = (
-                    f"{DATA_URL}data/{venue_en}/{date_str}/r{rno}/result.json"
-                )
+                # 正しいURL形式（二重スラッシュ防止）
+                res_url = f"{DATA_URL}/data/{venue_en}/{date_str}/r{rno}/result.json"
                 print(f"🌐 確認中: {venue_jp} {rno}R -> {res_url}")
 
                 try:
@@ -191,8 +265,8 @@ def check_results():
                     print(f" └ HTTP status: {r.status_code}")
 
                     if r.status_code != 200:
-                        print(" └ ⏳ 結果未確定またはアクセス失敗（スキップ）")
-                        continue  # レース未終了または結果未確定
+                        print(" └ ⏳ レース未確定または未終了")
+                        continue
 
                     result_data = r.json()
                     sanrentan = result_data.get("sanrentan", {})
@@ -201,67 +275,41 @@ def check_results():
 
                     print(f" └ 確定出目: {winning_combo} / 配当: {payout}円")
 
-                    # レース結果が出ている場合
                     if winning_combo:
                         if payout >= 10000:
-                            # 💣 万舟ヒット実績投稿！
-                            print(f" 💣 万舟検知！ Discord送信を試みます ({payout:,}円)")
+                            print(f" 💣 万舟検知！ Discord送信 ({payout:,}円)")
                             send_discord(
                                 webhook_url=RESULT_WEBHOOK_URL,
-                                title=(
-                                    "💣【朝一ピックアップ万舟ヒット！】"
-                                    f" {venue_jp} {rno}R"
-                                ),
-                                description=(
-                                    "朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！"
-                                ),
+                                title=f"💣【朝一ピックアップ万舟ヒット！】 {venue_jp} {rno}R",
+                                description="朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！",
                                 fields=[
-                                    {
-                                        "name": "📍 対象レース",
-                                        "value": f"{venue_jp} {rno}R",
-                                        "inline": True,
-                                    },
-                                    {
-                                        "name": "💰 確定配当",
-                                        "value": (
-                                            f"**3連単 {winning_combo} /"
-                                            f" {payout:,}円**"
-                                        ),
-                                        "inline": True,
-                                    },
-                                    {
-                                        "name": "🔥 期待値スコア",
-                                        "value": f"{info.get('s', 0)}点",
-                                        "inline": True,
-                                    },
+                                    {"name": "📍 対象レース", "value": f"{venue_jp} {rno}R", "inline": True},
+                                    {"name": "💰 確定配当", "value": f"**3連単 {winning_combo} / {payout:,}円**", "inline": True},
+                                    {"name": "🔥 期待値スコア", "value": f"{info.get('s', 0)}点", "inline": True},
                                 ],
                                 color=0xFF0055,
                             )
-                            print(
-                                f"💣 万舟ヒット検知＆投稿完了: {venue_jp} {rno}R"
-                                f" ({payout:,}円)"
-                            )
                         else:
-                            print(" ℹ️ 払戻金が10,000円未満のため通知スキップ")
+                            print(" ℹ️ 10,000円未満のため通知スキップ")
 
-                        # 結果が確定したら（万舟でも不的中でも）リストから削除
+                        # 結果確定のためリストから削除
                         del updated_pickups[race_key]
 
                 except Exception as e:
                     print(f"⚠️ 万舟結果参照エラー ({race_key}): {e}")
 
-            try:
-                with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
-                    json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
-            except Exception as e:
-                print(f"⚠️ {PENDING_PICKUPS_FILE} 保存エラー: {e}")
+            with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
+                json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
 
 
 # ==========================================
-# 🚀 4. メイン実行スクリプト
+# 🚀 5. メイン実行スクリプト
 # ==========================================
 def main():
     print("🚀 【NEXUS-X リアルタイム監視＆結果回収エンジン】 起動...")
+    # 1. リアルタイム解析＆事前アラート送信
+    run_realtime_monitor()
+    # 2. レース結果の自動回収＆的中・万舟投稿
     check_results()
 
 
