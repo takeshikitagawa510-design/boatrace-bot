@@ -60,7 +60,6 @@ def fetch_macour_sanrentan_result(venue_jp, rno, date_str=None, max_retries=2):
     if not date_str:
         date_str = datetime.now(JST).strftime("%Y%m%d")
 
-    # マクールスマホ版 払戻金URL
     url = f"https://sp.macour.jp/s/payout/?jcd={jcd}&date={date_str}&rno={rno}"
     headers = {
         "User-Agent": (
@@ -69,7 +68,6 @@ def fetch_macour_sanrentan_result(venue_jp, rno, date_str=None, max_retries=2):
         )
     }
 
-    # 連続アクセス負荷軽減のためのウェイト (1秒)
     time.sleep(1.0)
 
     for attempt in range(max_retries):
@@ -81,33 +79,28 @@ def fetch_macour_sanrentan_result(venue_jp, rno, date_str=None, max_retries=2):
             resp.encoding = "utf-8"
             soup = BeautifulSoup(resp.text, "html.parser")
 
-            # ページ内のテキスト全検索＆テーブル解析
-            full_text = soup.get_text()
-            if "3連単" not in full_text and "三連単" not in full_text:
-                # まだ確定していない（またはレース開催前）
-                return None, 0
-
+            # テーブル要素を走査して3連単を取得
             for tr in soup.find_all("tr"):
                 text = tr.get_text().replace(" ", "").replace("\n", "")
                 if "3連単" in text or "三連単" in text:
-                    # 出目パターン抽出 (例: 1-2-3 や 1=2=3)
-                    m_combo = re.search(r"([1-6])[-=–—─=]([1-6])[-=–—─=]([1-6])", text)
-                    # 払戻金抽出 (例: 1,230円 や ¥1230)
-                    m_pay = re.search(r"([0-9,]+)円?", text)
+                    # 着順の数字を抽出 (1-2-3 などのパターン)
+                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
+                    if not combo_match:
+                        # タグ区切りの数字だけ抽出
+                        digits = [td.get_text().strip() for td in tr.find_all(["td", "th"]) if td.get_text().strip().isdigit()]
+                        if len(digits) >= 3:
+                            combo_match = True
+                            combo_text = f"{digits[0]}-{digits[1]}-{digits[2]}"
+                    else:
+                        combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
 
-                    combo_text = ""
+                    # 払戻金を抽出
                     payout_val = 0
-
-                    if m_combo:
-                        combo_text = f"{m_combo.group(1)}-{m_combo.group(2)}-{m_combo.group(3)}"
-
-                    # 数値抽出（払戻金テーブルの各セルを確認）
-                    tds = tr.find_all(["td", "th"])
-                    for td in tds:
+                    for td in tr.find_all(["td", "th"]):
                         t_str = td.get_text().strip().replace(",", "").replace("円", "").replace("¥", "")
                         if t_str.isdigit():
                             val = int(t_str)
-                            if val >= 100:  # 100円以上の払戻金額を判定
+                            if val >= 100:
                                 payout_val = val
 
                     if combo_text and payout_val > 0:
@@ -117,8 +110,6 @@ def fetch_macour_sanrentan_result(venue_jp, rno, date_str=None, max_retries=2):
             if attempt < max_retries - 1:
                 time.sleep(1.5)
                 continue
-            else:
-                print(f"⚠️ マクール結果取得エラー ({clean_v} {rno}R): タイムアウトまたは通信エラー")
 
     return None, 0
 
@@ -153,11 +144,14 @@ def check_realtime_results():
         winning_combo, payout = fetch_macour_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
+            print(f"  🏁 レース結果取得: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             is_hit = False
             for combo in recommended_combos:
                 if not combo or combo == "対象なし" or len(combo) < 5:
                     continue
-                parts = combo.split("-")
+                
+                # フォーマットの正規化 (例: 1-23-45 や 1-2-3)
+                parts = combo.replace("=", "-").split("-")
                 if len(parts) == 3:
                     head, r2_list, r3_list = parts[0], list(parts[1]), list(parts[2])
                     win_parts = winning_combo.split("-")
@@ -178,11 +172,13 @@ def check_realtime_results():
                     ],
                     color=0x00FF00,
                 )
-                print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
+                print(f"🎯 的中報告送信成功: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
 
-            # レース確定後は追跡から削除
+            # 結果が確定したものは削除
             if race_key in updated_pending:
                 del updated_pending[race_key]
+        else:
+            print(f"  ⏳ 結果未確定または取得待ち: {venue_jp} {rno}R")
 
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
@@ -221,6 +217,7 @@ def check_pickup_results():
         winning_combo, payout = fetch_macour_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
+            print(f"  🏁 ピックアップ結果取得: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             if payout >= 10000:
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
@@ -235,9 +232,10 @@ def check_pickup_results():
                 )
                 print(f"💣 万舟ヒット通知完了: {v_name} {rno}R ({payout:,}円)")
 
-            # レース確定後は追跡から削除
             if race_key in updated_pickups:
                 del updated_pickups[race_key]
+        else:
+            print(f"  ⏳ ピックアップ結果未確定: {v_name} {rno}R")
 
     try:
         with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
