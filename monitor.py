@@ -635,7 +635,7 @@ def check_realtime_results():
                 # 買い目フォーマット(例: "2-134-134")に含まれるか判定
                 is_hit = False
                 for combo in recommended_combos:
-                    if combo == "対象なし" or len(combo) < 5:
+                    if not combo or combo == "対象なし" or len(combo) < 5:
                         continue
                     parts = combo.split("-")
                     if len(parts) == 3:
@@ -666,7 +666,9 @@ def check_realtime_results():
                     print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo})")
 
                 # 結果が確定したためリストから削除
-                del updated_pending[race_key]
+                if race_key in updated_pending:
+                    del updated_pending[race_key]
+
         except Exception as e:
             print(f"⚠️ リアルタイム結果確認エラー ({race_key}): {e}")
 
@@ -703,10 +705,16 @@ def check_pickup_results():
     }
 
     updated_pickups = pending_pickups.copy()
+
     for race_key, info in list(pending_pickups.items()):
-        v_name = str(info.get("v", "")).strip()
-        rno = info.get("r")
-        date_str = str(info.get("date", ""))
+        # データの保持形式に柔軟に対応
+        v_name = str(info.get("v") or info.get("venue") or info.get("venue_jp") or "").replace("[女子]", "").strip()
+        rno = info.get("r") or info.get("rno") or info.get("race_no")
+        date_str = str(info.get("date") or datetime.now(JST).strftime("%Y%m%d"))
+        score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
+
+        if not v_name or not rno:
+            continue
 
         venue_en = venue_en_map.get(v_name, v_name)
         res_url = f"{DATA_URL.rstrip('/')}/data/{venue_en}/{date_str}/r{rno}/result.json"
@@ -714,13 +722,14 @@ def check_pickup_results():
         try:
             r = session.get(res_url, timeout=5)
             if r.status_code != 200:
-                continue
+                continue  # レース未終了または結果未確定
 
             result_data = r.json()
             sanrentan = result_data.get("sanrentan", {})
             winning_combo = sanrentan.get("combo")
             payout = sanrentan.get("payout", 0)
 
+            # 万舟（10,000円以上）が発生した場合
             if winning_combo:
                 if payout >= 10000:
                     send_discord_embed(
@@ -730,14 +739,16 @@ def check_pickup_results():
                         fields=[
                             {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
                             {"name": "💰 確定配当", "value": f"**3連単 {winning_combo} / {payout:,}円**", "inline": True},
-                            {"name": "🔥 期待値スコア", "value": f"{info.get('s', 0)}点", "inline": True},
+                            {"name": "🔥 期待値スコア", "value": f"{score}点", "inline": True},
                         ],
                         color=0xFF0055,
                     )
-                    print(f"💣 万舟ヒット検知＆投稿完了: {v_name} {rno}R ({payout:,}円)")
-                
-                # 結果確定のためリストから削除
-                del updated_pickups[race_key]
+                    print(f"💣 万舟ヒット通知完了: {v_name} {rno}R ({payout:,}円)")
+
+                # レース結果が取得できたので追跡リストから削除
+                if race_key in updated_pickups:
+                    del updated_pickups[race_key]
+
         except Exception as e:
             print(f"⚠️ 万舟結果確認エラー ({race_key}): {e}")
 
