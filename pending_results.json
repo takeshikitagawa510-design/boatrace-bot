@@ -58,5 +58,15 @@
       "6-142-1425",
       "対象なし"
     ]
+  },
+  "児島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 12,
+    "venue_jp": "児島",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-165-1652",
+      "6-145-1452"
+    ]
   }
 }
