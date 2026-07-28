@@ -15,7 +15,7 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 会場名 ➔ 公式レース場コード(01-24) 完全マッピング
+# 会場名 ➔ マクール用場コード(01-24)
 VENUE_JCD_MAP = {
     "桐生": "01", "戸田": "02", "江戸川": "03", "平和島": "04", "多摩川": "05",
     "浜名湖": "06", "蒲郡": "07", "常滑": "08", "津": "09", "びわこ": "10",
@@ -47,9 +47,9 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 
-def fetch_official_sanrentan_result(venue_jp, rno, date_str=None):
+def fetch_macour_sanrentan_result(venue_jp, rno, date_str=None, max_retries=2):
     """
-    ボートレース公式サイト (boatrace.jp) の払戻金ページから3連単の結果と払戻金を回収
+    ボートレースマクール (sp.macour.jp) から3連単の結果と払戻金を回収
     """
     clean_v = venue_jp.replace("[女子]", "").strip()
     jcd = VENUE_JCD_MAP.get(clean_v)
@@ -60,51 +60,65 @@ def fetch_official_sanrentan_result(venue_jp, rno, date_str=None):
     if not date_str:
         date_str = datetime.now(JST).strftime("%Y%m%d")
 
-    url = f"https://www.boatrace.jp/owpc/pc/race/pay?jcd={jcd}&hd={date_str}&rno={rno}"
+    # マクールスマホ版 払戻金URL
+    url = f"https://sp.macour.jp/s/payout/?jcd={jcd}&date={date_str}&rno={rno}"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": (
+            "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36"
+        )
     }
 
-    # 公式サイトへのアクセス負荷軽減ウェイト
+    # 連続アクセス負荷軽減のためのウェイト (1秒)
     time.sleep(1.0)
 
-    try:
-        resp = requests.get(url, headers=headers, timeout=10)
-        if resp.status_code != 200:
-            return None, 0
+    for attempt in range(max_retries):
+        try:
+            resp = requests.get(url, headers=headers, timeout=12)
+            if resp.status_code != 200:
+                continue
 
-        resp.encoding = "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
+            resp.encoding = "utf-8"
+            soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 払戻金テーブルから「3連単」の行を抽出
-        for tr in soup.find_all("tr"):
-            text = tr.get_text()
-            if "3連単" in text:
-                tds = tr.find_all("td")
-                combo_text = ""
-                payout_val = 0
+            # ページ内のテキスト全検索＆テーブル解析
+            full_text = soup.get_text()
+            if "3連単" not in full_text and "三連単" not in full_text:
+                # まだ確定していない（またはレース開催前）
+                return None, 0
 
-                for td in tds:
-                    t_str = td.get_text().strip()
-                    # 確定出目（例: 1-2-3）
-                    m_combo = re.search(r"([1-6])\s*[-–—─]\s*([1-6])\s*[-–—─]\s*([1-6])", t_str)
-                    if m_combo and not combo_text:
+            for tr in soup.find_all("tr"):
+                text = tr.get_text().replace(" ", "").replace("\n", "")
+                if "3連単" in text or "三連単" in text:
+                    # 出目パターン抽出 (例: 1-2-3 や 1=2=3)
+                    m_combo = re.search(r"([1-6])[-=–—─=]([1-6])[-=–—─=]([1-6])", text)
+                    # 払戻金抽出 (例: 1,230円 や ¥1230)
+                    m_pay = re.search(r"([0-9,]+)円?", text)
+
+                    combo_text = ""
+                    payout_val = 0
+
+                    if m_combo:
                         combo_text = f"{m_combo.group(1)}-{m_combo.group(2)}-{m_combo.group(3)}"
 
-                    # 払戻金（例: ¥1,230 や 1,230円）
-                    m_pay = re.search(r"[¥￥]?\s*([0-9,]+)\s*円?", t_str)
-                    if m_pay:
-                        clean_num = m_pay.group(1).replace(",", "")
-                        if clean_num.isdigit():
-                            val = int(clean_num)
-                            if val >= 100:  # 最低払戻金100円以上
+                    # 数値抽出（払戻金テーブルの各セルを確認）
+                    tds = tr.find_all(["td", "th"])
+                    for td in tds:
+                        t_str = td.get_text().strip().replace(",", "").replace("円", "").replace("¥", "")
+                        if t_str.isdigit():
+                            val = int(t_str)
+                            if val >= 100:  # 100円以上の払戻金額を判定
                                 payout_val = val
 
-                if combo_text and payout_val > 0:
-                    return combo_text, payout_val
+                    if combo_text and payout_val > 0:
+                        return combo_text, payout_val
 
-    except Exception as e:
-        print(f"⚠️ 公式結果取得エラー ({clean_v} {rno}R): {e}")
+        except Exception as e:
+            if attempt < max_retries - 1:
+                time.sleep(1.5)
+                continue
+            else:
+                print(f"⚠️ マクール結果取得エラー ({clean_v} {rno}R): タイムアウトまたは通信エラー")
 
     return None, 0
 
@@ -124,7 +138,7 @@ def check_realtime_results():
         print("☕ 追跡中のリアルタイムアラートはありません。")
         return
 
-    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会を開始...")
+    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（マクール）を開始...")
     updated_pending = pending_results.copy()
 
     for race_key, info in list(pending_results.items()):
@@ -136,7 +150,7 @@ def check_realtime_results():
         if not venue_jp or not rno:
             continue
 
-        winning_combo, payout = fetch_official_sanrentan_result(venue_jp, rno)
+        winning_combo, payout = fetch_macour_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
             is_hit = False
@@ -166,7 +180,7 @@ def check_realtime_results():
                 )
                 print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
 
-            # レース確定後は不的中でも追跡から削除
+            # レース確定後は追跡から削除
             if race_key in updated_pending:
                 del updated_pending[race_key]
 
@@ -192,7 +206,7 @@ def check_pickup_results():
         print("☕ 追跡中の朝一ピックアップはありません。")
         return
 
-    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会を開始...")
+    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（マクール）を開始...")
     updated_pickups = pending_pickups.copy()
 
     for race_key, info in list(pending_pickups.items()):
@@ -204,7 +218,7 @@ def check_pickup_results():
         if not v_name or not rno:
             continue
 
-        winning_combo, payout = fetch_official_sanrentan_result(v_name, rno, date_str=date_str)
+        winning_combo, payout = fetch_macour_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
             if payout >= 10000:
