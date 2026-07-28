@@ -1,24 +1,4 @@
 {
-  "下関_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 1,
-    "venue_jp": "下関",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
-  "丸亀_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 1,
-    "venue_jp": "丸亀",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-361-3614",
-      "3-261-2614"
-    ]
-  },
   "大村_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 2,
@@ -27,56 +7,6 @@
     "recommended_combos": [
       "2-341-3416",
       "3-241-2416"
-    ]
-  },
-  "児島_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 10,
-    "venue_jp": "児島",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-132-1326",
-      "6-143-1432"
-    ]
-  },
-  "丸亀_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 3,
-    "venue_jp": "丸亀",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-451-4513",
-      "4-251-2513"
-    ]
-  },
-  "丸亀_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 4,
-    "venue_jp": "丸亀",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "6-142-1425",
-      "対象なし"
-    ]
-  },
-  "児島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 12,
-    "venue_jp": "児島",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-165-1652",
-      "6-145-1452"
-    ]
-  },
-  "丸亀_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 6,
-    "venue_jp": "丸亀",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-132-1326",
-      "6-143-1432"
     ]
   },
   "大村_6_rate": {
@@ -89,66 +19,6 @@
       "3-261-2614"
     ]
   },
-  "下関_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 6,
-    "venue_jp": "下関",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-412-4126",
-      "4-312-3126"
-    ]
-  },
-  "下関_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 7,
-    "venue_jp": "下関",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-461-4613",
-      "4-261-2613"
-    ]
-  },
-  "丸亀_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 8,
-    "venue_jp": "丸亀",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-143-1436",
-      "4-123-1236"
-    ]
-  },
-  "下関_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 9,
-    "venue_jp": "下関",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
-    ]
-  },
-  "丸亀_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 10,
-    "venue_jp": "丸亀",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
-  "下関_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 10,
-    "venue_jp": "下関",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-341-3415",
-      "3-241-2415"
-    ]
-  },
   "大村_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 11,
@@ -157,16 +27,6 @@
     "recommended_combos": [
       "2-345-3456",
       "3-245-2456"
-    ]
-  },
-  "丸亀_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 12,
-    "venue_jp": "丸亀",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-465-4651",
-      "4-265-2651"
     ]
   }
 }
