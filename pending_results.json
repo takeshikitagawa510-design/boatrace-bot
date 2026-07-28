@@ -128,5 +128,15 @@
       "2-136-1365",
       "3-126-1265"
     ]
+  },
+  "丸亀_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 10,
+    "venue_jp": "丸亀",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-145-1456",
+      "4-135-1356"
+    ]
   }
 }
