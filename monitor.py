@@ -20,10 +20,9 @@ PASSWORD = os.environ.get("SHINSUM_PASS", "art")
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")  # ⚡ リアルタイムAIアラート用
 RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")   # 🎯 的中・万舟実績用
 
-# ------------------------------------------
-# 💾 通知済みデータの永続化
-# ------------------------------------------
+# 💾 状態管理用ファイル
 CACHE_FILE = "notified_races.json"
+PENDING_RESULTS_FILE = "pending_results.json"        # リアルタイムアラート的中追跡用
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"  # 朝一ピックアップ万舟追跡用
 
 notified_races = set()
@@ -348,6 +347,15 @@ def monitor_shinsum(venue_urls):
         "shimonoseki": "下関",
     }
 
+    # 💾 pending_results.json の読み込み
+    pending_results = {}
+    if os.path.exists(PENDING_RESULTS_FILE):
+        try:
+            with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+                pending_results = json.load(f)
+        except Exception:
+            pending_results = {}
+
     for venue_url in venue_urls:
         parsed = urlparse(venue_url)
         clean_base_url = urlunparse(
@@ -443,6 +451,15 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(kakusei_race_id)
                     save_notified_races()
 
+                    # 💾 pending_results.json に追跡追加
+                    pending_results[kakusei_race_id] = {
+                        "clean_url": clean_base_url,
+                        "rno": int(rno_str),
+                        "venue_jp": venue_japanese,
+                        "alert_type": "機力覚醒シグナル",
+                        "recommended_combos": [main_eye, sub_eye],
+                    }
+
             # ② 勝率判定（イン飛び・超抜チャンス）✕ 推奨買い目
             if rate_race_id not in notified_races:
                 w1_rate = None
@@ -518,6 +535,15 @@ def monitor_shinsum(venue_urls):
                         notified_races.add(rate_race_id)
                         save_notified_races()
 
+                        # 💾 pending_results.json に追跡追加
+                        pending_results[rate_race_id] = {
+                            "clean_url": clean_base_url,
+                            "rno": int(rno_str),
+                            "venue_jp": venue_japanese,
+                            "alert_type": title,
+                            "recommended_combos": [main_eye, sub_eye],
+                        }
+
             # ③ スリットアラート
             if slit_race_id not in notified_races:
                 race_shinsum_str = json.dumps(
@@ -561,9 +587,98 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(slit_race_id)
                     save_notified_races()
 
+    # 💾 pending_results.json を保存
+    try:
+        with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(pending_results, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
+
 
 # ==========================================
-# 💰 4. 朝一万舟ヒット（10,000円以上）自動チェック
+# 🎯 4. リアルタイムアラートの的中自動判定
+# ==========================================
+def check_realtime_results():
+    if not os.path.exists(PENDING_RESULTS_FILE):
+        return
+
+    try:
+        with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+            pending_results = json.load(f)
+    except Exception:
+        pending_results = {}
+
+    if not pending_results:
+        return
+
+    updated_pending = pending_results.copy()
+    for race_key, info in list(pending_results.items()):
+        clean_url = info.get("clean_url")
+        rno = info.get("rno")
+        venue_jp = info.get("venue_jp")
+        alert_type = info.get("alert_type")
+        recommended_combos = info.get("recommended_combos", [])
+
+        res_url = f"{clean_url}/r{rno}/result.json"
+
+        try:
+            r = session.get(res_url, timeout=5)
+            if r.status_code != 200:
+                continue  # レース未終了または結果未確定
+
+            result_data = r.json()
+            sanrentan = result_data.get("sanrentan", {})
+            winning_combo = sanrentan.get("combo")
+            payout = sanrentan.get("payout", 0)
+
+            if winning_combo:
+                # 買い目フォーマット(例: "2-134-134")に含まれるか判定
+                is_hit = False
+                for combo in recommended_combos:
+                    if combo == "対象なし" or len(combo) < 5:
+                        continue
+                    parts = combo.split("-")
+                    if len(parts) == 3:
+                        head = parts[0]
+                        r2_list = list(parts[1])
+                        r3_list = list(parts[2])
+
+                        win_parts = winning_combo.split("-")
+                        if len(win_parts) == 3:
+                            if (win_parts[0] in head and 
+                                win_parts[1] in r2_list and 
+                                win_parts[2] in r3_list):
+                                is_hit = True
+                                break
+
+                if is_hit:
+                    send_discord_embed(
+                        webhook_url=RESULT_WEBHOOK_URL,
+                        title=f"🎯【AIアラート的中報告】 {venue_jp} {rno}R",
+                        description=f"⚡ **{alert_type}** アラート配信のレースで見事的中しました！",
+                        fields=[
+                            {"name": "📍 対象レース", "value": f"{venue_jp} {rno}R", "inline": True},
+                            {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
+                            {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
+                        ],
+                        color=0x00FF00,
+                    )
+                    print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo})")
+
+                # 結果が確定したためリストから削除
+                del updated_pending[race_key]
+        except Exception as e:
+            print(f"⚠️ リアルタイム結果確認エラー ({race_key}): {e}")
+
+    try:
+        with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated_pending, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
+
+
+# ==========================================
+# 💰 5. 朝一万舟ヒット（10,000円以上）自動チェック
 # ==========================================
 def check_pickup_results():
     if not os.path.exists(PENDING_PICKUPS_FILE):
@@ -578,7 +693,6 @@ def check_pickup_results():
     if not pending_pickups:
         return
 
-    print(f"🔍 朝一万舟監視対象: {len(pending_pickups)}件")
     venue_en_map = {
         "桐生": "kiryu", "戸田": "toda", "江戸川": "edogawa", "常滑": "tokoname",
         "三国": "mikuni", "丸亀": "marugame", "宮島": "miyajima", "徳山": "tokuyama",
@@ -620,16 +734,22 @@ def check_pickup_results():
                         ],
                         color=0xFF0055,
                     )
+                    print(f"💣 万舟ヒット検知＆投稿完了: {v_name} {rno}R ({payout:,}円)")
+                
+                # 結果確定のためリストから削除
                 del updated_pickups[race_key]
         except Exception as e:
             print(f"⚠️ 万舟結果確認エラー ({race_key}): {e}")
 
-    with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
-        json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
+    try:
+        with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ {PENDING_PICKUPS_FILE} 保存エラー: {e}")
 
 
 # ==========================================
-# ⏱️ 5. 実行エントリポイント
+# ⏱️ 6. 実行エントリポイント
 # ==========================================
 if __name__ == "__main__":
     perform_login()
@@ -641,6 +761,8 @@ if __name__ == "__main__":
     while time.time() - start_time < 240:
         if today_venues:
             monitor_shinsum(list(today_venues))
-        # 朝一ピックアップ万舟の自動判定・実績投稿
+        # 1. リアルタイムアラートの的中自動判定
+        check_realtime_results()
+        # 2. 朝一ピックアップ万舟の自動判定・実績投稿
         check_pickup_results()
         time.sleep(30)
