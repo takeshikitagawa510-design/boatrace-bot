@@ -15,13 +15,13 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 会場名 ➔ マクール用URL英字マップ
+# 会場名 ➔ マクール用URL英字マップ（大村は oomura）
 VENUE_EN_MAP = {
     "桐生": "kiryu", "戸田": "toda", "江戸川": "edogawa", "平和島": "heiwajima", "多摩川": "tamagawa",
     "浜名湖": "hamanako", "蒲郡": "gamagori", "常滑": "tokoname", "津": "tsu", "びわこ": "biwako",
     "住之江": "suminoe", "尼崎": "amagasaki", "鳴門": "naruto", "丸亀": "marugame", "児島": "kojima",
     "宮島": "miyajima", "徳山": "tokuyama", "下関": "shimonoseki", "若松": "wakamatsu", "芦屋": "ashiya",
-    "福岡": "fukuoka", "唐津": "karatsu", "大村": "omura", "三国": "mikuni",
+    "福岡": "fukuoka", "唐津": "karatsu", "大村": "oomura", "三国": "mikuni",
 }
 
 
@@ -49,7 +49,7 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
 
 def fetch_macour_sanrentan_result(venue_jp, rno):
     """
-    sp.macour.jp/{venue}/results/ から指定レースの結果と払戻金を抽出
+    sp.macour.jp/{venue}/results/ から指定レースの結果と払戻金をピンポイント抽出
     """
     clean_v = venue_jp.replace("[女子]", "").strip()
     v_en = VENUE_EN_MAP.get(clean_v)
@@ -74,27 +74,40 @@ def fetch_macour_sanrentan_result(venue_jp, rno):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # レース結果一覧の行/要素をループ処理
         target_r_str = f"{rno}R"
-        
-        # テーブル行またはブロック要素を探索
-        for elem in soup.find_all(["tr", "div", "li", "a"]):
-            text = elem.get_text().replace(" ", "").replace("\n", "")
-            
-            # 対象のR（例: "1R" や "4R"）が含まれているか判定
-            if target_r_str in text:
-                # 艇番（1〜6）の3連複/3連単の並びをチェック
-                # 画像の構造：数字 - 数字 - 数字 + 金額円
-                digits = re.findall(r"[1-6]", text)
-                payout_match = re.search(r"([0-9,]+)円", text)
 
-                # 対象Rの記述のあとに、着順の3つの数字と金額が存在するか
+        # テーブルの行（tr）、またはリスト要素（li, div）を1つずつ精査
+        for row in soup.find_all(["tr", "li", "div"]):
+            # 要素内のテキスト（改行や余白を排除）
+            row_text = row.get_text(strip=True)
+
+            # 行の先頭やR表示が「指定のR」と合致するかチェック（例: "1R", "10R"）
+            # バナーなどの誤検知を防ぐため、対象Rが含まれ、かつ要素が各Rの行として成立しているか確認
+            if re.search(rf"^{target_r_str}|[^0-9]{target_r_str}", row_text):
+                
+                # 艇番（1〜6）の数字を取得
+                # 画像構造: [艇番1] - [艇番2] - [艇番3]
+                # 1〜6の数字が3つ以上連続または含まれているか
+                digits = re.findall(r"[1-6]", row_text)
+                
+                # 払戻金（例: 1,560円 や 20,440円）
+                payout_match = re.search(r"([0-9,]+)円", row_text)
+
+                # 行の中に1〜6の数字が3つ以上あり、配当金が存在する場合
                 if len(digits) >= 3 and payout_match:
-                    combo_text = f"{digits[0]}-{digits[1]}-{digits[2]}"
-                    payout_val = int(payout_match.group(1).replace(",", ""))
-                    
-                    if payout_val > 0:
-                        return combo_text, payout_val
+                    # R数の数字自体を誤って艇番として拾わないよう調整
+                    # (行テキスト先頭の R数 数字を除外)
+                    clean_digits = digits
+                    if row_text.startswith(str(rno)) and len(digits) > 3:
+                        clean_digits = digits[len(str(rno)):]
+
+                    if len(clean_digits) >= 3:
+                        combo_text = f"{clean_digits[0]}-{clean_digits[1]}-{clean_digits[2]}"
+                        payout_val = int(payout_match.group(1).replace(",", ""))
+                        
+                        # 正常なデータが取れたら返却
+                        if payout_val > 0:
+                            return combo_text, payout_val
 
     except Exception as e:
         print(f"⚠️ 通信/解析エラー ({venue_jp} {rno}R): {e}")
@@ -202,7 +215,7 @@ def check_pickup_results():
         winning_combo, payout = fetch_macour_sanrentan_result(v_name, rno)
 
         if winning_combo:
-            print(f"  🏁 ピックアップ取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"  🏁 ピックアップ取得成功: {v_name} {rno}R -> 3连単 {winning_combo} ({payout:,}円)")
             if payout >= 10000:
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
