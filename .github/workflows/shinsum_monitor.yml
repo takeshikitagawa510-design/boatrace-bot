@@ -30,9 +30,15 @@ jobs:
 
       - name: Run Shinsum Monitor
         env:
+          SHINSUM_USER: ${{ secrets.SHINSUM_USER }}
+          SHINSUM_PASS: ${{ secrets.SHINSUM_PASS }}
           MONITOR_DISCORD_WEBHOOK_URL: ${{ secrets.MONITOR_DISCORD_WEBHOOK_URL }}
-          RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
         run: python monitor.py
+
+      - name: Run Result Checker
+        env:
+          RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
+        run: python result_checker.py
 
       # ★ エラー対策＆追跡ファイルの自動コミット・保存
       - name: Save notification cache and pending results
