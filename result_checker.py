@@ -15,13 +15,13 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 会場名 ➔ マクール用URL英字マップ（大村は oomura）
-VENUE_EN_MAP = {
-    "桐生": "kiryu", "戸田": "toda", "江戸川": "edogawa", "平和島": "heiwajima", "多摩川": "tamagawa",
-    "浜名湖": "hamanako", "蒲郡": "gamagori", "常滑": "tokoname", "津": "tsu", "びわこ": "biwako",
-    "住之江": "suminoe", "尼崎": "amagasaki", "鳴門": "naruto", "丸亀": "marugame", "児島": "kojima",
-    "宮島": "miyajima", "徳山": "tokuyama", "下関": "shimonoseki", "若松": "wakamatsu", "芦屋": "ashiya",
-    "福岡": "fukuoka", "唐津": "karatsu", "大村": "oomura", "三国": "mikuni",
+# 会場名 ➔ 競艇日和/公式共通場コード(1-24)
+VENUE_NO_MAP = {
+    "桐生": 1, "戸田": 2, "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "浜名湖": 6, "蒲郡": 7, "常滑": 8, "津": 9, "びわこ": 10,
+    "住之江": 11, "尼崎": 12, "鳴門": 13, "丸亀": 14, "児島": 15,
+    "宮島": 16, "徳山": 17, "下関": 18, "若松": 19, "芦屋": 20,
+    "福岡": 21, "唐津": 22, "大村": 23, "三国": 24,
 }
 
 
@@ -47,21 +47,24 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 
-def fetch_macour_sanrentan_result(venue_jp, rno):
+def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     """
-    sp.macour.jp/{venue}/results/ から指定レースの結果と払戻金をピンポイント抽出
+    競艇日和 (kyoteibiyori.com) から3連単結果と払戻金を回収
     """
     clean_v = venue_jp.replace("[女子]", "").strip()
-    v_en = VENUE_EN_MAP.get(clean_v)
-    if not v_en:
+    place_no = VENUE_NO_MAP.get(clean_v)
+    if not place_no:
         print(f"⚠️ 未対応の会場名: {clean_v}")
         return None, 0
 
-    url = f"https://sp.macour.jp/{v_en}/results/"
+    if not date_str:
+        date_str = datetime.now(JST).strftime("%Y%m%d")
+
+    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&race_no={rno}&hiduke={date_str}"
     headers = {
         "User-Agent": (
-            "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
         )
     }
 
@@ -74,43 +77,29 @@ def fetch_macour_sanrentan_result(venue_jp, rno):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        # 該当レース（〇R）のブロックを特定
         target_r_str = f"{rno}R"
+        
+        # 競艇日和のレース結果テーブル/ブロックを探索
+        for block in soup.find_all(["div", "tr", "table"]):
+            text = block.get_text().replace(" ", "").replace("\n", "")
+            
+            # 対象Rが含まれるブロックをキャッチ
+            if target_r_str in text and ("3連単" in text or "三連単" in text or "円" in text):
+                # 3連単出目パターン (例: 1-2-3 や 1-2-3)
+                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
+                # 金額パターン (例: 1,560円)
+                payout_match = re.search(r"([0-9,]+)\s*円", text)
 
-        # テーブルの行（tr）、またはリスト要素（li, div）を1つずつ精査
-        for row in soup.find_all(["tr", "li", "div"]):
-            # 要素内のテキスト（改行や余白を排除）
-            row_text = row.get_text(strip=True)
-
-            # 行の先頭やR表示が「指定のR」と合致するかチェック（例: "1R", "10R"）
-            # バナーなどの誤検知を防ぐため、対象Rが含まれ、かつ要素が各Rの行として成立しているか確認
-            if re.search(rf"^{target_r_str}|[^0-9]{target_r_str}", row_text):
-                
-                # 艇番（1〜6）の数字を取得
-                # 画像構造: [艇番1] - [艇番2] - [艇番3]
-                # 1〜6の数字が3つ以上連続または含まれているか
-                digits = re.findall(r"[1-6]", row_text)
-                
-                # 払戻金（例: 1,560円 や 20,440円）
-                payout_match = re.search(r"([0-9,]+)円", row_text)
-
-                # 行の中に1〜6の数字が3つ以上あり、配当金が存在する場合
-                if len(digits) >= 3 and payout_match:
-                    # R数の数字自体を誤って艇番として拾わないよう調整
-                    # (行テキスト先頭の R数 数字を除外)
-                    clean_digits = digits
-                    if row_text.startswith(str(rno)) and len(digits) > 3:
-                        clean_digits = digits[len(str(rno)):]
-
-                    if len(clean_digits) >= 3:
-                        combo_text = f"{clean_digits[0]}-{clean_digits[1]}-{clean_digits[2]}"
-                        payout_val = int(payout_match.group(1).replace(",", ""))
-                        
-                        # 正常なデータが取れたら返却
-                        if payout_val > 0:
-                            return combo_text, payout_val
+                if combo_match and payout_match:
+                    combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
+                    payout_val = int(payout_match.group(1).replace(",", ""))
+                    
+                    if payout_val > 0:
+                        return combo_text, payout_val
 
     except Exception as e:
-        print(f"⚠️ 通信/解析エラー ({venue_jp} {rno}R): {e}")
+        print(f"⚠️ 競艇日和 解析エラー ({venue_jp} {rno}R): {e}")
 
     return None, 0
 
@@ -130,7 +119,7 @@ def check_realtime_results():
         print("☕ 追跡中のリアルタイムアラートはありません。")
         return
 
-    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（マクール一覧ページ）を開始...")
+    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（競艇日和）を開始...")
     updated_pending = pending_results.copy()
 
     for race_key, info in list(pending_results.items()):
@@ -142,7 +131,7 @@ def check_realtime_results():
         if not venue_jp or not rno:
             continue
 
-        winning_combo, payout = fetch_macour_sanrentan_result(venue_jp, rno)
+        winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
             print(f"  🏁 取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
@@ -172,7 +161,7 @@ def check_realtime_results():
                     ],
                     color=0x00FF00,
                 )
-                print(f"🎯 的中報告送信: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
+                print(f"🎯 的中報告送信成功: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
 
             if race_key in updated_pending:
                 del updated_pending[race_key]
@@ -201,21 +190,22 @@ def check_pickup_results():
         print("☕ 追跡中の朝一ピックアップはありません。")
         return
 
-    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（マクール一覧ページ）を開始...")
+    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（競艇日和）を開始...")
     updated_pickups = pending_pickups.copy()
 
     for race_key, info in list(pending_pickups.items()):
         v_name = str(info.get("v") or info.get("venue") or info.get("venue_jp") or "").replace("[女子]", "").strip()
         rno = info.get("r") or info.get("rno") or info.get("race_no")
+        date_str = str(info.get("date") or datetime.now(JST).strftime("%Y%m%d"))
         score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
 
         if not v_name or not rno:
             continue
 
-        winning_combo, payout = fetch_macour_sanrentan_result(v_name, rno)
+        winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
-            print(f"  🏁 ピックアップ取得成功: {v_name} {rno}R -> 3连単 {winning_combo} ({payout:,}円)")
+            print(f"  🏁 ピックアップ取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             if payout >= 10000:
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
