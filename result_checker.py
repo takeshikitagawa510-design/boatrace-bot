@@ -29,7 +29,6 @@ def clean_venue_name(raw_name):
     """[女子] や joshi などの余計な表記を削り、純粋な会場名（漢字）のみ抽出"""
     if not raw_name:
         return ""
-    # [女子], joshi, 英字, 記号, 空白を除去
     cleaned = re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_name)).strip()
     return cleaned
 
@@ -86,26 +85,19 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 各レースのテーブルブロックを特定し、指定レース（例: 5R）のみを対象に解析
-        tables = soup.find_all("table")
-        for table in tables:
-            table_text = table.get_text().replace(" ", "").replace("\n", "")
-            
-            # 対象のR(例: "5R")の見出しがテーブル内に存在するか判定
-            if re.search(rf"(?:^|[^\d]){rno}R(?:[^\d]|$)", table_text):
-                combo_match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
-                payout_match = re.search(r"3連単.*?([0-9,]+)\s*円", table_text)
-
-                if not combo_match:
-                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
-                if not payout_match:
-                    payout_match = re.search(r"([0-9,]+)\s*円", table_text)
+        # 全テーブル・要素から「3連単」の表記を持つセル・行をブロック単位で探索
+        for tr in soup.find_all(["tr", "div", "table"]):
+            text = tr.get_text()
+            if "3連単" in text:
+                # 3連単の出目（例: 1-2-3, 1=2=3, 1⇒2⇒3 など）を抽出
+                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
+                # 払戻金（例: 1,230円 / 1230円）を抽出
+                payout_match = re.search(r"([0-9,]+)\s*円", text)
 
                 if combo_match and payout_match:
-                    combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
                     payout_val = int(payout_match.group(1).replace(",", ""))
-
                     if payout_val > 0:
+                        combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
                         return combo_text, payout_val
 
     except Exception as e:
@@ -176,7 +168,6 @@ def check_realtime_results():
             else:
                 print(f"   💀 【不的中】 推奨: {recommended_combos} / 結果: {winning_combo}")
 
-            # 判定完了のため追跡リストから削除
             if race_key in updated_pending:
                 del updated_pending[race_key]
         else:
@@ -237,7 +228,6 @@ def check_pickup_results():
             else:
                 print(f"   📉 【通常配当】 万舟対象外: {v_name} {rno}R ({payout:,}円)")
 
-            # 判定完了のため追跡リストから削除
             if race_key in updated_pickups:
                 del updated_pickups[race_key]
         else:
