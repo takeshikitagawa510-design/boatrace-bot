@@ -8,13 +8,14 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # ==========================================
-# 🎯 1. 初期設定 & 環境変数
+# 🎯 1. 初期設定
 # ==========================================
 DATA_URL = "https://boatrace-shinsum.com/"
 CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
-USER_ID = os.environ.get("SHINSUM_USER", "sum")
-PASSWORD = os.environ.get("SHINSUM_PASS", "art")
+# IDとパスワード（環境変数になければ直接デフォルト値を使用）
+USER_ID = os.environ.get("SHINSUM_USER") or "sum"
+PASSWORD = os.environ.get("SHINSUM_PASS") or "art"
 
 # ⚡ リアルタイムAIアラート用Webhook URL
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
@@ -94,8 +95,8 @@ def update_venues():
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
         if resp.status_code == 401:
-            perform_login()
-            resp = session.get(DATA_URL, auth=AUTH, timeout=10)
+            print("⚠️ 認証エラー: ID/PASSを確認してください。")
+            return
 
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -107,16 +108,14 @@ def update_venues():
             ):
                 continue
 
-            # urljoinを使って相対パス・絶対パスを自動判別して結合
             full_url = urljoin(DATA_URL, href)
 
-            # 同一ドメインかつトップページ以外を会場URL候補として収集
             if "boatrace-shinsum.com" in full_url:
                 clean_url = full_url.split("?")[0].rstrip("/") + "/"
                 if clean_url != DATA_URL.rstrip("/") + "/":
                     today_venues.add(clean_url)
 
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
+        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
 
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
@@ -140,7 +139,7 @@ def load_checker_data():
 
         if resp.status_code == 200:
             checker_data = resp.json()
-            print(f"✅ チェッカーデータ読み込み完了 ({len(checker_data)}名分)")
+            print(f"✅ チェッカーデータ読み込み完了")
     except Exception as e:
         print(f"⚠️ データロードエラー: {e}")
 
@@ -309,7 +308,6 @@ def monitor_shinsum(venue_urls):
         "shimonoseki": "下関",
     }
 
-    # 既存のpending_resultsを引き継ぎ
     pending_results = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
