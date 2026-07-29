@@ -49,7 +49,7 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
 
 def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     """
-    競艇日和 (kyoteibiyori.com) から3連単結果と払戻金を回収
+    競艇日和 (kyoteibiyori.com) から対象Rの3連単結果と払戻金を正確に回収
     """
     clean_v = venue_jp.replace("[女子]", "").strip()
     place_no = VENUE_NO_MAP.get(clean_v)
@@ -77,21 +77,20 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        target_r_str = f"{rno}R"
-
-        # レース結果の各ブロック（テーブルまたはDiv）を検索
-        # 1. 各レース枠・テーブル要素から該当レースを探す
-        containers = soup.find_all(["table", "div"], class_=re.compile(r"(result|race|tbl)", re.I))
-        if not containers:
-            containers = [soup]
-
-        for container in containers:
-            text = container.get_text().replace(" ", "").replace("\n", "")
+        # 各レースのテーブルブロックを特定し、指定レース（例: 5R）のみを対象に解析
+        tables = soup.find_all("table")
+        for table in tables:
+            table_text = table.get_text().replace(" ", "").replace("\n", "")
             
-            # 対象のRが含まれているブロックを特定
-            if target_r_str in text and ("3連単" in text or "三連単" in text):
-                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
-                payout_match = re.search(r"([0-9,]+)\s*円", text)
+            # 対象のR(例: "5R")の見出しがテーブル内に存在するか判定
+            if re.search(rf"(?:^|[^\d]){rno}R(?:[^\d]|$)", table_text):
+                combo_match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
+                payout_match = re.search(r"3連単.*?([0-9,]+)\s*円", table_text)
+
+                if not combo_match:
+                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
+                if not payout_match:
+                    payout_match = re.search(r"([0-9,]+)\s*円", table_text)
 
                 if combo_match and payout_match:
                     combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
@@ -99,20 +98,6 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
 
                     if payout_val > 0:
                         return combo_text, payout_val
-
-        # 上記でヒットしなかった場合の全体テキストからのフォールバック探索
-        page_text = soup.get_text()
-        # "1R" ... "3連単" の範囲を柔軟にマッチング
-        pattern = re.compile(
-            rf"{rno}R.*?(?:3連単|三連単).*?([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6]).*?([0-9,]+)\s*円",
-            re.DOTALL
-        )
-        match = pattern.search(page_text)
-        if match:
-            combo_text = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
-            payout_val = int(match.group(4).replace(",", ""))
-            if payout_val > 0:
-                return combo_text, payout_val
 
     except Exception as e:
         print(f"⚠️ 競艇日和 解析エラー ({venue_jp} {rno}R): {e}")
