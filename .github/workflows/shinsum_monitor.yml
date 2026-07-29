@@ -35,6 +35,12 @@ jobs:
           MONITOR_DISCORD_WEBHOOK_URL: ${{ secrets.MONITOR_DISCORD_WEBHOOK_URL }}
         run: python monitor.py
 
+      # 🔻 ここを追加しました（Playwrightのインストール）
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          playwright install chromium --with-deps
+
       - name: Run Result Checker
         env:
           RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
