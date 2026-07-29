@@ -15,13 +15,13 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 会場名 ➔ 公式場コード(01-24)
+# 会場名 ➔ 競艇日和/公式共通場コード(1-24)
 VENUE_NO_MAP = {
-    "桐生": "01", "戸田": "02", "江戸川": "03", "平和島": "04", "多摩川": "05",
-    "浜名湖": "06", "蒲郡": "07", "常滑": "08", "津": "09", "びわこ": "10",
-    "住之江": "11", "尼崎": "12", "鳴門": "13", "丸亀": "14", "児島": "15",
-    "宮島": "16", "徳山": "17", "下関": "18", "若松": "19", "芦屋": "20",
-    "福岡": "21", "唐津": "22", "大村": "23", "三国": "24",
+    "桐生": 1, "戸田": 2, "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "浜名湖": 6, "蒲郡": 7, "常滑": 8, "津": 9, "びわこ": 10,
+    "住之江": 11, "尼崎": 12, "鳴門": 13, "丸亀": 14, "児島": 15,
+    "宮島": 16, "徳山": 17, "下関": 18, "若松": 19, "芦屋": 20,
+    "福岡": 21, "唐津": 22, "大村": 23, "三国": 24,
 }
 
 
@@ -55,59 +55,71 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 
-def fetch_official_sanrentan_result(venue_jp, rno, date_str=None):
+def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     """
-    BOAT RACE 公式サイト (boatrace.jp) から確実に3連単結果と払戻金を回収
+    競艇日和から対象Rの3連単結果と払戻金を回収（ヘッダー最適化＆頑丈な抽出）
     """
     clean_v = clean_venue_name(venue_jp)
-    jcd = VENUE_NO_MAP.get(clean_v)
-    if not jcd:
+    place_no = VENUE_NO_MAP.get(clean_v)
+    if not place_no:
         print(f"⚠️ 未対応の会場名: '{venue_jp}' (整形後: '{clean_v}')")
         return None, 0
 
     if not date_str:
         date_str = datetime.now(JST).strftime("%Y%m%d")
 
-    # 公式サイトのレース結果URL
-    url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={jcd}&hd={date_str}"
+    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={date_str}"
+    
+    # クラウド環境からのブロックを回避するためのフルブラウザヘッダー
     headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-        )
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
+        "Referer": "https://kyoteibiyori.com/",
     }
 
     try:
-        resp = requests.get(url, headers=headers, timeout=10)
+        resp = requests.get(url, headers=headers, timeout=15)
         if resp.status_code != 200:
+            print(f"⚠️ 競艇日和 アクセス拒否/エラー (HTTP {resp.status_code}): {venue_jp}")
             return None, 0
 
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 勝舟不成立・レース未確定チェック
-        if "レース結果はありません" in resp.text or "データがありません" in resp.text:
-            return None, 0
-
-        # 3連単のテーブル・行を探す
-        for tbody in soup.find_all("tbody"):
-            text = tbody.get_text()
-            if "3連単" in text:
-                # 出目 (例: 1-2-3)
-                combo_match = re.search(r"([1-6])\s*[-–—\-]\s*([1-6])\s*[-–—\-]\s*([1-6])", text)
-                # 払戻金 (例: ¥1,230 や 1,230円)
-                payout_match = re.search(r"[¥￥]?([0-9,]+)\s*円?", text)
+        target_r_str = f"{rno}R"
+        
+        # 1. テーブル構造からの抽出
+        for table in soup.find_all("table"):
+            table_text = table.get_text()
+            if target_r_str in table_text and ("3連単" in table_text or "三連単" in table_text):
+                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
+                payout_match = re.search(r"([0-9,]+)\s*円", table_text)
 
                 if combo_match and payout_match:
-                    payout_str = payout_match.group(1).replace(",", "")
-                    if payout_str.isdigit():
-                        payout_val = int(payout_str)
+                    payout_val = int(payout_match.group(1).replace(",", ""))
+                    if payout_val > 0:
+                        combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
+                        return combo_text, payout_val
+
+        # 2. テキストブロック分割による抽出（フォールバック）
+        full_text = soup.get_text()
+        if target_r_str in full_text:
+            # 各レースの区切りを探す
+            blocks = re.split(r"(?:^|\s)(\d{1,2}R)(?:\s|$)", full_text)
+            for i in range(1, len(blocks) - 1, 2):
+                if blocks[i] == target_r_str:
+                    r_content = blocks[i+1]
+                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", r_content)
+                    payout_match = re.search(r"([0-9,]+)\s*円", r_content)
+                    if combo_match and payout_match:
+                        payout_val = int(payout_match.group(1).replace(",", ""))
                         if payout_val > 0:
                             combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
                             return combo_text, payout_val
 
     except Exception as e:
-        print(f"⚠️ 公式結果解析エラー ({venue_jp} {rno}R): {e}")
+        print(f"⚠️ 競艇日和 解析例外 ({venue_jp} {rno}R): {e}")
 
     return None, 0
 
@@ -127,7 +139,7 @@ def check_realtime_results():
         print("☕ 追跡中のリアルタイムアラートはありません。")
         return
 
-    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（公式）を開始...")
+    print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（競艇日和）を開始...")
     updated_pending = pending_results.copy()
 
     for race_key, info in list(pending_results.items()):
@@ -140,7 +152,7 @@ def check_realtime_results():
         if not venue_jp or not rno:
             continue
 
-        winning_combo, payout = fetch_official_sanrentan_result(venue_jp, rno)
+        winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
             print(f"   🏁 結果取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
@@ -178,6 +190,9 @@ def check_realtime_results():
                 del updated_pending[race_key]
         else:
             print(f"   ⏳ 結果未確定または取得待ち: {venue_jp} {rno}R")
+        
+        # サーバ負荷軽減＆ブロック回避のための短時間スリープ
+        time.sleep(1)
 
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
@@ -201,7 +216,7 @@ def check_pickup_results():
         print("☕ 追跡中の朝一ピックアップはありません。")
         return
 
-    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（公式）を開始...")
+    print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（競艇日和）を開始...")
     updated_pickups = pending_pickups.copy()
 
     for race_key, info in list(pending_pickups.items()):
@@ -214,7 +229,7 @@ def check_pickup_results():
         if not v_name or not rno:
             continue
 
-        winning_combo, payout = fetch_official_sanrentan_result(v_name, rno, date_str=date_str)
+        winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
             print(f"   🏁 ピックアップ結果取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
@@ -238,6 +253,8 @@ def check_pickup_results():
                 del updated_pickups[race_key]
         else:
             print(f"   ⏳ ピックアップ結果未確定: {v_name} {rno}R")
+            
+        time.sleep(1)
 
     try:
         with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
