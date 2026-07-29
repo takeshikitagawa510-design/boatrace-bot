@@ -101,6 +101,8 @@ def update_venues():
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        base_clean_url = DATA_URL.rstrip("/")
+
         for a in soup.find_all("a"):
             href = a.get("href")
             if not href or any(
@@ -111,11 +113,12 @@ def update_venues():
             full_url = urljoin(DATA_URL, href)
 
             if "boatrace-shinsum.com" in full_url:
-                clean_url = full_url.split("?")[0].rstrip("/") + "/"
-                if clean_url != DATA_URL.rstrip("/") + "/":
-                    today_venues.add(clean_url)
+                clean_url = full_url.split("?")[0].rstrip("/")
+                # トップページ自体のリンクでなければ会場URLとして登録
+                if clean_url and clean_url != base_clean_url:
+                    today_venues.add(clean_url + "/")
 
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
+        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
 
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
