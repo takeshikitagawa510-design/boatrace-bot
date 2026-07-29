@@ -60,27 +60,36 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
     url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={date_str}"
 
     try:
-        page.goto(url, wait_until="networkidle", timeout=30000)
-        page.wait_for_timeout(2000)
+        response = page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        page.wait_for_timeout(3000)
 
-        content = page.content()
+        title = page.title()
+        text_content = page.inner_text("body")
+
+        # デバッグログ：ページタイトルとテキスト先頭を出力
+        print(f"   [DEBUG {clean_v} {rno}R] URL: {url} | Title: '{title}' | Text Length: {len(text_content)}")
+
+        if "Verify you are human" in text_content or "Cloudflare" in title:
+            print(f"   ⚠️ CloudflareのBot判定（人間確認画面）でブロックされています！")
+            return None, 0
+
         target_r = f"{rno}R"
+        if target_r in text_content:
+            after_r = text_content.split(target_r, 1)[1]
+            next_r = re.search(r"\d{1,2}R", after_r)
+            block = after_r[:next_r.start()] if next_r else after_r[:1000]
 
-        if target_r in content:
-            text = page.inner_text("body")
-            if target_r in text:
-                after_r = text.split(target_r, 1)[1]
-                next_r = re.search(r"\d{1,2}R", after_r)
-                block = after_r[:next_r.start()] if next_r else after_r[:1000]
+            if "3連単" in block or "三連単" in block:
+                combo_m = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", block)
+                payout_m = re.search(r"([0-9,]+)\s*円", block)
+                if combo_m and payout_m:
+                    payout_val = int(payout_m.group(1).replace(",", ""))
+                    if payout_val > 0:
+                        combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                        return combo_text, payout_val
 
-                if "3連単" in block or "三連単" in block:
-                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", block)
-                    payout_m = re.search(r"([0-9,]+)\s*円", block)
-                    if combo_m and payout_m:
-                        payout_val = int(payout_m.group(1).replace(",", ""))
-                        if payout_val > 0:
-                            combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                            return combo_text, payout_val
+        else:
+            print(f"   ⚠️ ページ内に '{target_r}' の表記が見つかりません（日付指定ミスの可能性あり）")
 
     except Exception as e:
         print(f"⚠️ ブラウザ取得エラー ({venue_jp} {rno}R): {e}")
@@ -93,9 +102,14 @@ def check_all_results():
         return
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        # Bot判定を回避するためのオプション設定
+        browser = p.chromium.launch(
+            headless=True,
+            args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled']
+        )
         context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            viewport={'width': 1280, 'height': 800}
         )
         page = context.new_page()
 
