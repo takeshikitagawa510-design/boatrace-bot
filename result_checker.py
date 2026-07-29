@@ -77,27 +77,42 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # レース結果テーブル全体を取得
-        # レース未確定（または不成立・発売前）の場合は判定をスキップ
         target_r_str = f"{rno}R"
-        
-        # 競艇日和のテーブル行(tr)またはブロックを詳細探索
-        for tr in soup.find_all("tr"):
-            text = tr.get_text().replace(" ", "").replace("\n", "")
+
+        # レース結果の各ブロック（テーブルまたはDiv）を検索
+        # 1. 各レース枠・テーブル要素から該当レースを探す
+        containers = soup.find_all(["table", "div"], class_=re.compile(r"(result|race|tbl)", re.I))
+        if not containers:
+            containers = [soup]
+
+        for container in containers:
+            text = container.get_text().replace(" ", "").replace("\n", "")
             
-            # 対象のR(例: "1R") が含まれ、かつ3連単の表記がある行を判定
+            # 対象のRが含まれているブロックを特定
             if target_r_str in text and ("3連単" in text or "三連単" in text):
-                # 確定判定（結果未入力・ダミー対策）
                 combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
                 payout_match = re.search(r"([0-9,]+)\s*円", text)
 
                 if combo_match and payout_match:
                     combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
                     payout_val = int(payout_match.group(1).replace(",", ""))
-                    
-                    # 異常値・ゼロ配当のガード
+
                     if payout_val > 0:
                         return combo_text, payout_val
+
+        # 上記でヒットしなかった場合の全体テキストからのフォールバック探索
+        page_text = soup.get_text()
+        # "1R" ... "3連単" の範囲を柔軟にマッチング
+        pattern = re.compile(
+            rf"{rno}R.*?(?:3連単|三連単).*?([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6]).*?([0-9,]+)\s*円",
+            re.DOTALL
+        )
+        match = pattern.search(page_text)
+        if match:
+            combo_text = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+            payout_val = int(match.group(4).replace(",", ""))
+            if payout_val > 0:
+                return combo_text, payout_val
 
     except Exception as e:
         print(f"⚠️ 競艇日和 解析エラー ({venue_jp} {rno}R): {e}")
@@ -135,7 +150,7 @@ def check_realtime_results():
         winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
-            print(f"  🏁 取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"   🏁 取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             is_hit = False
             for combo in recommended_combos:
                 if not combo or combo == "対象なし" or len(combo) < 5:
@@ -167,7 +182,7 @@ def check_realtime_results():
             if race_key in updated_pending:
                 del updated_pending[race_key]
         else:
-            print(f"  ⏳ 結果未確定または取得待ち: {venue_jp} {rno}R")
+            print(f"   ⏳ 結果未確定または取得待ち: {venue_jp} {rno}R")
 
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
@@ -206,7 +221,7 @@ def check_pickup_results():
         winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
-            print(f"  🏁 ピックアップ取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"   🏁 ピックアップ取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             if payout >= 10000:
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
@@ -224,7 +239,7 @@ def check_pickup_results():
             if race_key in updated_pickups:
                 del updated_pickups[race_key]
         else:
-            print(f"  ⏳ ピックアップ結果未確定: {v_name} {rno}R")
+            print(f"   ⏳ ピックアップ結果未確定: {v_name} {rno}R")
 
     try:
         with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
