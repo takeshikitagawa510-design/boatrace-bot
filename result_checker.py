@@ -145,7 +145,7 @@ def check_realtime_results():
         winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(venue_jp, rno)
 
         if winning_combo:
-            print(f"   🏁 取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"   🏁 結果取得: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             is_hit = False
             for combo in recommended_combos:
                 if not combo or combo == "対象なし" or len(combo) < 5:
@@ -161,6 +161,7 @@ def check_realtime_results():
                             break
 
             if is_hit:
+                print(f"   🎯 【的中】 Discordへ通知を送信します: {venue_jp} {rno}R")
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
                     title=f"🎯【AIアラート的中報告】 {venue_jp} {rno}R",
@@ -172,8 +173,10 @@ def check_realtime_results():
                     ],
                     color=0x00FF00,
                 )
-                print(f"🎯 的中報告送信成功: {venue_jp} {rno}R ({winning_combo} / {payout:,}円)")
+            else:
+                print(f"   💀 【不的中】 推奨: {recommended_combos} / 結果: {winning_combo}")
 
+            # 判定完了のため追跡リストから削除
             if race_key in updated_pending:
                 del updated_pending[race_key]
         else:
@@ -217,8 +220,9 @@ def check_pickup_results():
         winning_combo, payout = fetch_kyoteibiyori_sanrentan_result(v_name, rno, date_str=date_str)
 
         if winning_combo:
-            print(f"   🏁 ピックアップ取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"   🏁 ピックアップ結果取得: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
             if payout >= 10000:
+                print(f"   💣 【万舟達成】 Discordへ通知を送信します: {v_name} {rno}R ({payout:,}円)")
                 send_discord_embed(
                     webhook_url=RESULT_WEBHOOK_URL,
                     title=f"💣【朝一ピックアップ万舟ヒット！】 {v_name} {rno}R",
@@ -230,8 +234,10 @@ def check_pickup_results():
                     ],
                     color=0xFF0055,
                 )
-                print(f"💣 万舟ヒット通知完了: {v_name} {rno}R ({payout:,}円)")
+            else:
+                print(f"   📉 【通常配当】 万舟対象外: {v_name} {rno}R ({payout:,}円)")
 
+            # 判定完了のため追跡リストから削除
             if race_key in updated_pickups:
                 del updated_pickups[race_key]
         else:
