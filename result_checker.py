@@ -25,6 +25,15 @@ VENUE_NO_MAP = {
 }
 
 
+def clean_venue_name(raw_name):
+    """[女子] や joshi などの余計な表記を削り、純粋な会場名（漢字）のみ抽出"""
+    if not raw_name:
+        return ""
+    # [女子], joshi, 英字, 記号, 空白を除去
+    cleaned = re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_name)).strip()
+    return cleaned
+
+
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF00):
     """DiscordへEmbedメッセージを送信"""
     if not webhook_url:
@@ -51,10 +60,10 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     """
     競艇日和 (kyoteibiyori.com) から対象Rの3連単結果と払戻金を正確に回収
     """
-    clean_v = venue_jp.replace("[女子]", "").strip()
+    clean_v = clean_venue_name(venue_jp)
     place_no = VENUE_NO_MAP.get(clean_v)
     if not place_no:
-        print(f"⚠️ 未対応の会場名: {clean_v}")
+        print(f"⚠️ 未対応の会場名: '{venue_jp}' (整形後: '{clean_v}')")
         return None, 0
 
     if not date_str:
@@ -125,7 +134,8 @@ def check_realtime_results():
 
     for race_key, info in list(pending_results.items()):
         rno = info.get("rno")
-        venue_jp = info.get("venue_jp")
+        raw_v = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
+        venue_jp = clean_venue_name(raw_v)
         alert_type = info.get("alert_type")
         recommended_combos = info.get("recommended_combos", [])
 
@@ -195,7 +205,8 @@ def check_pickup_results():
     updated_pickups = pending_pickups.copy()
 
     for race_key, info in list(pending_pickups.items()):
-        v_name = str(info.get("v") or info.get("venue") or info.get("venue_jp") or "").replace("[女子]", "").strip()
+        raw_v = info.get("v") or info.get("venue") or info.get("venue_jp") or ""
+        v_name = clean_venue_name(raw_v)
         rno = info.get("r") or info.get("rno") or info.get("race_no")
         date_str = str(info.get("date") or datetime.now(JST).strftime("%Y%m%d"))
         score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
