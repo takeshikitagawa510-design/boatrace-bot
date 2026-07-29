@@ -114,11 +114,25 @@ def update_venues():
 
             if "boatrace-shinsum.com" in full_url:
                 clean_url = full_url.split("?")[0].rstrip("/")
-                # トップページ自体のリンクでなければ会場URLとして登録
                 if clean_url and clean_url != base_clean_url:
                     today_venues.add(clean_url + "/")
 
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
+        # 🚨 大村などの主要ナイター会場がリンク自動取得から漏れていた場合の補完ロジック
+        fallback_venues = [
+            "https://boatrace-shinsum.com/omura/",
+            "https://boatrace-shinsum.com/wakamatsu/",
+            "https://boatrace-shinsum.com/marugame/",
+            "https://boatrace-shinsum.com/suminoe/",
+            "https://boatrace-shinsum.com/shimonoseki/",
+            "https://boatrace-shinsum.com/kiryu/",
+            "https://boatrace-shinsum.com/gamagori/",
+        ]
+        for fv in fallback_venues:
+            today_venues.add(fv)
+
+        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件):")
+        for v in sorted(list(today_venues)):
+            print(f"   📍 {v}")
 
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
@@ -352,6 +366,7 @@ def monitor_shinsum(venue_urls):
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
+        print(f"🔍 解析実施中: {venue_japanese} ({len(all_race_keys)} レース検出)")
 
         for rno_key in all_race_keys:
             try:
