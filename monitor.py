@@ -13,7 +13,7 @@ from requests.auth import HTTPBasicAuth
 DATA_URL = "https://boatrace-shinsum.com/"
 CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
-# IDとパスワード（環境変数になければ直接デフォルト値を使用）
+# IDとパスワード
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
 PASSWORD = os.environ.get("SHINSUM_PASS") or "art"
 
@@ -301,11 +301,11 @@ def monitor_shinsum(venue_urls):
     venue_name_map = {
         "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "tokoname": "常滑",
         "mikuni": "三国", "marugame": "丸亀", "miyajima": "宮島", "tokuyama": "徳山",
-        "ashiya": "芦屋", "omura": "大村", "gamagori": "蒲郡", "hamanako_sg": "浜名湖",
-        "hamanako": "浜名湖", "heiwajima": "平和島", "tamagawa": "多摩川", "tsu": "津",
-        "biwako": "びわこ", "suminoe": "住之江", "amagasaki": "尼崎", "naruto": "鳴門",
-        "karatsu": "唐津", "kojima": "児島", "wakamatsu": "若松", "fukuoka": "福岡",
-        "shimonoseki": "下関",
+        "ashiya": "芦屋", "omura": "大村", "omura_sg": "大村", "gamagori": "蒲郡",
+        "hamanako_sg": "浜名湖", "hamanako": "浜名湖", "heiwajima": "平和島",
+        "tamagawa": "多摩川", "tsu": "津", "biwako": "びわこ", "suminoe": "住之江",
+        "amagasaki": "尼崎", "naruto": "鳴門", "karatsu": "唐津", "kojima": "児島",
+        "wakamatsu": "若松", "fukuoka": "福岡", "shimonoseki": "下関",
     }
 
     pending_results = {}
@@ -322,13 +322,12 @@ def monitor_shinsum(venue_urls):
             (parsed.scheme, parsed.netloc, parsed.path.rstrip("/"), "", "", "")
         )
 
-        venue_id_name = parsed.path.rstrip("/").split("/")[-1]
-        is_joshi = "/joshi/" in parsed.path
-        venue_japanese = (
-            f"[女子]{venue_name_map.get(venue_id_name, venue_id_name)}"
-            if is_joshi
-            else venue_name_map.get(venue_id_name, venue_id_name)
-        )
+        path_parts = [p for p in parsed.path.rstrip("/").split("/") if p]
+        venue_id_name = next((p for p in reversed(path_parts) if p != "joshi"), "")
+        is_joshi = "joshi" in path_parts
+
+        base_name = venue_name_map.get(venue_id_name, venue_id_name)
+        venue_japanese = f"[女子]{base_name}" if is_joshi else base_name
 
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
