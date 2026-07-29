@@ -68,7 +68,8 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     if not date_str:
         date_str = datetime.now(JST).strftime("%Y%m%d")
 
-    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&race_no={rno}&hiduke={date_str}"
+    # 会場の全レース結果ページを取得
+    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={date_str}"
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -85,15 +86,38 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 全テーブル・要素から「3連単」の表記を持つセル・行をブロック単位で探索
-        for tr in soup.find_all(["tr", "div", "table"]):
-            text = tr.get_text()
-            if "3連単" in text:
-                # 3連単の出目（例: 1-2-3, 1=2=3, 1⇒2⇒3 など）を抽出
-                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
-                # 払戻金（例: 1,230円 / 1230円）を抽出
-                payout_match = re.search(r"([0-9,]+)\s*円", text)
+        # ページ内の各レースブロック（テーブルやdiv）を取得
+        # 競艇日和の全レース結果ページでは、各レースごとにブロックが分かれている
+        target_r_str = f"{rno}R"
+        
+        # テーブル群を巡回
+        for table in soup.find_all("table"):
+            table_text = table.get_text()
+            # 対象のレース番号（例: 5R）が含まれているブロックかを厳密に判定
+            if target_r_str in table_text and "3連単" in table_text:
+                # 3連単の出目抽出
+                combo_match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
+                if not combo_match:
+                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
 
+                # 配当金の抽出
+                payout_match = re.search(r"([0-9,]+)\s*円", table_text)
+
+                if combo_match and payout_match:
+                    payout_val = int(payout_match.group(1).replace(",", ""))
+                    if payout_val > 0:
+                        combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
+                        return combo_text, payout_val
+
+        # フォールバック: テーブル単位で取れない場合、テキスト全体から該当R付近を探す
+        full_text = soup.get_text()
+        r_blocks = re.split(r"(\d{1,2}R)", full_text)
+        for i in range(1, len(r_blocks) - 1, 2):
+            header = r_blocks[i].strip()
+            content = r_blocks[i+1]
+            if header == target_r_str and "3連単" in content:
+                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", content)
+                payout_match = re.search(r"([0-9,]+)\s*円", content)
                 if combo_match and payout_match:
                     payout_val = int(payout_match.group(1).replace(",", ""))
                     if payout_val > 0:
