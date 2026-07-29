@@ -103,6 +103,14 @@ def update_venues():
 
         base_clean_url = DATA_URL.rstrip("/")
 
+        # 大村リンクの診断ログ
+        print("--- 🔍 大村関連リンク検索 ---")
+        for a in soup.find_all("a"):
+            href = a.get("href", "")
+            text = a.get_text(strip=True)
+            if "大村" in text or "omura" in href.lower():
+                print(f"   👉 テキスト='{text}' | href='{href}' | URL='{urljoin(DATA_URL, href)}'")
+
         for a in soup.find_all("a"):
             href = a.get("href")
             if not href or any(
@@ -117,9 +125,11 @@ def update_venues():
                 if clean_url and clean_url != base_clean_url:
                     today_venues.add(clean_url + "/")
 
-        # 🚨 大村などの主要ナイター会場がリンク自動取得から漏れていた場合の補完ロジック
-        fallback_venues = [
+        # 自動取得漏れ対策の補完リスト
+        extra_venues = [
             "https://boatrace-shinsum.com/omura/",
+            "https://boatrace-shinsum.com/joshi/omura/",
+            "https://boatrace-shinsum.com/omura_sg/",
             "https://boatrace-shinsum.com/wakamatsu/",
             "https://boatrace-shinsum.com/marugame/",
             "https://boatrace-shinsum.com/suminoe/",
@@ -127,12 +137,10 @@ def update_venues():
             "https://boatrace-shinsum.com/kiryu/",
             "https://boatrace-shinsum.com/gamagori/",
         ]
-        for fv in fallback_venues:
-            today_venues.add(fv)
+        for ev in extra_venues:
+            today_venues.add(ev)
 
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件):")
-        for v in sorted(list(today_venues)):
-            print(f"   📍 {v}")
+        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
 
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
@@ -366,7 +374,10 @@ def monitor_shinsum(venue_urls):
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
-        print(f"🔍 解析実施中: {venue_japanese} ({len(all_race_keys)} レース検出)")
+
+        # 大村のログ明示
+        if "大村" in venue_japanese or "omura" in clean_base_url:
+            print(f"🔍 【大村データ取得結果】 URL: {clean_base_url} | レース数: {len(all_race_keys)}")
 
         for rno_key in all_race_keys:
             try:
