@@ -77,24 +77,25 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 該当レース（〇R）のブロックを特定
+        # レース結果テーブル全体を取得
+        # レース未確定（または不成立・発売前）の場合は判定をスキップ
         target_r_str = f"{rno}R"
         
-        # 競艇日和のレース結果テーブル/ブロックを探索
-        for block in soup.find_all(["div", "tr", "table"]):
-            text = block.get_text().replace(" ", "").replace("\n", "")
+        # 競艇日和のテーブル行(tr)またはブロックを詳細探索
+        for tr in soup.find_all("tr"):
+            text = tr.get_text().replace(" ", "").replace("\n", "")
             
-            # 対象Rが含まれるブロックをキャッチ
-            if target_r_str in text and ("3連単" in text or "三連単" in text or "円" in text):
-                # 3連単出目パターン (例: 1-2-3 や 1-2-3)
+            # 対象のR(例: "1R") が含まれ、かつ3連単の表記がある行を判定
+            if target_r_str in text and ("3連単" in text or "三連単" in text):
+                # 確定判定（結果未入力・ダミー対策）
                 combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", text)
-                # 金額パターン (例: 1,560円)
                 payout_match = re.search(r"([0-9,]+)\s*円", text)
 
                 if combo_match and payout_match:
                     combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
                     payout_val = int(payout_match.group(1).replace(",", ""))
                     
+                    # 異常値・ゼロ配当のガード
                     if payout_val > 0:
                         return combo_text, payout_val
 
