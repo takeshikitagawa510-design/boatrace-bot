@@ -55,9 +55,58 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 
+def parse_sanrentan_from_html(html_text, rno):
+    """
+    競艇日和のHTML全体から指定R(例:5)の3連単結果と払戻金を解析して返す
+    """
+    soup = BeautifulSoup(html_text, "html.parser")
+    target_r_str = f"{rno}R"
+
+    # 競艇日和の結果テーブル群をループ
+    tables = soup.find_all("table")
+    for table in tables:
+        text = table.get_text()
+        
+        # 該当レース番号（例: 5R）が含まれ、かつ「3連単」または「三連単」が含まれるテーブルを特定
+        if target_r_str in text and ("3連単" in text or "三連単" in text):
+            # テーブル内の全tr(行)を走査
+            for tr in table.find_all("tr"):
+                tr_text = tr.get_text().replace(" ", "").replace("\n", "")
+                if "3連単" in tr_text or "三連単" in tr_text:
+                    # 出目抽出 (例: 1-2-3, 1⇒2⇒3, 1=2=3)
+                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", tr_text)
+                    # 払戻金抽出 (例: 1,230円)
+                    payout_m = re.search(r"([0-9,]+)\s*円", tr_text)
+
+                    if combo_m and payout_m:
+                        payout_val = int(payout_m.group(1).replace(",", ""))
+                        if payout_val > 0:
+                            combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                            return combo_text, payout_val
+
+    # 万が一テーブル単位で取れなかった場合のフォールバック（文字列全体のブロック検索）
+    # Rごとの区切り文字で分割
+    r_blocks = re.split(r"(?:\r?\n|\s)(?=[1-9]\d?R)", soup.get_text())
+    for block in r_blocks:
+        block_clean = block.strip()
+        if block_clean.startswith(target_r_str) and ("3連単" in block_clean or "三連単" in block_clean):
+            combo_m = re.search(r"3連単.*(?:\s|:)*([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", block_clean)
+            if not combo_m:
+                combo_m = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", block_clean)
+            payout_m = re.search(r"([0-9,]+)\s*円", block_clean)
+
+            if combo_m and payout_m:
+                payout_val = int(payout_m.group(1).replace(",", ""))
+                if payout_val > 0:
+                    combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                    return combo_text, payout_val
+
+    return None, 0
+
+
 def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
     """
-    競艇日和から対象Rの3連単結果と払戻金を回収（ヘッダー最適化＆頑丈な抽出）
+    競艇日和から対象Rの3連単結果を取得
     """
     clean_v = clean_venue_name(venue_jp)
     place_no = VENUE_NO_MAP.get(clean_v)
@@ -70,53 +119,20 @@ def fetch_kyoteibiyori_sanrentan_result(venue_jp, rno, date_str=None):
 
     url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={date_str}"
     
-    # クラウド環境からのブロックを回避するためのフルブラウザヘッダー
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Referer": "https://kyoteibiyori.com/",
     }
 
     try:
         resp = requests.get(url, headers=headers, timeout=15)
         if resp.status_code != 200:
-            print(f"⚠️ 競艇日和 アクセス拒否/エラー (HTTP {resp.status_code}): {venue_jp}")
+            print(f"⚠️ 競艇日和 HTTPエラー {resp.status_code}: {venue_jp}")
             return None, 0
 
         resp.encoding = "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        target_r_str = f"{rno}R"
-        
-        # 1. テーブル構造からの抽出
-        for table in soup.find_all("table"):
-            table_text = table.get_text()
-            if target_r_str in table_text and ("3連単" in table_text or "三連単" in table_text):
-                combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", table_text)
-                payout_match = re.search(r"([0-9,]+)\s*円", table_text)
-
-                if combo_match and payout_match:
-                    payout_val = int(payout_match.group(1).replace(",", ""))
-                    if payout_val > 0:
-                        combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
-                        return combo_text, payout_val
-
-        # 2. テキストブロック分割による抽出（フォールバック）
-        full_text = soup.get_text()
-        if target_r_str in full_text:
-            # 各レースの区切りを探す
-            blocks = re.split(r"(?:^|\s)(\d{1,2}R)(?:\s|$)", full_text)
-            for i in range(1, len(blocks) - 1, 2):
-                if blocks[i] == target_r_str:
-                    r_content = blocks[i+1]
-                    combo_match = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", r_content)
-                    payout_match = re.search(r"([0-9,]+)\s*円", r_content)
-                    if combo_match and payout_match:
-                        payout_val = int(payout_match.group(1).replace(",", ""))
-                        if payout_val > 0:
-                            combo_text = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
-                            return combo_text, payout_val
+        return parse_sanrentan_from_html(resp.text, rno)
 
     except Exception as e:
         print(f"⚠️ 競艇日和 解析例外 ({venue_jp} {rno}R): {e}")
@@ -191,8 +207,7 @@ def check_realtime_results():
         else:
             print(f"   ⏳ 結果未確定または取得待ち: {venue_jp} {rno}R")
         
-        # サーバ負荷軽減＆ブロック回避のための短時間スリープ
-        time.sleep(1)
+        time.sleep(0.5)
 
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
@@ -254,7 +269,7 @@ def check_pickup_results():
         else:
             print(f"   ⏳ ピックアップ結果未確定: {v_name} {rno}R")
             
-        time.sleep(1)
+        time.sleep(0.5)
 
     try:
         with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
