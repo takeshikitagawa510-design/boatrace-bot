@@ -2,7 +2,7 @@ import json
 import os
 import time
 from datetime import datetime, timedelta, timezone
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urljoin, urlparse, urlunparse
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
@@ -21,7 +21,7 @@ DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 
 # 💾 状態管理用ファイル
 CACHE_FILE = "notified_races.json"
-PENDING_RESULTS_FILE = "pending_results.json"  # アラートを出したレースの記録用
+PENDING_RESULTS_FILE = "pending_results.json"
 
 notified_races = set()
 if os.path.exists(CACHE_FILE):
@@ -103,21 +103,20 @@ def update_venues():
         for a in soup.find_all("a"):
             href = a.get("href")
             if not href or any(
-                skip in href for skip in ["login", "logout", "wp-", "/checker/"]
+                skip in href for skip in ["login", "logout", "wp-", "/checker/", "#", "javascript:"]
             ):
                 continue
 
-            if href.startswith("http") and "boatrace-shinsum.com" in href:
-                full_url = href
-            elif href.startswith("/"):
-                full_url = DATA_URL.rstrip("/") + href
-            else:
-                continue
+            # urljoinを使って相対パス・絶対パスを自動判別して結合
+            full_url = urljoin(DATA_URL, href)
 
-            if full_url not in [DATA_URL, DATA_URL + "/", DATA_URL + "login"]:
-                today_venues.add(full_url)
+            # 同一ドメインかつトップページ以外を会場URL候補として収集
+            if "boatrace-shinsum.com" in full_url:
+                clean_url = full_url.split("?")[0].rstrip("/") + "/"
+                if clean_url != DATA_URL.rstrip("/") + "/":
+                    today_venues.add(clean_url)
 
-        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
+        print(f"✅ 巡回対象の会場URL ({len(today_venues)}件): {list(today_venues)}")
 
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
@@ -141,6 +140,7 @@ def load_checker_data():
 
         if resp.status_code == 200:
             checker_data = resp.json()
+            print(f"✅ チェッカーデータ読み込み完了 ({len(checker_data)}名分)")
     except Exception as e:
         print(f"⚠️ データロードエラー: {e}")
 
@@ -309,6 +309,7 @@ def monitor_shinsum(venue_urls):
         "shimonoseki": "下関",
     }
 
+    # 既存のpending_resultsを引き継ぎ
     pending_results = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
@@ -522,7 +523,8 @@ if __name__ == "__main__":
     load_checker_data()
     update_venues()
 
-    for _ in range(2):
+    for i in range(2):
         if today_venues:
             monitor_shinsum(list(today_venues))
-        time.sleep(30)
+        if i == 0:
+            time.sleep(30)
