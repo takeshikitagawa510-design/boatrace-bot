@@ -75,5 +75,16 @@
       "2-165-1653",
       "6-125-1253"
     ]
+  },
+  "20260730_[女子]_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 1,
+    "venue_jp": "[女子]",
+    "date": "20260730",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
