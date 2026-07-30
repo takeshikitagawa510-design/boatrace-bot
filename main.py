@@ -209,12 +209,19 @@ def main():
         color=0xFF4500,
     )
 
-    # 💾 朝一の判定待ちレース一覧をファイルに自動保存
+    # 💾 朝一の判定待ちレース一覧を「スコア上位15件」に絞り込んで自動保存
     try:
+      sorted_pickups = sorted(
+          pending_pickups.items(),
+          key=lambda x: x[1]['s'],
+          reverse=True
+      )[:15]
+      top15_pending_pickups = dict(sorted_pickups)
+
       with open(PICKUP_PENDING_FILE, 'w', encoding='utf-8') as f:
-        json.dump(pending_pickups, f, ensure_ascii=False, indent=2)
+        json.dump(top15_pending_pickups, f, ensure_ascii=False, indent=2)
       print(
-          f'💾 万舟判定用データ ({len(pending_pickups)}件) を保存しました。'
+          f'💾 万舟判定用データ（上位15件 / 全{len(pending_pickups)}件中）を保存しました。'
       )
     except Exception as e:
       print(f'⚠️ 万舟判定用データの保存エラー: {e}')
