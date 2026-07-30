@@ -11,6 +11,7 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
+# 会場コードマップ
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -69,11 +70,11 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     """ BOATRACE公式サイトから最速・確実に対象レースの結果を取得 """
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
-    # 会場が判定できない場合（[女子]等）は、当日可能性のある場を全検索
+    # 会場が判定できない場合（[女子]等）は、本日開催され得る主要場を自動走査
     if resolved_v:
         candidate_venues = [resolved_v]
     else:
-        candidate_venues = ["平和島", "徳山", "常滑", "福岡", "唐津", "児島", "三国", "多摩川", "江戸川"]
+        candidate_venues = ["徳山", "三国", "常滑", "児島", "福岡", "唐津", "平和島", "多摩川", "江戸川"]
 
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
@@ -89,7 +90,6 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
         if not place_no:
             continue
 
-        # 公式のレース結果URL
         url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
 
         try:
@@ -99,31 +99,27 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
 
             soup = BeautifulSoup(res.text, "html.parser")
             
-            # 競艇公式Resultテーブル解析
-            # 3連単のセルを含むテーブル行(tr)を特定
+            # BOATRACE公式 Resultページの払戻金テーブル解析
+            # 3連単が含まれるテーブル行(tr)を探す
             for tr in soup.find_all("tr"):
-                text = tr.get_text()
+                text = tr.get_text(separator=" ", strip=True)
                 if "3連単" in text:
-                    # 出目(例: 1-2-3)
-                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", text)
-                    # 払戻金(例: 1,230円 または ¥1,230)
-                    payout_m = re.search(r"¥?\s*([0-9,]+)\s*円?", text)
+                    # 組番（1-2-3 等）の取得
+                    combo_m = re.search(r"\b([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\b", text)
+                    # 払戻金（¥1,230 や 1,230円）の取得
+                    payout_m = re.search(r"(?:¥|￥)?\s*([0-9,]{3,7})\s*円?", text)
                     
-                    # 払戻金数値を抽出（「3連単」という単語自体の横にある数値）
-                    tds = tr.find_all(["td", "th"])
-                    if len(tds) >= 3:
-                        td_text = " ".join([td.get_text(strip=True) for td in tds])
-                        combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", td_text)
-                        # 金額数値（カンマ区切り数字）
-                        nums = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", td_text)
+                    if combo_m:
+                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
                         
-                        if combo_m and nums:
-                            combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                            payout_val = int(nums[-1].replace(",", "")) # 通常最後の数値が払戻金
-                            if payout_val >= 100:
-                                return combo, payout_val, v_name
+                        # 数字列から払戻金を正しく判別
+                        all_nums = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", text)
+                        for num_str in reversed(all_nums):
+                            val = int(num_str.replace(",", ""))
+                            if 100 <= val <= 999999:  # 100円〜99万の範囲を配当金とみなす
+                                return combo, val, v_name
 
-        except Exception as e:
+        except Exception:
             pass
 
     return None, 0, resolved_v
