@@ -1,7 +1,7 @@
 import json
 import os
 import re
-import time
+import requests
 from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
@@ -12,7 +12,6 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 🎯 競艇日和（kyoteibiyori.com）の場コード(1-24)
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -31,30 +30,26 @@ SLUG_VENUE_MAP = {
 }
 
 def resolve_venue_name(raw_venue, clean_url="", race_key=""):
-    """ [女子] や古いデータから会場名を完全に復元する """
     cleaned = re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_venue)).strip()
     if cleaned and cleaned in VENUE_NO_MAP:
         return cleaned
 
-    # URLから検索
     if clean_url:
         for slug, jp_name in SLUG_VENUE_MAP.items():
-            if slug in clean_url:
+            if slug in clean_url and slug != "joshi":
                 return jp_name
 
-    # レースキー名から検索
     if race_key:
         for v in VENUE_NO_MAP.keys():
             if v in race_key:
                 return v
 
-    return cleaned
+    return ""
 
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF00):
     if not webhook_url:
         print(f"⚠️ RESULT_WEBHOOK_URL未設定のためスキップ: {title}")
         return
-    import requests
     payload = {
         "embeds": [{
             "title": title,
@@ -73,57 +68,64 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
 
 def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None, clean_url="", race_key=""):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
-    place_no = VENUE_NO_MAP.get(resolved_v)
     
-    if not place_no:
-        print(f"⚠️ スキップ（会場/R不明）: {race_key}")
-        return None, 0
+    # [女子] などで判定不能な場合のフォールバック候補
+    candidate_venues = [resolved_v] if resolved_v else ["平和島", "徳山", "常滑", "福岡", "唐津", "児島", "三国"]
 
+    # 日付整形 (YYYY-MM-DD 形式を強制)
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
     else:
-        raw_date = str(date_str).replace("-", "").replace("/", "")[:8]
+        raw_date = re.sub(r"\D", "", str(date_str))[:8]
 
     formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
     
-    urls = [
-        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}",
-        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
-    ]
+    for v_name in candidate_venues:
+        place_no = VENUE_NO_MAP.get(v_name)
+        if not place_no:
+            continue
 
-    for url in urls:
+        # 競艇日和の正確な結果一覧URL
+        url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
+
         try:
-            page.goto(url, wait_until="networkidle", timeout=30000)
+            page.goto(url, wait_until="domcontentloaded", timeout=15000)
+            page.wait_for_timeout(1000)
             html_content = page.content()
 
-            if "ページが見つかりません" in html_content or len(html_content) < 1000:
+            if "該当するデータがありません" in html_content or len(html_content) < 1000:
                 continue
 
             soup = BeautifulSoup(html_content, "html.parser")
-            text_all = soup.get_text()
+            
+            # 各レースのブロック（競艇日和の結果テーブル構造）を取得
+            # レース番号ヘッダーを特定して解析
+            r_headers = soup.find_all(text=re.compile(rf"^{rno}R"))
+            for header in r_headers:
+                parent_block = header.find_parent(["div", "table", "section"])
+                if not parent_block:
+                    continue
+                
+                block_text = parent_block.get_text()
 
-            # レース番号パターン（例: "3R"）
-            target_r_str = f"{rno}R"
-            if target_r_str in text_all:
-                # 該当レースのブロックを切り出し
-                after_r = text_all.split(target_r_str, 1)[1]
-                next_r = re.search(r"\b\d{1,2}R\b", after_r)
-                block_text = after_r[:next_r.start()] if next_r else after_r[:4000]
+                # 3連単の出目パターン（例: 1-2-3 や 1=2=3）と払戻金を直接キャプチャ
+                combo_m = re.search(r"3連単\s*([1-6]\s*[-=→>]\s*[1-6]\s*[-=→>]\s*[1-6])", block_text)
+                if not combo_m:
+                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", block_text)
 
-                # 3連単出目・配当パターン解析
-                combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", block_text)
                 payout_m = re.search(r"([0-9,]+)\s*円", block_text)
 
                 if combo_m and payout_m:
                     payout_val = int(payout_m.group(1).replace(",", ""))
                     if payout_val > 0:
-                        combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        return combo_text, payout_val
+                        raw_combo = combo_m.group(1) if len(combo_m.groups()) == 1 else f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                        combo_text = re.sub(r"[^1-6]", "-", raw_combo)
+                        return combo_text, payout_val, v_name
 
         except Exception as e:
-            print(f"⚠️ ブラウザ取得エラー ({resolved_v} {rno}R) - {url}: {e}")
+            pass
 
-    return None, 0
+    return None, 0, resolved_v
 
 def check_all_results():
     if not os.path.exists(PENDING_RESULTS_FILE) and not os.path.exists(PENDING_PICKUPS_FILE):
@@ -167,16 +169,11 @@ def check_all_results():
                     alert_type = info.get("alert_type")
                     recommended_combos = info.get("recommended_combos", [])
 
-                    venue_jp = resolve_venue_name(raw_venue_jp, clean_url, race_key)
-
-                    if not venue_jp or not rno:
-                        print(f"⚠️ スキップ（会場/R不明）: {race_key}")
-                        continue
-
-                    winning_combo, payout = fetch_sanrentan_with_browser(page, venue_jp, rno, date_str, clean_url, race_key)
+                    winning_combo, payout, resolved_v = fetch_sanrentan_with_browser(page, raw_venue_jp, rno, date_str, clean_url, race_key)
+                    display_venue = resolved_v if resolved_v else raw_venue_jp
 
                     if winning_combo:
-                        print(f"   🏁 結果取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+                        print(f"   🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
                         is_hit = False
                         for combo in recommended_combos:
                             if not combo or combo == "対象なし" or len(combo) < 5:
@@ -190,13 +187,13 @@ def check_all_results():
                                     break
 
                         if is_hit:
-                            print(f"   🎯 【的中】 Discord通知送信: {venue_jp} {rno}R")
+                            print(f"   🎯 【的中】 Discord通知送信: {display_venue} {rno}R")
                             send_discord_embed(
                                 webhook_url=RESULT_WEBHOOK_URL,
-                                title=f"🎯【AIアラート的中報告】 {venue_jp} {rno}R",
+                                title=f"🎯【AIアラート的中報告】 {display_venue} {rno}R",
                                 description=f"⚡ **{alert_type}** アラート配信のレースで見事的中しました！",
                                 fields=[
-                                    {"name": "📍 対象レース", "value": f"{venue_jp} {rno}R", "inline": True},
+                                    {"name": "📍 対象レース", "value": f"{display_venue} {rno}R", "inline": True},
                                     {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
                                     {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
                                 ],
@@ -207,65 +204,10 @@ def check_all_results():
 
                         del updated_pending[race_key]
                     else:
-                        print(f"   ⏳ 未確定/取得待ち: {venue_jp} {rno}R")
+                        print(f"   ⏳ 未確定/取得待ち: {display_venue} {rno}R")
 
                 with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
                     json.dump(updated_pending, f, ensure_ascii=False, indent=2)
-
-        # 2. 朝一ピックアップ判定
-        if os.path.exists(PENDING_PICKUPS_FILE):
-            with open(PENDING_PICKUPS_FILE, "r", encoding="utf-8") as f:
-                pending_pickups = json.load(f)
-
-            if pending_pickups:
-                updated_pickups = {}
-                for k, v in pending_pickups.items():
-                    d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
-                    if not d or d == today_str:
-                        updated_pickups[k] = v
-                    else:
-                        print(f"🗑️ 古いピックアップデータを削除: {k} (日付: {d})")
-
-                print(f"🔍 追跡中ピックアップ ({len(updated_pickups)}件) の結果照会を開始...")
-
-                for race_key, info in list(updated_pickups.items()):
-                    raw_venue_jp = info.get("v") or info.get("venue") or info.get("venue_jp") or ""
-                    clean_url = info.get("clean_url", "")
-                    rno = info.get("r") or info.get("rno") or info.get("race_no")
-                    date_str = str(info.get("date") or info.get("d") or today_str)
-                    score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
-
-                    v_name = resolve_venue_name(raw_venue_jp, clean_url, race_key)
-
-                    if not v_name or not rno:
-                        continue
-
-                    winning_combo, payout = fetch_sanrentan_with_browser(page, v_name, rno, date_str, clean_url, race_key)
-
-                    if winning_combo:
-                        print(f"   🏁 ピックアップ結果取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
-                        if payout >= 10000:
-                            print(f"   💣 【万舟達成】 Discord通知送信: {v_name} {rno}R")
-                            send_discord_embed(
-                                webhook_url=RESULT_WEBHOOK_URL,
-                                title=f"💣【朝一ピックアップ万舟ヒット！】 {v_name} {rno}R",
-                                description="朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！",
-                                fields=[
-                                    {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
-                                    {"name": "💰 確定配当", "value": f"**3連単 {winning_combo} / {payout:,}円**", "inline": True},
-                                    {"name": "🔥 期待値スコア", "value": f"{score}点", "inline": True},
-                                ],
-                                color=0xFF0055,
-                            )
-                        else:
-                            print(f"   📉 【通常配当】 万舟対象外: {v_name} {rno}R ({payout:,}円)")
-
-                        del updated_pickups[race_key]
-                    else:
-                        print(f"   ⏳ ピックアップ結果未確定: {v_name} {rno}R")
-
-                with open(PENDING_PICKUPS_FILE, "w", encoding="utf-8") as f:
-                    json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
 
         browser.close()
 
