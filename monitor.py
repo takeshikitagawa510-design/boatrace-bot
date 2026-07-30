@@ -13,26 +13,27 @@ from requests.auth import HTTPBasicAuth
 DATA_URL = "https://boatrace-shinsum.com/"
 CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
-# IDとパスワード
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
 PASSWORD = os.environ.get("SHINSUM_PASS") or "art"
 
-# ⚡ リアルタイムAIアラート用Webhook URL
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 
-# 💾 状態管理用ファイル
 CACHE_FILE = "notified_races.json"
 PENDING_RESULTS_FILE = "pending_results.json"
+
+JST = timezone(timedelta(hours=+9), "JST")
+TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260730)
 
 notified_races = set()
 if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            notified_races = set(json.load(f))
-        print(f"📦 過去の通知済みデータ ({len(notified_races)}件) を読み込みました。")
+            raw_notified = json.load(f)
+            # 💡 今日の日付が含まれるキーのみ保持（古い日付や日付なしの旧データは自動削除）
+            notified_races = {k for k in raw_notified if k.startswith(TODAY_STR)}
+        print(f"📦 本日 ({TODAY_STR}) の通知済みキャッシュ ({len(notified_races)}件) を読み込みました。")
     except Exception as e:
         print(f"⚠️ キャッシュ読み込みエラー: {e}")
-
 
 def save_notified_races():
     try:
@@ -41,11 +42,9 @@ def save_notified_races():
     except Exception as e:
         print(f"⚠️ キャッシュ保存エラー: {e}")
 
-
 today_venues = set()
 checker_data = {}
 
-JST = timezone(timedelta(hours=+9), "JST")
 AUTH = HTTPBasicAuth(USER_ID, PASSWORD)
 
 session = requests.Session()
@@ -56,7 +55,6 @@ session.headers.update({
         " like Gecko) Chrome/115.0.0.0 Safari/537.36"
     )
 })
-
 
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFFF):
     if not webhook_url:
@@ -78,7 +76,6 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-
 def perform_login():
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
@@ -88,7 +85,6 @@ def perform_login():
             print(f"⚠️ 認証応答コード: {resp.status_code}")
     except Exception as e:
         print(f"⚠️ 通信エラー: {e}")
-
 
 def update_venues():
     global today_venues
@@ -100,7 +96,6 @@ def update_venues():
 
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
-
         base_clean_url = DATA_URL.rstrip("/")
 
         for a in soup.find_all("a"):
@@ -111,13 +106,11 @@ def update_venues():
                 continue
 
             full_url = urljoin(DATA_URL, href)
-
             if "boatrace-shinsum.com" in full_url:
                 clean_url = full_url.split("?")[0].rstrip("/")
                 if clean_url and clean_url != base_clean_url:
                     today_venues.add(clean_url + "/")
 
-        # 🎯 大村等のナイター会場・主要会場がリンク解析から漏れた場合の直接補完リスト
         fallback_venues = [
             "https://boatrace-shinsum.com/omura/",
             "https://boatrace-shinsum.com/joshi/omura/",
@@ -137,7 +130,6 @@ def update_venues():
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
 
-
 # ==========================================
 # 📊 2. AI確率解析ロジック
 # ==========================================
@@ -145,21 +137,16 @@ def load_checker_data():
     global checker_data
     try:
         timestamp = int(time.time() * 1000)
-        resp = session.get(
-            f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10
-        )
+        resp = session.get(f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10)
         if resp.status_code == 401:
             perform_login()
-            resp = session.get(
-                f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10
-            )
+            resp = session.get(f"{CHECKER_URL}?t={timestamp}", auth=AUTH, timeout=10)
 
         if resp.status_code == 200:
             checker_data = resp.json()
             print(f"✅ チェッカーデータ読み込み完了")
     except Exception as e:
         print(f"⚠️ データロードエラー: {e}")
-
 
 def get_real_probabilities(toban, waku, time_diff_val):
     if not checker_data or not toban or str(toban) not in checker_data:
@@ -171,13 +158,9 @@ def get_real_probabilities(toban, waku, time_diff_val):
         return None
 
     target_range = (
-        "大プラス"
-        if time_diff_val >= 0.5
-        else (
-            "小プラス"
-            if time_diff_val >= 0.0
-            else "小マイナス" if time_diff_val >= -0.5 else "大マイナス"
-        )
+        "大プラス" if time_diff_val >= 0.5
+        else ("小プラス" if time_diff_val >= 0.0
+        else "小マイナス" if time_diff_val >= -0.5 else "大マイナス")
     )
     for row in player_waku_data.get("rows", []):
         if row.get("name") == target_range:
@@ -191,7 +174,6 @@ def get_real_probabilities(toban, waku, time_diff_val):
         "r2": float(player_waku_data.get("t2", 0.0)),
         "r3": float(player_waku_data.get("t3", 0.0)),
     }
-
 
 def generate_probability_eye(boats):
     if not isinstance(boats, list) or len(boats) < 6:
@@ -237,21 +219,13 @@ def generate_probability_eye(boats):
         if probs:
             has_valid_checker = True
             analyzed_boats.append({
-                "waku": waku,
-                "r1": probs["r1"],
-                "r2": probs["r2"],
-                "r3": probs["r3"],
-                "is_alert": is_alert_target,
-                "tdiff": time_diff_val,
+                "waku": waku, "r1": probs["r1"], "r2": probs["r2"], "r3": probs["r3"],
+                "is_alert": is_alert_target, "tdiff": time_diff_val,
             })
         else:
             analyzed_boats.append({
-                "waku": waku,
-                "r1": 0.0,
-                "r2": 0.0,
-                "r3": 0.0,
-                "is_alert": is_alert_target,
-                "tdiff": time_diff_val,
+                "waku": waku, "r1": 0.0, "r2": 0.0, "r3": 0.0,
+                "is_alert": is_alert_target, "tdiff": time_diff_val,
             })
 
     if has_valid_checker:
@@ -278,7 +252,6 @@ def generate_probability_eye(boats):
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
 
         return main_eye, sub_eye
-
     else:
         pool_2to6 = [b for b in analyzed_boats[1:] if b["is_alert"]]
         if not pool_2to6:
@@ -287,8 +260,7 @@ def generate_probability_eye(boats):
         main_head = max(pool_2to6, key=lambda x: x["tdiff"])
         other_boats = sorted(
             [b for b in analyzed_boats if b["waku"] != main_head["waku"]],
-            key=lambda x: x["tdiff"],
-            reverse=True,
+            key=lambda x: x["tdiff"], reverse=True,
         )
         r2_str = "".join(str(b["waku"]) for b in other_boats[:3])
         r3_str = "".join(str(b["waku"]) for b in other_boats[:4])
@@ -300,15 +272,13 @@ def generate_probability_eye(boats):
             sub_head = max(sub_pool, key=lambda x: x["tdiff"])
             sub_others = sorted(
                 [b for b in analyzed_boats if b["waku"] != sub_head["waku"]],
-                key=lambda x: x["tdiff"],
-                reverse=True,
+                key=lambda x: x["tdiff"], reverse=True,
             )
             sub_r2_str = "".join(str(b["waku"]) for b in sub_others[:3])
             sub_r3_str = "".join(str(b["waku"]) for b in sub_others[:4])
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
 
         return main_eye, sub_eye
-
 
 # ==========================================
 # 🚀 3. リアルタイムAI監視ロジック
@@ -335,7 +305,6 @@ def monitor_shinsum(venue_urls):
 
     for venue_url in venue_urls:
         parsed = urlparse(venue_url)
-        # 🔑 URL末尾のクエリパラメータ（?race=8 など）を除去し、正しくベースディレクトリを取得
         base_path = parsed.path.split('?')[0].rstrip("/")
         clean_base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}"
 
@@ -373,9 +342,10 @@ def monitor_shinsum(venue_urls):
             except ValueError:
                 continue
 
-            slit_race_id = f"{venue_japanese}_{rno_str}_slit"
-            rate_race_id = f"{venue_japanese}_{rno_str}_rate"
-            kakusei_race_id = f"{venue_japanese}_{rno_str}_kakusei"
+            # 💡 【重要】キーの頭に日付 (YYYYMMDD) を追加
+            slit_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_slit"
+            rate_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_rate"
+            kakusei_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_kakusei"
 
             boats = (
                 shinsum_data.get(rno_key, {}).get("boats", [])
@@ -417,6 +387,7 @@ def monitor_shinsum(venue_urls):
                         "clean_url": clean_base_url,
                         "rno": int(rno_str),
                         "venue_jp": venue_japanese,
+                        "date": TODAY_STR,
                         "alert_type": "機力覚醒シグナル",
                         "recommended_combos": [main_eye, sub_eye],
                     }
@@ -432,12 +403,8 @@ def monitor_shinsum(venue_urls):
                         try:
                             clean_str = (
                                 str(shin_1chaku)
-                                .replace("%", "")
-                                .replace("+", "")
-                                .replace("＋", "")
-                                .replace("－", "-")
-                                .replace("−", "-")
-                                .strip()
+                                .replace("%", "").replace("+", "").replace("＋", "")
+                                .replace("－", "-").replace("−", "-").strip()
                             )
                             if clean_str:
                                 diff = float(clean_str)
@@ -482,6 +449,7 @@ def monitor_shinsum(venue_urls):
                             "clean_url": clean_base_url,
                             "rno": int(rno_str),
                             "venue_jp": venue_japanese,
+                            "date": TODAY_STR,
                             "alert_type": title,
                             "recommended_combos": [main_eye, sub_eye],
                         }
@@ -527,7 +495,6 @@ def monitor_shinsum(venue_urls):
             json.dump(pending_results, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
-
 
 # ==========================================
 # ⏱️ 実行エントリポイント
