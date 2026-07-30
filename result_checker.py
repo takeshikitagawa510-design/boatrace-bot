@@ -66,13 +66,13 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
-    """ BOATRACE公式サイトから最速・確実に3連単と払戻金を抽出 """
+    """ BOATRACE公式サイトからピンポイントで3連単の確定結果をパース """
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
     if resolved_v:
         candidate_venues = [resolved_v]
     else:
-        candidate_venues = ["徳山", "三国", "常滑", "児島", "福岡", "唐津", "平和島", "多摩川", "江戸川"]
+        candidate_venues = ["徳山", "三国", "常滑", "児島", "福岡", "唐津", "丸亀", "下関", "大村"]
 
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
@@ -97,23 +97,33 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
 
             soup = BeautifulSoup(res.text, "html.parser")
             
-            # ページ内のすべての tbody または table から「3連単」が含まれるブロックを取得
-            for block in soup.find_all(["tbody", "table"]):
-                block_text = block.get_text()
-                if "3連単" in block_text:
-                    # 3連単の直後周辺にある「組番」と「金額」を取得
-                    # 組番（1-2-3 など）
-                    combo_m = re.search(r"3連単.*?\b([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\b", block_text, re.DOTALL)
-                    # 金額（¥1,230 や 1,230円）
-                    payout_m = re.search(r"3連単.*?(?:¥|￥)?\s*([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})\s*円?", block_text, re.DOTALL)
+            # 「3連単」セルを直接特定
+            target_cell = None
+            for cell in soup.find_all(["td", "th"]):
+                if cell.get_text(strip=True) == "3連単":
+                    target_cell = cell
+                    break
+
+            if target_cell:
+                # 親の <tr> または所属テーブルブロックを取得
+                parent_tr = target_cell.find_parent("tr")
+                if parent_tr:
+                    # その行（および直後行）のテキストを全結合
+                    tr_group_text = parent_tr.get_text(separator=" ", strip=True)
+                    
+                    # 組み合わせ (例: 1-2-3)
+                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_group_text)
+                    # 金額
+                    payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_group_text)
 
                     if combo_m and payout_m:
                         combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        payout_val = int(payout_m.group(1).replace(",", ""))
-                        if payout_val >= 100:
-                            return combo, payout_val, v_name
+                        for p_str in reversed(payout_m):
+                            val = int(p_str.replace(",", ""))
+                            if 100 <= val <= 999999:
+                                return combo, val, v_name
 
-        except Exception as e:
+        except Exception:
             pass
 
     return None, 0, resolved_v
