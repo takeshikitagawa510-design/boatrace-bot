@@ -152,5 +152,16 @@
       "2-134-1345",
       "3-124-1245"
     ]
+  },
+  "20260730_[女子]_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 3,
+    "venue_jp": "[女子]",
+    "date": "20260730",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-456-4561",
+      "4-256-2561"
+    ]
   }
 }
