@@ -312,8 +312,10 @@ def monitor_shinsum(venue_urls):
         venue_id_name = next((p for p in reversed(path_parts) if p != "joshi"), "")
         is_joshi = "joshi" in path_parts
 
-        base_name = venue_name_map.get(venue_id_name, venue_id_name)
-        venue_japanese = f"[女子]{base_name}" if is_joshi else base_name
+        pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
+        
+        # 💡 Discord表示用と、結果チェック照会用(pure_venue)を切り分け
+        venue_japanese = f"[女子]{pure_venue}" if is_joshi else pure_venue
 
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
@@ -383,10 +385,11 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(kakusei_race_id)
                     save_notified_races()
 
+                    # 💡 venue_jp には純粋な場名（例: "平和島"）を入れて結果チェックエラーを回避
                     pending_results[kakusei_race_id] = {
                         "clean_url": clean_base_url,
                         "rno": int(rno_str),
-                        "venue_jp": venue_japanese,
+                        "venue_jp": pure_venue,
                         "date": TODAY_STR,
                         "alert_type": "機力覚醒シグナル",
                         "recommended_combos": [main_eye, sub_eye],
@@ -445,10 +448,11 @@ def monitor_shinsum(venue_urls):
                         notified_races.add(rate_race_id)
                         save_notified_races()
 
+                        # 💡 venue_jp には純粋な場名（例: "平和島"）を入れて結果チェックエラーを回避
                         pending_results[rate_race_id] = {
                             "clean_url": clean_base_url,
                             "rno": int(rno_str),
-                            "venue_jp": venue_japanese,
+                            "venue_jp": pure_venue,
                             "date": TODAY_STR,
                             "alert_type": title,
                             "recommended_combos": [main_eye, sub_eye],
@@ -490,9 +494,20 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(slit_race_id)
                     save_notified_races()
 
+    # 💡 既存のpending_resultsと統合して安全に保存
+    existing_pending = {}
+    if os.path.exists(PENDING_RESULTS_FILE):
+        try:
+            with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+                existing_pending = json.load(f)
+        except Exception:
+            existing_pending = {}
+
+    existing_pending.update(pending_results)
+
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
-            json.dump(pending_results, f, ensure_ascii=False, indent=2)
+            json.dump(existing_pending, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"⚠️ {PENDING_RESULTS_FILE} 保存エラー: {e}")
 
