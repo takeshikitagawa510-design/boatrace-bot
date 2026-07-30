@@ -17,7 +17,14 @@ CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
 PASSWORD = os.environ.get("SHINSUM_PASS") or "art"
 
+# ⚡ リアルタイム監視用 Webhook
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
+
+# 🎯 的中・回収実績用 Webhook (環境変数があればそちらを優先、無ければ指定URL)
+RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
+    "RESULT_DISCORD_WEBHOOK_URL",
+    "https://discord.com/api/webhooks/1531249075117096990/URp3Tock98zsni_jSoH2qCvepmsRoYo2sWLyV7_XcuaPYyQxGvwIKcKUeWTUWfsjOkLZ"
+)
 
 CACHE_FILE = "notified_races.json"
 PENDING_RESULTS_FILE = "pending_results.json"
@@ -337,7 +344,7 @@ def fetch_official_result_simple(venue_jp, rno, date_str):
     return None, 0
 
 def check_pickup_manshu_results():
-    """ pending_pickup_races.json のレース結果を追跡し、万舟(1万円以上)だった場合通知 """
+    """ pending_pickup_races.json のレース結果を追跡し、万舟(1万円以上)だった場合🎯｜ai的中・回収実績 へ通知 """
     if not os.path.exists(PENDING_PICKUP_FILE):
         return
 
@@ -364,17 +371,17 @@ def check_pickup_manshu_results():
         if winning_combo:
             print(f"   📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
             
-            # 💰 払戻金が10,000円以上（万舟）の場合、Discordに通知
+            # 💰 払戻金が10,000円以上（万舟）の場合、実績用Webhook(RESULT_DISCORD_WEBHOOK_URL)へ送信
             if payout >= 10000:
-                print(f"   🎆 【万舟発生】 Discord通知送信: {v_name} {rno}R ({payout:,}円)")
+                print(f"   🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
                     {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
                     {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
                 ]
                 send_discord_embed(
-                    webhook_url=DISCORD_WEBHOOK_URL,
-                    title=f"🎆【万舟発生】ピックアップレース {v_name} {rno}R",
+                    webhook_url=RESULT_DISCORD_WEBHOOK_URL,
+                    title=f"🎆【万舟的中・回収実績】ピックアップレース {v_name} {rno}R",
                     description=f"🔥 AI期待値スコア **{score}点** の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
                     fields=fields,
                     color=0xFF0000, # 万舟アピールの赤色
@@ -637,5 +644,5 @@ if __name__ == "__main__":
         if i == 0:
             time.sleep(30)
 
-    # 💣 万舟ピックアップレース（上位15件）の結果照会を実行
+    # 💣 万舟ピックアップレース（上位15件）の結果照会を実行 (「🎯｜ai的中・回収実績」へ送信)
     check_pickup_manshu_results()
