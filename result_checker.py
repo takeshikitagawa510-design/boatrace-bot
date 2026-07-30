@@ -3,6 +3,7 @@ import os
 import re
 import requests
 from datetime import datetime, timedelta, timezone
+from bs4 import BeautifulSoup
 
 JST = timezone(timedelta(hours=+9), "JST")
 
@@ -64,10 +65,15 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-def fetch_result_api(venue_jp, rno, date_str=None, clean_url="", race_key=""):
-    """ BOATRACE公式 / 競艇日和のAPIから直接3連単結果を取得 """
+def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
+    """ BOATRACE公式Webサイトから結果・払戻金をパースする """
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
-    candidate_venues = [resolved_v] if resolved_v else ["平和島", "徳山", "常滑", "福岡", "唐津", "児島", "三国"]
+    
+    # 会場特定不能([女子]など)の場合は主要開催場を順に検索
+    if resolved_v:
+        candidate_venues = [resolved_v]
+    else:
+        candidate_venues = list(VENUE_NO_MAP.keys())
 
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
@@ -75,8 +81,7 @@ def fetch_result_api(venue_jp, rno, date_str=None, clean_url="", race_key=""):
         raw_date = re.sub(r"\D", "", str(date_str))[:8]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "Referer": "https://kyoteibiyori.com/"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     }
 
     for v_name in candidate_venues:
@@ -84,33 +89,30 @@ def fetch_result_api(venue_jp, rno, date_str=None, clean_url="", race_key=""):
         if not place_no:
             continue
 
-        # 競艇日和内部のデータAPI（json）へ直接問い合わせ
-        api_url = f"https://kyoteibiyori.com/api/get_race_result.php?place_no={place_no}&date={raw_date}&r={rno}"
-        
-        try:
-            res = requests.get(api_url, headers=headers, timeout=5)
-            if res.status_code == 200:
-                data = res.json()
-                if data and "sanrentan" in data and "payout" in data:
-                    combo = data["sanrentan"]  # 例: "1-2-3"
-                    payout = int(data["payout"]) # 例: 1500
-                    if payout > 0:
-                        return combo, payout, v_name
-        except Exception:
-            pass
+        # BOATRACE公式の標準結果URL
+        url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
 
-        # バックアップ：BOATRACE公式API風HTML解析（API失敗時）
-        fallback_url = f"https://kyoteibiyori.com/race_result_single.php?place_no={place_no}&hiduke={raw_date}&race_no={rno}"
         try:
-            res = requests.get(fallback_url, headers=headers, timeout=5)
-            if res.status_code == 200:
-                text = res.text
-                m_combo = re.search(r"3連単</span>\s*<span[^>]*>([1-6]-[1-6]-[1-6])", text)
-                m_payout = re.search(r"([0-9,]+)\s*円", text)
-                if m_combo and m_payout:
-                    payout_val = int(m_payout.group(1).replace(",", ""))
-                    if payout_val > 0:
-                        return m_combo.group(1), payout_val, v_name
+            res = requests.get(url, headers=headers, timeout=5)
+            if res.status_code != 200:
+                continue
+
+            soup = BeautifulSoup(res.text, "html.parser")
+            
+            # 3連単テーブルの特定
+            # 公式サイトの勝舟・払戻金テーブル構造をスクレイピング
+            tbodies = soup.find_all("tbody", class_="is-payout1")
+            for tbody in tbodies:
+                text = tbody.get_text()
+                if "3連単" in text:
+                    # 組合せ（例: 1-2-3）と払戻金（例: ¥1,230 / 1230）を抽出
+                    combo_match = re.search(r"([1-6])\s*-\s*([1-6])\s*-\s*([1-6])", text)
+                    payout_match = re.search(r"¥?\s*([0-9,]+)", text)
+                    if combo_match and payout_match:
+                        combo = f"{combo_match.group(1)}-{combo_match.group(2)}-{combo_match.group(3)}"
+                        payout = int(payout_match.group(1).replace(",", ""))
+                        if payout > 0:
+                            return combo, payout, v_name
         except Exception:
             pass
 
@@ -123,7 +125,6 @@ def check_all_results():
 
     today_str = datetime.now(JST).strftime("%Y%m%d")
 
-    # 1. リアルタイムアラート判定
     if os.path.exists(PENDING_RESULTS_FILE):
         with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
             pending_results = json.load(f)
@@ -147,7 +148,7 @@ def check_all_results():
                 alert_type = info.get("alert_type")
                 recommended_combos = info.get("recommended_combos", [])
 
-                winning_combo, payout, resolved_v = fetch_result_api(raw_venue_jp, rno, date_str, clean_url, race_key)
+                winning_combo, payout, resolved_v = fetch_official_result(raw_venue_jp, rno, date_str, clean_url, race_key)
                 display_venue = resolved_v if resolved_v else raw_venue_jp
 
                 if winning_combo:
