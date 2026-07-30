@@ -11,12 +11,13 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
+# 🎯 競艇日和（kyoteibiyori.com）の正確な場コード(1-24)
 VENUE_NO_MAP = {
-    "桐生": 1, "戸田": 2, "江戸川": 3, "平和島": 4, "多摩川": 5,
-    "浜名湖": 6, "蒲郡": 7, "常滑": 8, "津": 9, "びわこ": 10,
-    "住之江": 11, "尼崎": 12, "鳴門": 13, "丸亀": 14, "児島": 15,
-    "宮島": 16, "徳山": 17, "下関": 18, "若松": 19, "芦屋": 20,
-    "福岡": 21, "唐津": 22, "大村": 23, "三国": 24,
+    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
+    "びわこ": 11, "住之江": 12, "尼崎": 13, "鳴門": 14, "丸亀": 15,
+    "児島": 16,  "宮島": 17,  "徳山": 18, "下関": 19, "若松": 20,
+    "芦屋": 21,  "福岡": 22,  "唐津": 23, "大村": 24,
 }
 
 def clean_venue_name(raw_name):
@@ -49,29 +50,34 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
     clean_v = clean_venue_name(venue_jp)
     place_no = VENUE_NO_MAP.get(clean_v)
     if not place_no:
-        print(f"⚠️ 未対応の会場名: '{venue_jp}'")
+        print(f"⚠️ 未対応の会場名: '{venue_jp}' (整形後: '{clean_v}')")
         return None, 0
 
+    # 日付フォーマットの整形 (YYYYMMDD -> YYYY-MM-DD も試行)
     if not date_str or len(str(date_str)) < 8:
-        date_str = datetime.now(JST).strftime("%Y%m%d")
+        raw_date = datetime.now(JST).strftime("%Y%m%d")
     else:
-        date_str = str(date_str).replace("-", "").replace("/", "")[:8]
+        raw_date = str(date_str).replace("-", "").replace("/", "")[:8]
 
-    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={date_str}"
+    # YYYY-MM-DD 形式
+    formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
+    
+    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
 
     try:
-        response = page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        page.wait_for_timeout(3000)
+        page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        page.wait_for_timeout(2000)
 
         title = page.title()
         text_content = page.inner_text("body")
 
-        # デバッグログ：ページタイトルとテキスト先頭を出力
-        print(f"   [DEBUG {clean_v} {rno}R] URL: {url} | Title: '{title}' | Text Length: {len(text_content)}")
-
-        if "Verify you are human" in text_content or "Cloudflare" in title:
-            print(f"   ⚠️ CloudflareのBot判定（人間確認画面）でブロックされています！")
-            return None, 0
+        # 「ページが見つかりません」の場合は 8桁(YYYYMMDD) でリトライ
+        if "ページが見つかりません" in title:
+            url_alt = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}"
+            page.goto(url_alt, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_timeout(2000)
+            title = page.title()
+            text_content = page.inner_text("body")
 
         target_r = f"{rno}R"
         if target_r in text_content:
@@ -88,9 +94,6 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
                         combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
                         return combo_text, payout_val
 
-        else:
-            print(f"   ⚠️ ページ内に '{target_r}' の表記が見つかりません（日付指定ミスの可能性あり）")
-
     except Exception as e:
         print(f"⚠️ ブラウザ取得エラー ({venue_jp} {rno}R): {e}")
 
@@ -102,7 +105,6 @@ def check_all_results():
         return
 
     with sync_playwright() as p:
-        # Bot判定を回避するためのオプション設定
         browser = p.chromium.launch(
             headless=True,
             args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled']
