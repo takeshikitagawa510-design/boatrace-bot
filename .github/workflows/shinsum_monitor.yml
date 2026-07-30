@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # git pull の競合回避のために全履歴を取得
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -35,23 +37,18 @@ jobs:
           MONITOR_DISCORD_WEBHOOK_URL: ${{ secrets.MONITOR_DISCORD_WEBHOOK_URL }}
         run: python monitor.py
 
-      # 🔻 ここを追加しました（Playwrightのインストール）
-      - name: Install Playwright
-        run: |
-          pip install playwright
-          playwright install chromium --with-deps
-
       - name: Run Result Checker
         env:
           RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
         run: python result_checker.py
 
-      # ★ エラー対策＆追跡ファイルの自動コミット・保存
+      # ★ コンフリクトを100%回避するコミット＆プッシュ処理
       - name: Save notification cache and pending results
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add notified_races.json pending_results.json pending_pickup_races.json || true
           git commit -m "Auto-update cache and pending results [skip ci]" || exit 0
-          git pull --rebase origin main || true
+          git fetch origin main
+          git rebase -X ours origin/main || git rebase --skip || true
           git push origin main
