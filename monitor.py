@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin, urlparse
@@ -20,9 +21,18 @@ DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 
 CACHE_FILE = "notified_races.json"
 PENDING_RESULTS_FILE = "pending_results.json"
+PENDING_PICKUP_FILE = "pending_pickup_races.json"
 
 JST = timezone(timedelta(hours=+9), "JST")
 TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260730)
+
+VENUE_NO_MAP = {
+    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
+    "びわこ": 11, "住之江": 12, "尼崎": 13, "鳴門": 14, "丸亀": 15,
+    "児島": 16,  "宮島": 17,  "徳山": 18, "下関": 19, "若松": 20,
+    "芦屋": 21,  "福岡": 22,  "唐津": 23, "大村": 24,
+}
 
 notified_races = set()
 if os.path.exists(CACHE_FILE):
@@ -281,6 +291,108 @@ def generate_probability_eye(boats):
         return main_eye, sub_eye
 
 # ==========================================
+# 💰 4. 万舟ピックアップ結果照会ロジック
+# ==========================================
+def fetch_official_result_simple(venue_jp, rno, date_str):
+    """ BOATRACE公式サイトから指定レースの3連単結果と払戻金を取得 """
+    place_no = VENUE_NO_MAP.get(venue_jp)
+    if not place_no:
+        return None, 0
+
+    raw_date = re.sub(r"\D", "", str(date_str))[:8]
+    url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Referer": "https://www.boatrace.jp/"
+    }
+
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code != 200:
+            return None, 0
+
+        soup = BeautifulSoup(res.text, "html.parser")
+        text_all = soup.get_text(separator=" ", strip=True)
+
+        match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
+        if match:
+            combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+            payout_val = int(match.group(4).replace(",", ""))
+            return combo, payout_val
+
+        for tr in soup.find_all("tr"):
+            tr_text = tr.get_text(separator=" ", strip=True)
+            if "3連単" in tr_text:
+                combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
+                payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_text)
+                if combo_m and payout_m:
+                    combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                    val = int(payout_m[-1].replace(",", ""))
+                    if val >= 100:
+                        return combo, val
+    except Exception:
+        pass
+
+    return None, 0
+
+def check_pickup_manshu_results():
+    """ pending_pickup_races.json のレース結果を追跡し、万舟(1万円以上)だった場合通知 """
+    if not os.path.exists(PENDING_PICKUP_FILE):
+        return
+
+    try:
+        with open(PENDING_PICKUP_FILE, "r", encoding="utf-8") as f:
+            pickups = json.load(f)
+    except Exception:
+        return
+
+    if not pickups:
+        return
+
+    print(f"💣 万舟ピックアップレース ({len(pickups)}件) の結果照会を開始...")
+    updated_pickups = dict(pickups)
+
+    for race_key, info in list(pickups.items()):
+        v_name = info.get("v", "")
+        rno = info.get("r", 0)
+        score = info.get("s", 0)
+        date_str = info.get("date", TODAY_STR)
+
+        winning_combo, payout = fetch_official_result_simple(v_name, rno, date_str)
+
+        if winning_combo:
+            print(f"   📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
+            
+            # 💰 払戻金が10,000円以上（万舟）の場合、Discordに通知
+            if payout >= 10000:
+                print(f"   🎆 【万舟発生】 Discord通知送信: {v_name} {rno}R ({payout:,}円)")
+                fields = [
+                    {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
+                    {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
+                    {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
+                ]
+                send_discord_embed(
+                    webhook_url=DISCORD_WEBHOOK_URL,
+                    title=f"🎆【万舟発生】ピックアップレース {v_name} {rno}R",
+                    description=f"🔥 AI期待値スコア **{score}点** の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
+                    fields=fields,
+                    color=0xFF0000, # 万舟アピールの赤色
+                )
+
+            # 結果が確定したレースは次回以降のチェックから除去
+            del updated_pickups[race_key]
+        else:
+            print(f"   ⏳ ピックアップ未確定: {v_name} {rno}R")
+
+    # 更新されたピックアップリストを書き戻す
+    try:
+        with open(PENDING_PICKUP_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️ {PENDING_PICKUP_FILE} 保存エラー: {e}")
+
+# ==========================================
 # 🚀 3. リアルタイムAI監視ロジック
 # ==========================================
 def monitor_shinsum(venue_urls):
@@ -524,3 +636,6 @@ if __name__ == "__main__":
             monitor_shinsum(list(today_venues))
         if i == 0:
             time.sleep(30)
+
+    # 💣 万舟ピックアップレース（上位15件）の結果照会を実行
+    check_pickup_manshu_results()
