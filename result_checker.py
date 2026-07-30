@@ -65,8 +65,7 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
-    """ BOATRACE公式サイトから堅牢に3連単結果を取得 """
+def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="", debug=False):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
     if resolved_v:
@@ -74,6 +73,7 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     else:
         candidate_venues = ["徳山", "三国", "常滑", "児島", "福岡", "唐津", "丸亀", "下関", "大村"]
 
+    # 日付の正規化（YYYYMMDD）
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
     else:
@@ -92,46 +92,41 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
 
         try:
             res = requests.get(url, headers=headers, timeout=6)
+            if debug:
+                print(f"   [DEBUG] Fetching: {url} | Status: {res.status_code}")
+
             if res.status_code != 200:
                 continue
 
             soup = BeautifulSoup(res.text, "html.parser")
             
-            # 公式WebResultの勝舟・払戻金テーブル（is-w495クラスまたはtb-result等）を取得
-            tables = soup.find_all("table")
-            for table in tables:
-                # テーブル内の全tbody/trを走査
-                for tr in table.find_all("tr"):
-                    # imgのalt属性やテキストから「3連単」を包含検索
-                    tr_html = str(tr)
-                    if "3連単" in tr_html or "3rentan" in tr_html or "3連勝単式" in tr_html or "is-payout1" in tr_html:
-                        text_content = tr.get_text(separator=" ", strip=True)
-                        
-                        # 組番 (例: 1 - 2 - 3)
-                        combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", text_content)
-                        # カンマ付き数字（払戻金）
-                        payouts = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", text_content)
+            # 全テーブル・全テキストの中から「3連単」というキーワードを走査
+            text_all = soup.get_text()
+            if debug and ("3連単" not in text_all and "勝舟" not in text_all):
+                print(f"   [DEBUG] レース結果ページに『3連単』『勝舟』の記述なし（未確定またはURL不正の可能性）")
 
-                        if combo_m and payouts:
-                            combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                            for p_str in reversed(payouts):
-                                val = int(p_str.replace(",", ""))
-                                if 100 <= val <= 999999:
-                                    return combo, val, v_name
+            # 汎用パース：HTML全体から 3連単 とその直後の「数字-数字-数字」および「金額」を抽出
+            match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
+            if match:
+                combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+                payout_val = int(match.group(4).replace(",", ""))
+                return combo, payout_val, v_name
 
-            # フォールバック：ページ全体テキストからの正規表現抽出
-            page_text = soup.get_text(separator=" ", strip=True)
-            # 「勝舟・払戻金」エリア以降から3連単を探す
-            if "勝舟" in page_text or "払戻金" in page_text:
-                m = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*¥?\s*([0-9,]+)", page_text)
-                if m:
-                    combo = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
-                    val = int(m.group(4).replace(",", ""))
-                    if val >= 100:
-                        return combo, val, v_name
+            # テーブルごとの個別走査
+            for tr in soup.find_all("tr"):
+                tr_text = tr.get_text(separator=" ", strip=True)
+                if "3連単" in tr_text:
+                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
+                    payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_text)
+                    if combo_m and payout_m:
+                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                        val = int(payout_m[-1].replace(",", ""))
+                        if val >= 100:
+                            return combo, val, v_name
 
-        except Exception:
-            pass
+        except Exception as e:
+            if debug:
+                print(f"   [DEBUG] Error fetching {v_name} {rno}R: {e}")
 
     return None, 0, resolved_v
 
@@ -157,6 +152,7 @@ def check_all_results():
 
             print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始...")
 
+            first_item = True
             for race_key, info in list(updated_pending.items()):
                 rno = info.get("rno")
                 raw_venue_jp = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
@@ -165,7 +161,12 @@ def check_all_results():
                 alert_type = info.get("alert_type")
                 recommended_combos = info.get("recommended_combos", [])
 
-                winning_combo, payout, resolved_v = fetch_official_result(raw_venue_jp, rno, date_str, clean_url, race_key)
+                # 最初の1件目だけ詳細なデバッグログを出力
+                winning_combo, payout, resolved_v = fetch_official_result(
+                    raw_venue_jp, rno, date_str, clean_url, race_key, debug=first_item
+                )
+                first_item = False
+
                 display_venue = resolved_v if resolved_v else raw_venue_jp
 
                 if winning_combo:
