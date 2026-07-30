@@ -66,7 +66,7 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
-    """ BOATRACE公式サイトからピンポイントで3連単の確定結果をパース """
+    """ BOATRACE公式サイトから堅牢に3連単結果を取得 """
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
     if resolved_v:
@@ -97,31 +97,38 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
 
             soup = BeautifulSoup(res.text, "html.parser")
             
-            # 「3連単」セルを直接特定
-            target_cell = None
-            for cell in soup.find_all(["td", "th"]):
-                if cell.get_text(strip=True) == "3連単":
-                    target_cell = cell
-                    break
+            # 公式WebResultの勝舟・払戻金テーブル（is-w495クラスまたはtb-result等）を取得
+            tables = soup.find_all("table")
+            for table in tables:
+                # テーブル内の全tbody/trを走査
+                for tr in table.find_all("tr"):
+                    # imgのalt属性やテキストから「3連単」を包含検索
+                    tr_html = str(tr)
+                    if "3連単" in tr_html or "3rentan" in tr_html or "3連勝単式" in tr_html or "is-payout1" in tr_html:
+                        text_content = tr.get_text(separator=" ", strip=True)
+                        
+                        # 組番 (例: 1 - 2 - 3)
+                        combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", text_content)
+                        # カンマ付き数字（払戻金）
+                        payouts = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", text_content)
 
-            if target_cell:
-                # 親の <tr> または所属テーブルブロックを取得
-                parent_tr = target_cell.find_parent("tr")
-                if parent_tr:
-                    # その行（および直後行）のテキストを全結合
-                    tr_group_text = parent_tr.get_text(separator=" ", strip=True)
-                    
-                    # 組み合わせ (例: 1-2-3)
-                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_group_text)
-                    # 金額
-                    payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_group_text)
+                        if combo_m and payouts:
+                            combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                            for p_str in reversed(payouts):
+                                val = int(p_str.replace(",", ""))
+                                if 100 <= val <= 999999:
+                                    return combo, val, v_name
 
-                    if combo_m and payout_m:
-                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        for p_str in reversed(payout_m):
-                            val = int(p_str.replace(",", ""))
-                            if 100 <= val <= 999999:
-                                return combo, val, v_name
+            # フォールバック：ページ全体テキストからの正規表現抽出
+            page_text = soup.get_text(separator=" ", strip=True)
+            # 「勝舟・払戻金」エリア以降から3連単を探す
+            if "勝舟" in page_text or "払戻金" in page_text:
+                m = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*¥?\s*([0-9,]+)", page_text)
+                if m:
+                    combo = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+                    val = int(m.group(4).replace(",", ""))
+                    if val >= 100:
+                        return combo, val, v_name
 
         except Exception:
             pass
