@@ -11,7 +11,6 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
-# 会場コードマップ
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -67,10 +66,9 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
         print(f"⚠️ Discord通信エラー: {e}")
 
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
-    """ BOATRACE公式サイトから最速・確実に対象レースの結果を取得 """
+    """ BOATRACE公式サイトから最速・確実に3連単と払戻金を抽出 """
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
-    # 会場が判定できない場合（[女子]等）は、本日開催され得る主要場を自動走査
     if resolved_v:
         candidate_venues = [resolved_v]
     else:
@@ -99,27 +97,23 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
 
             soup = BeautifulSoup(res.text, "html.parser")
             
-            # BOATRACE公式 Resultページの払戻金テーブル解析
-            # 3連単が含まれるテーブル行(tr)を探す
-            for tr in soup.find_all("tr"):
-                text = tr.get_text(separator=" ", strip=True)
-                if "3連単" in text:
-                    # 組番（1-2-3 等）の取得
-                    combo_m = re.search(r"\b([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\b", text)
-                    # 払戻金（¥1,230 や 1,230円）の取得
-                    payout_m = re.search(r"(?:¥|￥)?\s*([0-9,]{3,7})\s*円?", text)
-                    
-                    if combo_m:
-                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        
-                        # 数字列から払戻金を正しく判別
-                        all_nums = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", text)
-                        for num_str in reversed(all_nums):
-                            val = int(num_str.replace(",", ""))
-                            if 100 <= val <= 999999:  # 100円〜99万の範囲を配当金とみなす
-                                return combo, val, v_name
+            # ページ内のすべての tbody または table から「3連単」が含まれるブロックを取得
+            for block in soup.find_all(["tbody", "table"]):
+                block_text = block.get_text()
+                if "3連単" in block_text:
+                    # 3連単の直後周辺にある「組番」と「金額」を取得
+                    # 組番（1-2-3 など）
+                    combo_m = re.search(r"3連単.*?\b([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\b", block_text, re.DOTALL)
+                    # 金額（¥1,230 や 1,230円）
+                    payout_m = re.search(r"3連単.*?(?:¥|￥)?\s*([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})\s*円?", block_text, re.DOTALL)
 
-        except Exception:
+                    if combo_m and payout_m:
+                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                        payout_val = int(payout_m.group(1).replace(",", ""))
+                        if payout_val >= 100:
+                            return combo, payout_val, v_name
+
+        except Exception as e:
             pass
 
     return None, 0, resolved_v
