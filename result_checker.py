@@ -53,15 +53,12 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
         print(f"⚠️ 未対応の会場名: '{venue_jp}' (整形後: '{clean_v}')")
         return None, 0
 
-    # 日付フォーマットの整形 (YYYYMMDD -> YYYY-MM-DD も試行)
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
     else:
         raw_date = str(date_str).replace("-", "").replace("/", "")[:8]
 
-    # YYYY-MM-DD 形式
     formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
-    
     url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
 
     try:
@@ -71,12 +68,10 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
         title = page.title()
         text_content = page.inner_text("body")
 
-        # 「ページが見つかりません」の場合は 8桁(YYYYMMDD) でリトライ
         if "ページが見つかりません" in title:
             url_alt = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}"
             page.goto(url_alt, wait_until="domcontentloaded", timeout=30000)
             page.wait_for_timeout(2000)
-            title = page.title()
             text_content = page.inner_text("body")
 
         target_r = f"{rno}R"
@@ -104,6 +99,8 @@ def check_all_results():
         print("☕ 追跡対象のデータが存在しません。")
         return
 
+    today_str = datetime.now(JST).strftime("%Y%m%d")
+
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
@@ -121,10 +118,18 @@ def check_all_results():
                 pending_results = json.load(f)
 
             if pending_results:
-                print(f"🔍 追跡中アラート ({len(pending_results)}件) の結果照会（実ブラウザ）を開始...")
-                updated_pending = pending_results.copy()
+                updated_pending = {}
+                # 当日以外の古いデータを取り除くクリーンアップ
+                for k, v in pending_results.items():
+                    d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
+                    if not d or d == today_str:
+                        updated_pending[k] = v
+                    else:
+                        print(f"🗑️ 古いアラートデータを削除: {k} (日付: {d})")
 
-                for race_key, info in list(pending_results.items()):
+                print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始...")
+
+                for race_key, info in list(updated_pending.items()):
                     rno = info.get("rno")
                     venue_jp = clean_venue_name(info.get("venue_jp") or info.get("venue") or info.get("v") or "")
                     date_str = info.get("date") or info.get("d")
@@ -179,13 +184,21 @@ def check_all_results():
                 pending_pickups = json.load(f)
 
             if pending_pickups:
-                print(f"🔍 追跡中ピックアップ ({len(pending_pickups)}件) の結果照会（実ブラウザ）を開始...")
-                updated_pickups = pending_pickups.copy()
+                updated_pickups = {}
+                # 当日以外の古いデータを取り除くクリーンアップ
+                for k, v in pending_pickups.items():
+                    d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
+                    if not d or d == today_str:
+                        updated_pickups[k] = v
+                    else:
+                        print(f"🗑️ 古いピックアップデータを削除: {k} (日付: {d})")
 
-                for race_key, info in list(pending_pickups.items()):
+                print(f"🔍 追跡中ピックアップ ({len(updated_pickups)}件) の結果照会を開始...")
+
+                for race_key, info in list(updated_pickups.items()):
                     v_name = clean_venue_name(info.get("v") or info.get("venue") or info.get("venue_jp") or "")
                     rno = info.get("r") or info.get("rno") or info.get("race_no")
-                    date_str = str(info.get("date") or info.get("d") or datetime.now(JST).strftime("%Y%m%d"))
+                    date_str = str(info.get("date") or info.get("d") or today_str)
                     score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
 
                     if not v_name or not rno:
@@ -203,7 +216,7 @@ def check_all_results():
                                 description="朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！",
                                 fields=[
                                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
-                                    {"name": "💰 確定配当", "value": f"**3連単 {winning_combo} / {payout:,}円**", "inline": True},
+                                    {"name": "💰 確定配当", "value": f"**3连単 {winning_combo} / {payout:,}円**", "inline": True},
                                     {"name": "🔥 期待値スコア", "value": f"{score}点", "inline": True},
                                 ],
                                 color=0xFF0055,
