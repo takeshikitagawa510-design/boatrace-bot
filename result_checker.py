@@ -58,39 +58,47 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
     else:
         raw_date = str(date_str).replace("-", "").replace("/", "")[:8]
 
+    # YYYY-MM-DD 形式と YYYYMMDD 形式の両方のURLパターンに対応
     formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
-    url = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
+    urls = [
+        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}",
+        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}"
+    ]
 
-    try:
-        page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        page.wait_for_timeout(2000)
-
-        title = page.title()
-        text_content = page.inner_text("body")
-
-        if "ページが見つかりません" in title:
-            url_alt = f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}"
-            page.goto(url_alt, wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_timeout(2000)
+    for url in urls:
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_timeout(1500)
+            
             text_content = page.inner_text("body")
 
-        target_r = f"{rno}R"
-        if target_r in text_content:
-            after_r = text_content.split(target_r, 1)[1]
-            next_r = re.search(r"\d{1,2}R", after_r)
-            block = after_r[:next_r.start()] if next_r else after_r[:1000]
+            # 404やエラー画面が表示されている場合は次のURLを試す
+            if ("見つかりません" in text_content or "エラー" in text_content) and len(text_content) < 500:
+                continue
 
-            if "3連単" in block or "三連単" in block:
-                combo_m = re.search(r"([1-6])\s*[-–—─=⇒>]\s*([1-6])\s*[-–—─=⇒>]\s*([1-6])", block)
-                payout_m = re.search(r"([0-9,]+)\s*円", block)
-                if combo_m and payout_m:
-                    payout_val = int(payout_m.group(1).replace(",", ""))
-                    if payout_val > 0:
-                        combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        return combo_text, payout_val
+            target_r = f"{rno}R"
+            if target_r in text_content:
+                # 対象レース(例: 3R)の場所から次のレース(例: 4R)までのブロックを抽出
+                after_r = text_content.split(target_r, 1)[1]
+                
+                # 次のレース(数字+R)までの範囲を探す。なければ3000文字まで広げて検索
+                next_r = re.search(r"\b\d{1,2}R\b", after_r)
+                block = after_r[:next_r.start()] if next_r else after_r[:3000]
 
-    except Exception as e:
-        print(f"⚠️ ブラウザ取得エラー ({venue_jp} {rno}R): {e}")
+                if "3連単" in block or "三連単" in block:
+                    # 💡 「1-2-3」「1→2→3」「1=2=3」など全矢印・記号パターンに対応
+                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", block)
+                    # 払戻金（数値 + 円）の抽出
+                    payout_m = re.search(r"([0-9,]+)\s*円", block)
+
+                    if combo_m and payout_m:
+                        payout_val = int(payout_m.group(1).replace(",", ""))
+                        if payout_val > 0:
+                            combo_text = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                            return combo_text, payout_val
+
+        except Exception as e:
+            print(f"⚠️ ブラウザ取得エラー ({venue_jp} {rno}R) - {url}: {e}")
 
     return None, 0
 
@@ -216,7 +224,7 @@ def check_all_results():
                                 description="朝一AI解析でピックアップした波乱期待値レースにて**万舟が発生**しました！",
                                 fields=[
                                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
-                                    {"name": "💰 確定配当", "value": f"**3连単 {winning_combo} / {payout:,}円**", "inline": True},
+                                    {"name": "💰 確定配当", "value": f"**3連単 {winning_combo} / {payout:,}円**", "inline": True},
                                     {"name": "🔥 期待値スコア", "value": f"{score}点", "inline": True},
                                 ],
                                 color=0xFF0055,
