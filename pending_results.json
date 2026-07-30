@@ -251,5 +251,16 @@
       "3-415-4152",
       "4-315-3152"
     ]
+  },
+  "20260730_常滑_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 11,
+    "venue_jp": "常滑",
+    "date": "20260730",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-465-4651",
+      "4-365-3651"
+    ]
   }
 }
