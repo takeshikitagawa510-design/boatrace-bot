@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import requests
 from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
@@ -65,68 +66,64 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="", debug=False):
+def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     
-    if resolved_v:
-        candidate_venues = [resolved_v]
-    else:
-        candidate_venues = ["徳山", "三国", "常滑", "児島", "福岡", "唐津", "丸亀", "下関", "大村"]
+    # 会場が特定できない（[女子]等）場合は無駄な通信を避けるため即スキップ
+    if not resolved_v:
+        return None, 0, ""
 
-    # 日付の正規化（YYYYMMDD）
+    place_no = VENUE_NO_MAP.get(resolved_v)
+    if not place_no:
+        return None, 0, resolved_v
+
     if not date_str or len(str(date_str)) < 8:
         raw_date = datetime.now(JST).strftime("%Y%m%d")
     else:
         raw_date = re.sub(r"\D", "", str(date_str))[:8]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Referer": "https://www.boatrace.jp/"
     }
 
-    for v_name in candidate_venues:
-        place_no = VENUE_NO_MAP.get(v_name)
-        if not place_no:
-            continue
+    url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
 
-        url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
-
+    session = requests.Session()
+    res = None
+    for attempt in range(2):
         try:
-            res = requests.get(url, headers=headers, timeout=6)
-            if debug:
-                print(f"   [DEBUG] Fetching: {url} | Status: {res.status_code}")
+            res = session.get(url, headers=headers, timeout=12)
+            if res.status_code == 200:
+                break
+        except Exception:
+            time.sleep(1)
 
-            if res.status_code != 200:
-                continue
+    if not res or res.status_code != 200:
+        return None, 0, resolved_v
 
-            soup = BeautifulSoup(res.text, "html.parser")
-            
-            # 全テーブル・全テキストの中から「3連単」というキーワードを走査
-            text_all = soup.get_text()
-            if debug and ("3連単" not in text_all and "勝舟" not in text_all):
-                print(f"   [DEBUG] レース結果ページに『3連単』『勝舟』の記述なし（未確定またはURL不正の可能性）")
+    soup = BeautifulSoup(res.text, "html.parser")
+    text_all = soup.get_text(separator=" ", strip=True)
 
-            # 汎用パース：HTML全体から 3連単 とその直後の「数字-数字-数字」および「金額」を抽出
-            match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
-            if match:
-                combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
-                payout_val = int(match.group(4).replace(",", ""))
-                return combo, payout_val, v_name
+    # 1. テキスト全体からの高速マッチング
+    match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
+    if match:
+        combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+        payout_val = int(match.group(4).replace(",", ""))
+        return combo, payout_val, resolved_v
 
-            # テーブルごとの個別走査
-            for tr in soup.find_all("tr"):
-                tr_text = tr.get_text(separator=" ", strip=True)
-                if "3連単" in tr_text:
-                    combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
-                    payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_text)
-                    if combo_m and payout_m:
-                        combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                        val = int(payout_m[-1].replace(",", ""))
-                        if val >= 100:
-                            return combo, val, v_name
-
-        except Exception as e:
-            if debug:
-                print(f"   [DEBUG] Error fetching {v_name} {rno}R: {e}")
+    # 2. テーブル（tr）ごとの精査
+    for tr in soup.find_all("tr"):
+        tr_text = tr.get_text(separator=" ", strip=True)
+        if "3連単" in tr_text:
+            combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
+            payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_text)
+            if combo_m and payout_m:
+                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                val = int(payout_m[-1].replace(",", ""))
+                if val >= 100:
+                    return combo, val, resolved_v
 
     return None, 0, resolved_v
 
@@ -152,7 +149,6 @@ def check_all_results():
 
             print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始...")
 
-            first_item = True
             for race_key, info in list(updated_pending.items()):
                 rno = info.get("rno")
                 raw_venue_jp = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
@@ -161,13 +157,16 @@ def check_all_results():
                 alert_type = info.get("alert_type")
                 recommended_combos = info.get("recommended_combos", [])
 
-                # 最初の1件目だけ詳細なデバッグログを出力
-                winning_combo, payout, resolved_v = fetch_official_result(
-                    raw_venue_jp, rno, date_str, clean_url, race_key, debug=first_item
-                )
-                first_item = False
+                resolved_v = resolve_venue_name(raw_venue_jp, clean_url, race_key)
 
-                display_venue = resolved_v if resolved_v else raw_venue_jp
+                # 会場特定不能なデータはログを出して削除（またはスキップ）
+                if not resolved_v:
+                    print(f"   ⚠️ 会場不明のためスキップ: {raw_venue_jp} {rno}R")
+                    continue
+
+                winning_combo, payout, display_venue = fetch_official_result(
+                    raw_venue_jp, rno, date_str, clean_url, race_key
+                )
 
                 if winning_combo:
                     print(f"   🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
