@@ -20,10 +20,29 @@ VENUE_NO_MAP = {
     "芦屋": 21,  "福岡": 22,  "唐津": 23, "大村": 24,
 }
 
-def clean_venue_name(raw_name):
-    if not raw_name:
-        return ""
-    return re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_name)).strip()
+# URL末尾のスラッグから会場名へ変換するマップ
+SLUG_VENUE_MAP = {
+    "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "heiwajima": "平和島",
+    "tamagawa": "多摩川", "hamanako": "浜名湖", "gamagori": "蒲郡", "tokoname": "常滑",
+    "tsu": "津", "mikuni": "三国", "biwako": "びわこ", "suminoe": "住之江",
+    "amagasaki": "尼崎", "naruto": "鳴門", "marugame": "丸亀", "kojima": "児島",
+    "miyajima": "宮島", "tokuyama": "徳山", "shimonoseki": "下関", "wakamatsu": "若松",
+    "ashiya": "芦屋", "fukuoka": "福岡", "karatsu": "唐津", "omura": "大村"
+}
+
+def resolve_venue_name(raw_venue, clean_url=""):
+    """ [女子] 等で会場名が消えてしまうのを防ぎ、URLからも会場名を補完する """
+    cleaned = re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_venue)).strip()
+    if cleaned and cleaned in VENUE_NO_MAP:
+        return cleaned
+
+    # URLからの復元 (例: https://boatrace-shinsum.com/tokuyama -> tokuyama -> 徳山)
+    if clean_url:
+        slug = clean_url.rstrip("/").split("/")[-1].replace("joshi", "").replace("_sg", "")
+        if slug in SLUG_VENUE_MAP:
+            return SLUG_VENUE_MAP[slug]
+
+    return cleaned
 
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF00):
     if not webhook_url:
@@ -46,11 +65,12 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF0
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
-    clean_v = clean_venue_name(venue_jp)
-    place_no = VENUE_NO_MAP.get(clean_v)
+def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None, clean_url=""):
+    resolved_v = resolve_venue_name(venue_jp, clean_url)
+    place_no = VENUE_NO_MAP.get(resolved_v)
+    
     if not place_no:
-        print(f"⚠️ 未対応の会場名: '{venue_jp}' (整形後: '{clean_v}')")
+        print(f"⚠️ 未対応または判定不能の会場名: '{venue_jp}' (補完後: '{resolved_v}')")
         return None, 0
 
     if not date_str or len(str(date_str)) < 8:
@@ -58,11 +78,12 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
     else:
         raw_date = str(date_str).replace("-", "").replace("/", "")[:8]
 
-    # YYYY-MM-DD 形式と YYYYMMDD 形式の両方のURLパターンに対応
     formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
+    
+    # kyoteibiyoriのURLパターン（YYYYMMDD を優先）
     urls = [
-        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}",
-        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}"
+        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={raw_date}",
+        f"https://kyoteibiyori.com/race_result_all.php?place_no={place_no}&hiduke={formatted_date}"
     ]
 
     for url in urls:
@@ -72,23 +93,19 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
             
             text_content = page.inner_text("body")
 
-            # 404やエラー画面が表示されている場合は次のURLを試す
-            if ("見つかりません" in text_content or "エラー" in text_content) and len(text_content) < 500:
+            if "ページが見つかりません" in text_content or len(text_content) < 300:
                 continue
 
             target_r = f"{rno}R"
             if target_r in text_content:
-                # 対象レース(例: 3R)の場所から次のレース(例: 4R)までのブロックを抽出
                 after_r = text_content.split(target_r, 1)[1]
                 
-                # 次のレース(数字+R)までの範囲を探す。なければ3000文字まで広げて検索
+                # 次のR（例: 4R）までのブロックを抽出
                 next_r = re.search(r"\b\d{1,2}R\b", after_r)
                 block = after_r[:next_r.start()] if next_r else after_r[:3000]
 
                 if "3連単" in block or "三連単" in block:
-                    # 💡 「1-2-3」「1→2→3」「1=2=3」など全矢印・記号パターンに対応
                     combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", block)
-                    # 払戻金（数値 + 円）の抽出
                     payout_m = re.search(r"([0-9,]+)\s*円", block)
 
                     if combo_m and payout_m:
@@ -98,7 +115,7 @@ def fetch_sanrentan_with_browser(page, venue_jp, rno, date_str=None):
                             return combo_text, payout_val
 
         except Exception as e:
-            print(f"⚠️ ブラウザ取得エラー ({venue_jp} {rno}R) - {url}: {e}")
+            print(f"⚠️ ブラウザ取得エラー ({resolved_v} {rno}R) - {url}: {e}")
 
     return None, 0
 
@@ -127,7 +144,6 @@ def check_all_results():
 
             if pending_results:
                 updated_pending = {}
-                # 当日以外の古いデータを取り除くクリーンアップ
                 for k, v in pending_results.items():
                     d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
                     if not d or d == today_str:
@@ -139,15 +155,19 @@ def check_all_results():
 
                 for race_key, info in list(updated_pending.items()):
                     rno = info.get("rno")
-                    venue_jp = clean_venue_name(info.get("venue_jp") or info.get("venue") or info.get("v") or "")
+                    raw_venue_jp = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
+                    clean_url = info.get("clean_url", "")
                     date_str = info.get("date") or info.get("d")
                     alert_type = info.get("alert_type")
                     recommended_combos = info.get("recommended_combos", [])
 
+                    venue_jp = resolve_venue_name(raw_venue_jp, clean_url)
+
                     if not venue_jp or not rno:
+                        print(f"⚠️ スキップ（会場/R不明）: {race_key}")
                         continue
 
-                    winning_combo, payout = fetch_sanrentan_with_browser(page, venue_jp, rno, date_str)
+                    winning_combo, payout = fetch_sanrentan_with_browser(page, venue_jp, rno, date_str, clean_url)
 
                     if winning_combo:
                         print(f"   🏁 結果取得成功: {venue_jp} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
@@ -193,7 +213,6 @@ def check_all_results():
 
             if pending_pickups:
                 updated_pickups = {}
-                # 当日以外の古いデータを取り除くクリーンアップ
                 for k, v in pending_pickups.items():
                     d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
                     if not d or d == today_str:
@@ -204,15 +223,18 @@ def check_all_results():
                 print(f"🔍 追跡中ピックアップ ({len(updated_pickups)}件) の結果照会を開始...")
 
                 for race_key, info in list(updated_pickups.items()):
-                    v_name = clean_venue_name(info.get("v") or info.get("venue") or info.get("venue_jp") or "")
+                    raw_venue_jp = info.get("v") or info.get("venue") or info.get("venue_jp") or ""
+                    clean_url = info.get("clean_url", "")
                     rno = info.get("r") or info.get("rno") or info.get("race_no")
                     date_str = str(info.get("date") or info.get("d") or today_str)
                     score = info.get("s") or info.get("score") or info.get("eval_score") or "高"
 
+                    v_name = resolve_venue_name(raw_venue_jp, clean_url)
+
                     if not v_name or not rno:
                         continue
 
-                    winning_combo, payout = fetch_sanrentan_with_browser(page, v_name, rno, date_str)
+                    winning_combo, payout = fetch_sanrentan_with_browser(page, v_name, rno, date_str, clean_url)
 
                     if winning_combo:
                         print(f"   🏁 ピックアップ結果取得成功: {v_name} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
