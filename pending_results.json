@@ -31,5 +31,27 @@
       "2-156-1564",
       "5-126-1264"
     ]
+  },
+  "20260731_[女子]_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 7,
+    "venue_jp": "",
+    "date": "20260731",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20260731_桐生_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 7,
+    "venue_jp": "桐生",
+    "date": "20260731",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
