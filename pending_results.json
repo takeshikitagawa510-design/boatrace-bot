@@ -9,5 +9,16 @@
       "4-563-5631",
       "5-463-4631"
     ]
+  },
+  "20260731_唐津_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 9,
+    "venue_jp": "唐津",
+    "date": "20260731",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-156-1562",
+      "5-136-1362"
+    ]
   }
 }
