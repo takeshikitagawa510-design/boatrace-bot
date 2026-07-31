@@ -9,5 +9,16 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20260731_常滑_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 2,
+    "venue_jp": "常滑",
+    "date": "20260731",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5612",
+      "5-461-4612"
+    ]
   }
 }
