@@ -9,5 +9,27 @@
       "4-563-5632",
       "5-463-4632"
     ]
+  },
+  "20260731_尼崎_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 7,
+    "venue_jp": "尼崎",
+    "date": "20260731",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
+    ]
+  },
+  "20260731_浜名湖_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 5,
+    "venue_jp": "浜名湖",
+    "date": "20260731",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-354-3541",
+      "3-254-2541"
+    ]
   }
 }
