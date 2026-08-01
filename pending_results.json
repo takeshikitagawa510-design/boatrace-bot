@@ -76,15 +76,15 @@
       "3-126-1265"
     ]
   },
-  "20260801_常滑_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 6,
-    "venue_jp": "常滑",
+  "20260801_浜名湖_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 5,
+    "venue_jp": "浜名湖",
     "date": "20260801",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "5-142-1423",
-      "6-154-1542"
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
