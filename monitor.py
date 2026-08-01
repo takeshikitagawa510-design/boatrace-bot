@@ -228,7 +228,7 @@ def generate_probability_eye(boats):
                     time_diff_val = float("".join(c for c in sub_str if c in "+-.0123456789"))
                     break
                 except:
-                    
+                    pass
 
         is_alert_target = ("Imperial" in b_str or "覚醒" in b_str) and ("+" in b_str or "＋" in b_str)
 
@@ -369,11 +369,11 @@ def check_pickup_manshu_results():
         winning_combo, payout = fetch_official_result_simple(v_name, rno, date_str)
 
         if winning_combo:
-            print(f"   📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
             
             # 💰 払戻金が10,000円以上（万舟）の場合、実績用Webhook(RESULT_DISCORD_WEBHOOK_URL)へ送信
             if payout >= 10000:
-                print(f"   🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
+                print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
                     {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
@@ -390,7 +390,7 @@ def check_pickup_manshu_results():
             # 結果が確定したレースは次回以降のチェックから除去
             del updated_pickups[race_key]
         else:
-            print(f"   ⏳ ピックアップ未確定: {v_name} {rno}R")
+            print(f"    ⏳ ピックアップ未確定: {v_name} {rno}R")
 
     # 更新されたピックアップリストを書き戻す
     try:
