@@ -46,7 +46,6 @@ if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
             raw_notified = json.load(f)
-            # 💡 今日の日付が含まれるキーのみ保持（古い日付や日付なしの旧データは自動削除）
             notified_races = {k for k in raw_notified if k.startswith(TODAY_STR)}
         print(f"📦 本日 ({TODAY_STR}) の通知済みキャッシュ ({len(notified_races)}件) を読み込みました。")
     except Exception as e:
@@ -73,17 +72,17 @@ session.headers.update({
     )
 })
 
+# 💡 リアルタイム監視用：カード（Embed）＋ テキスト（IFTTT用）
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFFF):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
         return
 
-    # 💡 IFTTT（X自動転送）が拾えるようにプレーンテキストの文章を作成
     fields_text = "\n".join([f"{f['name']}: {f['value']}" for f in fields])
     plain_content = f"{title}\n{description}\n{fields_text}".replace("**", "").replace("`", "")
 
     payload = {
-        "content": plain_content,  # 👈 IFTTT連携用のプレーンテキスト
+        "content": plain_content,
         "embeds": [{
             "title": title,
             "description": description,
@@ -96,6 +95,36 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
         print(f"📡 Discord送信結果: HTTP {res.status_code}")
+    except Exception as e:
+        print(f"⚠️ Discord通信エラー: {e}")
+
+# 💡 的中・回収実績用：テキストのみ送信（カードなし）
+def send_discord_text(webhook_url, title, description, fields=[]):
+    if not webhook_url:
+        print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
+        return
+
+    formatted_fields = []
+    for f in fields:
+        name = f['name']
+        val = str(f['value']).replace("**", "").replace("`", "")
+        formatted_fields.append(f"{name}\n{val}")
+    
+    fields_block = "\n".join(formatted_fields)
+
+    plain_content = (
+        f"{title}\n"
+        f"{description}\n"
+        f"{fields_block}"
+    )
+
+    payload = {
+        "content": plain_content
+    }
+    
+    try:
+        res = requests.post(webhook_url, json=payload, timeout=10)
+        print(f"📡 Discord実績送信結果: HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
@@ -377,28 +406,25 @@ def check_pickup_manshu_results():
         if winning_combo:
             print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
             
-            # 💰 払戻金が10,000円以上（万舟）の場合、実績用Webhook(RESULT_DISCORD_WEBHOOK_URL)へ送信
+            # 💰 【改修】的中・回収実績はテキストのみ(send_discord_text)で送信
             if payout >= 10000:
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
-                    {"name": "📍 対象レース", "value": f"{v_name} {rno}R", "inline": True},
-                    {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
-                    {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
+                    {"name": "📍 対象レース", "value": f"{v_name} {rno}R"},
+                    {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
+                    {"name": "💰 払戻金", "value": f"{payout:,}円"},
                 ]
-                send_discord_embed(
+                send_discord_text(
                     webhook_url=RESULT_DISCORD_WEBHOOK_URL,
                     title=f"🎆【万舟的中・回収実績】ピックアップレース {v_name} {rno}R",
-                    description=f"🔥 AI期待値スコア **{score}点** の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
+                    description=f"🔥 AI期待値スコア {score}点 の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
                     fields=fields,
-                    color=0xFF0000, # 万舟アピールの赤色
                 )
 
-            # 結果が確定したレースは次回以降のチェックから除去
             del updated_pickups[race_key]
         else:
             print(f"    ⏳ ピックアップ未確定: {v_name} {rno}R")
 
-    # 更新されたピックアップリストを書き戻す
     try:
         with open(PENDING_PICKUP_FILE, "w", encoding="utf-8") as f:
             json.dump(updated_pickups, f, ensure_ascii=False, indent=2)
@@ -459,7 +485,7 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 データ内の日付チェック（前日のデータが残っている場合はスキップ）
+        # 💡 データ内の日付チェック
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
@@ -492,7 +518,7 @@ def monitor_shinsum(venue_urls):
             if not boats:
                 continue
 
-            # ① 覚醒タイム
+            # ① 覚醒タイム（カード＋テキスト送信）
             if kakusei_race_id not in notified_races:
                 kakusei_alerts = []
                 is_triggered = False
@@ -530,7 +556,7 @@ def monitor_shinsum(venue_urls):
                         "recommended_combos": [main_eye, sub_eye],
                     }
 
-            # ② 勝率判定
+            # ② 勝率判定（カード＋テキスト送信）
             if rate_race_id not in notified_races:
                 w1_rate = None
                 other_rates = []
@@ -592,7 +618,7 @@ def monitor_shinsum(venue_urls):
                             "recommended_combos": [main_eye, sub_eye],
                         }
 
-            # ③ スリットアラート
+            # ③ スリットアラート（カード＋テキスト送信）
             if slit_race_id not in notified_races:
                 race_shinsum_str = json.dumps(shinsum_data.get(rno_key, {}), ensure_ascii=False)
                 race_arare_str = json.dumps(arare_data.get(rno_key, {}), ensure_ascii=False)
@@ -628,7 +654,6 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(slit_race_id)
                     save_notified_races()
 
-    # 💡 既存のpending_resultsと統合して安全に保存
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
@@ -659,5 +684,4 @@ if __name__ == "__main__":
         if i == 0:
             time.sleep(30)
 
-    # 💣 万舟ピックアップレース（上位15件）の結果照会を実行 (「🎯｜ai的中・回収実績」へ送信)
     check_pickup_manshu_results()
