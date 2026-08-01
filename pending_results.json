@@ -1,15 +1,4 @@
 {
-  "20260801_桐生_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 10,
-    "venue_jp": "桐生",
-    "date": "20260801",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
-    ]
-  },
   "20260801_[女子]_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 10,
