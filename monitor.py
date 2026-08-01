@@ -77,7 +77,13 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
         return
+
+    # 💡 IFTTT（X自動転送）が拾えるようにプレーンテキストの文章を作成
+    fields_text = "\n".join([f"{f['name']}: {f['value']}" for f in fields])
+    plain_content = f"{title}\n{description}\n{fields_text}".replace("**", "").replace("`", "")
+
     payload = {
+        "content": plain_content,  # 👈 IFTTT連携用のプレーンテキスト
         "embeds": [{
             "title": title,
             "description": description,
@@ -453,18 +459,16 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 【追加】データ内の日付チェック（前日のデータが残っている場合はスキップ）
+        # 💡 データ内の日付チェック（前日のデータが残っている場合はスキップ）
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
-                # JSON内の "date" や "created_at" フィールドから日付を取り出す
                 date_val = check_d.get("date") or check_d.get("created_at") or ""
                 clean_d = re.sub(r"\D", "", str(date_val))[:8]
                 if len(clean_d) == 8:
                     data_date = clean_d
                     break
 
-        # データに日付があり、それが本日の日付(TODAY_STR)と一致しない場合は前日データと判断して処理しない
         if data_date and data_date != TODAY_STR:
             print(f"⏭️ 【スキップ】{venue_japanese} は過去の日付データです ({data_date} != {TODAY_STR})")
             continue
