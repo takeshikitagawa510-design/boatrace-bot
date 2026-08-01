@@ -33,8 +33,9 @@ PENDING_PICKUP_FILE = "pending_pickup_races.json"
 JST = timezone(timedelta(hours=+9), "JST")
 TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260801)
 
+# 💡 tamakawa, tamagawa 双方を「多摩川 (5)」として判定できるよう追加
 VENUE_NO_MAP = {
-    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
     "びわこ": 11, "住之江": 12, "尼崎": 13, "鳴門": 14, "丸亀": 15,
     "児島": 16,  "宮島": 17,  "徳山": 18, "下関": 19, "若松": 20,
@@ -404,9 +405,9 @@ def check_pickup_manshu_results():
         winning_combo, payout = fetch_official_result_simple(v_name, rno, date_str)
 
         if winning_combo:
-            print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
+            print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3连単 {winning_combo} ({payout:,}円)")
             
-            # 💰 【改修】的中・回収実績はテキストのみ(send_discord_text)で送信
+            # 💰 的中・回収実績はテキストのみ(send_discord_text)で送信
             if payout >= 10000:
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
@@ -436,12 +437,13 @@ def check_pickup_manshu_results():
 # ==========================================
 def monitor_shinsum(venue_urls):
     global notified_races
+    # 💡 tamakawa を多摩川にマッピング追加
     venue_name_map = {
         "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "tokoname": "常滑",
         "mikuni": "三国", "marugame": "丸亀", "miyajima": "宮島", "tokuyama": "徳山",
         "ashiya": "芦屋", "omura": "大村", "omura_sg": "大村", "gamagori": "蒲郡",
         "hamanako_sg": "浜名湖", "hamanako": "浜名湖", "heiwajima": "平和島",
-        "tamagawa": "多摩川", "tsu": "津", "biwako": "びわこ", "suminoe": "住之江",
+        "tamagawa": "多摩川", "tamakawa": "多摩川", "tsu": "津", "biwako": "びわこ", "suminoe": "住之江",
         "amagasaki": "尼崎", "naruto": "鳴門", "karatsu": "唐津", "kojima": "児島",
         "wakamatsu": "若松", "fukuoka": "福岡", "shimonoseki": "下関",
     }
