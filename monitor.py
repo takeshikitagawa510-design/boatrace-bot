@@ -15,7 +15,7 @@ DATA_URL = "https://boatrace-shinsum.com/"
 CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
-PASSWORD = os.environ.get("SHINSUM_PASS") or "art"
+PASSWORD = os.environ.get("SHINSUM_PASS") or "pom"
 
 # ⚡ リアルタイム監視用 Webhook
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
@@ -108,7 +108,7 @@ def update_venues():
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
         if resp.status_code == 401:
-            print("⚠️ 認証エラー: ID/PASSを確認してください。")
+            print("⚠️ 認証エラー: ID/を確認してください。")
             return
 
         resp.encoding = "utf-8"
@@ -228,7 +228,7 @@ def generate_probability_eye(boats):
                     time_diff_val = float("".join(c for c in sub_str if c in "+-.0123456789"))
                     break
                 except:
-                    pass
+                    
 
         is_alert_target = ("Imperial" in b_str or "覚醒" in b_str) and ("+" in b_str or "＋" in b_str)
 
