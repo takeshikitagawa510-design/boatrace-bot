@@ -1,1 +1,46 @@
-{}
+{
+  "20260801_徳山_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 5,
+    "venue_jp": "徳山",
+    "date": "20260801",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "5-163-1632",
+      "6-153-1532"
+    ]
+  },
+  "20260801_桐生_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 2,
+    "venue_jp": "桐生",
+    "date": "20260801",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
+    ]
+  },
+  "20260801_桐生_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 7,
+    "venue_jp": "桐生",
+    "date": "20260801",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20260801_桐生_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 8,
+    "venue_jp": "桐生",
+    "date": "20260801",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1456",
+      "4-135-1356"
+    ]
+  }
+}
