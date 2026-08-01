@@ -13,7 +13,7 @@ PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
 VENUE_NO_MAP = {
-    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
+    "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
     "びわこ": 11, "住之江": 12, "尼崎": 13, "鳴門": 14, "丸亀": 15,
     "児島": 16,  "宮島": 17,  "徳山": 18, "下関": 19, "若松": 20,
@@ -22,7 +22,7 @@ VENUE_NO_MAP = {
 
 SLUG_VENUE_MAP = {
     "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "heiwajima": "平和島",
-    "tamagawa": "多摩川", "hamanako": "浜名湖", "gamagori": "蒲郡", "tokoname": "常滑",
+    "tamagawa": "多摩川", "tamakawa": "多摩川", "hamanako": "浜名湖", "gamagori": "蒲郡", "tokoname": "常滑",
     "tsu": "津", "mikuni": "三国", "biwako": "びわこ", "suminoe": "住之江",
     "amagasaki": "尼崎", "naruto": "鳴門", "marugame": "丸亀", "kojima": "児島",
     "miyajima": "宮島", "tokuyama": "徳山", "shimonoseki": "下関", "wakamatsu": "若松",
@@ -46,23 +46,34 @@ def resolve_venue_name(raw_venue, clean_url="", race_key=""):
 
     return ""
 
-def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FF00):
+# 💡 的中・回収実績用：カード枠なし・テキストのみ送信関数（IFTTT/X転送対応）
+def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
         print(f"⚠️ RESULT_WEBHOOK_URL未設定のためスキップ: {title}")
         return
+
+    formatted_fields = []
+    for f in fields:
+        name = f['name']
+        val = str(f['value']).replace("**", "").replace("`", "")
+        formatted_fields.append(f"{name}\n{val}")
+    
+    fields_block = "\n".join(formatted_fields)
+
+    # カード装飾（embeds）を含めず、純粋なテキストのみを組み立てる
+    plain_content = (
+        f"{title}\n"
+        f"{description}\n"
+        f"{fields_block}"
+    ).replace("**", "").replace("`", "")
+
     payload = {
-        "embeds": [{
-            "title": title,
-            "description": description,
-            "color": color,
-            "fields": fields,
-            "footer": {"text": "NEXUS-X VIP AI Engine"},
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }]
+        "content": plain_content
     }
+
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
-        print(f"📡 Discord送信結果: HTTP {res.status_code}")
+        print(f"📡 Discord実績送信結果 (テキストのみ): HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
@@ -159,9 +170,9 @@ def check_all_results():
 
                 resolved_v = resolve_venue_name(raw_venue_jp, clean_url, race_key)
 
-                # 会場特定不能なデータはログを出して削除（またはスキップ）
+                # 会場特定不能なデータはスキップ
                 if not resolved_v:
-                    print(f"   ⚠️ 会場不明のためスキップ: {raw_venue_jp} {rno}R")
+                    print(f"    ⚠️ 会場不明のためスキップ: {raw_venue_jp} {rno}R")
                     continue
 
                 winning_combo, payout, display_venue = fetch_official_result(
@@ -169,7 +180,7 @@ def check_all_results():
                 )
 
                 if winning_combo:
-                    print(f"   🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+                    print(f"    🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
                     is_hit = False
                     for combo in recommended_combos:
                         if not combo or combo == "対象なし" or len(combo) < 5:
@@ -183,24 +194,25 @@ def check_all_results():
                                 break
 
                     if is_hit:
-                        print(f"   🎯 【的中】 Discord通知送信: {display_venue} {rno}R")
-                        send_discord_embed(
+                        print(f"    🎯 【的中】 Discord通知送信 (テキストのみ): {display_venue} {rno}R")
+                        
+                        # 💡 修正箇所：カード(send_discord_embed)をやめ、テキストのみ(send_discord_text)で送信
+                        send_discord_text(
                             webhook_url=RESULT_WEBHOOK_URL,
                             title=f"🎯【AIアラート的中報告】 {display_venue} {rno}R",
-                            description=f"⚡ **{alert_type}** アラート配信のレースで見事的中しました！",
+                            description=f"⚡ {alert_type} アラート配信のレースで見事的中しました！",
                             fields=[
-                                {"name": "📍 対象レース", "value": f"{display_venue} {rno}R", "inline": True},
-                                {"name": "🎲 確定出目", "value": f"**3連単 {winning_combo}**", "inline": True},
-                                {"name": "💰 払戻金", "value": f"**{payout:,}円**", "inline": True},
+                                {"name": "📍 対象レース", "value": f"{display_venue} {rno}R"},
+                                {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
+                                {"name": "💰 払戻金", "value": f"{payout:,}円"},
                             ],
-                            color=0x00FF00,
                         )
                     else:
-                        print(f"   💀 【不的中】 推奨: {recommended_combos} / 結果: {winning_combo}")
+                        print(f"    💀 【不的中】 推奨: {recommended_combos} / 結果: {winning_combo}")
 
                     del updated_pending[race_key]
                 else:
-                    print(f"   ⏳ 未確定/取得待ち: {display_venue} {rno}R")
+                    print(f"    ⏳ 未確定/取得待ち: {display_venue} {rno}R")
 
             with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
                 json.dump(updated_pending, f, ensure_ascii=False, indent=2)
