@@ -31,7 +31,7 @@ PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUP_FILE = "pending_pickup_races.json"
 
 JST = timezone(timedelta(hours=+9), "JST")
-TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260730)
+TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260801)
 
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5,
@@ -108,7 +108,7 @@ def update_venues():
     try:
         resp = session.get(DATA_URL, auth=AUTH, timeout=10)
         if resp.status_code == 401:
-            print("⚠️ 認証エラー: ID/を確認してください。")
+            print("⚠️ 認証エラー: ID/PASSWORDを確認してください。")
             return
 
         resp.encoding = "utf-8"
@@ -432,8 +432,6 @@ def monitor_shinsum(venue_urls):
         is_joshi = "joshi" in path_parts
 
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
-        
-        # 💡 Discord表示用と、結果チェック照会用(pure_venue)を切り分け
         venue_japanese = f"[女子]{pure_venue}" if is_joshi else pure_venue
 
         timestamp = int(time.time() * 1000)
@@ -455,6 +453,22 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
+        # 💡 【追加】データ内の日付チェック（前日のデータが残っている場合はスキップ）
+        data_date = None
+        for check_d in [shinsum_data, arare_data]:
+            if isinstance(check_d, dict):
+                # JSON内の "date" や "created_at" フィールドから日付を取り出す
+                date_val = check_d.get("date") or check_d.get("created_at") or ""
+                clean_d = re.sub(r"\D", "", str(date_val))[:8]
+                if len(clean_d) == 8:
+                    data_date = clean_d
+                    break
+
+        # データに日付があり、それが本日の日付(TODAY_STR)と一致しない場合は前日データと判断して処理しない
+        if data_date and data_date != TODAY_STR:
+            print(f"⏭️ 【スキップ】{venue_japanese} は過去の日付データです ({data_date} != {TODAY_STR})")
+            continue
+
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
         for rno_key in all_race_keys:
@@ -463,7 +477,6 @@ def monitor_shinsum(venue_urls):
             except ValueError:
                 continue
 
-            # 💡 【重要】キーの頭に日付 (YYYYMMDD) を追加
             slit_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_slit"
             rate_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_rate"
             kakusei_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_kakusei"
@@ -504,7 +517,6 @@ def monitor_shinsum(venue_urls):
                     notified_races.add(kakusei_race_id)
                     save_notified_races()
 
-                    # 💡 venue_jp には純粋な場名（例: "平和島"）を入れて結果チェックエラーを回避
                     pending_results[kakusei_race_id] = {
                         "clean_url": clean_base_url,
                         "rno": int(rno_str),
@@ -567,7 +579,6 @@ def monitor_shinsum(venue_urls):
                         notified_races.add(rate_race_id)
                         save_notified_races()
 
-                        # 💡 venue_jp には純粋な場名（例: "平和島"）を入れて結果チェックエラーを回避
                         pending_results[rate_race_id] = {
                             "clean_url": clean_base_url,
                             "rno": int(rno_str),
