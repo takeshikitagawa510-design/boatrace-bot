@@ -42,5 +42,27 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20260801_tamakawa_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 1,
+    "venue_jp": "tamakawa",
+    "date": "20260801",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-561-5614",
+      "5-361-3614"
+    ]
+  },
+  "20260801_常滑_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 3,
+    "venue_jp": "常滑",
+    "date": "20260801",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-563-5631",
+      "5-463-4631"
+    ]
   }
 }
