@@ -17,10 +17,10 @@ CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
 PASSWORD = os.environ.get("SHINSUM_PASS") or "pom"
 
-# ⚡ リアルタイム監視用 Webhook
+# ⚡ リアルタイム監視用 Webhook（カードのみ送信）
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 
-# 🎯 的中・回収実績用 Webhook (環境変数があればそちらを優先、無ければ指定URL)
+# 🎯 的中・回収実績用 Webhook（テキストのみ送信）
 RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
     "RESULT_DISCORD_WEBHOOK_URL",
     "https://discord.com/api/webhooks/1531249075117096990/URp3Tock98zsni_jSoH2qCvepmsRoYo2sWLyV7_XcuaPYyQxGvwIKcKUeWTUWfsjOkLZ"
@@ -31,9 +31,9 @@ PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUP_FILE = "pending_pickup_races.json"
 
 JST = timezone(timedelta(hours=+9), "JST")
-TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 💡 本日の日付 (例: 20260801)
+TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 本日の日付 (例: 20260801)
 
-# 💡 tamakawa, tamagawa 双方を「多摩川 (5)」として判定できるよう追加
+# 💡 tamakawa, tamagawa 双方を「多摩川 (5)」として判定できるよう設定
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -73,17 +73,13 @@ session.headers.update({
     )
 })
 
-# 💡 リアルタイム監視用：カード（Embed）＋ テキスト（IFTTT用）
+# 💡 リアルタイム監視用：カード（Embed）のみ送信（content なし）
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFFF):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
         return
 
-    fields_text = "\n".join([f"{f['name']}: {f['value']}" for f in fields])
-    plain_content = f"{title}\n{description}\n{fields_text}".replace("**", "").replace("`", "")
-
     payload = {
-        "content": plain_content,
         "embeds": [{
             "title": title,
             "description": description,
@@ -95,11 +91,11 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     }
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
-        print(f"📡 Discord送信結果: HTTP {res.status_code}")
+        print(f"📡 Discordリアルタイム送信結果 (カードのみ): HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-# 💡 的中・回収実績用：テキストのみ送信（カードなし）
+# 💡 的中・回収実績用：テキストのみ送信（embeds 一切なし）
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
@@ -119,13 +115,14 @@ def send_discord_text(webhook_url, title, description, fields=[]):
         f"{fields_block}"
     )
 
+    # embeds キーを含めず、content のみ送信する
     payload = {
         "content": plain_content
     }
     
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
-        print(f"📡 Discord実績送信結果: HTTP {res.status_code}")
+        print(f"📡 Discord実績送信結果 (テキストのみ): HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
@@ -405,9 +402,9 @@ def check_pickup_manshu_results():
         winning_combo, payout = fetch_official_result_simple(v_name, rno, date_str)
 
         if winning_combo:
-            print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3连単 {winning_combo} ({payout:,}円)")
+            print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
             
-            # 💰 的中・回収実績はテキストのみ(send_discord_text)で送信
+            # 💰 的中・回収実績は「プレーンテキストのみ (send_discord_text)」で送信
             if payout >= 10000:
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
@@ -437,7 +434,6 @@ def check_pickup_manshu_results():
 # ==========================================
 def monitor_shinsum(venue_urls):
     global notified_races
-    # 💡 tamakawa を多摩川にマッピング追加
     venue_name_map = {
         "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "tokoname": "常滑",
         "mikuni": "三国", "marugame": "丸亀", "miyajima": "宮島", "tokuyama": "徳山",
@@ -520,7 +516,7 @@ def monitor_shinsum(venue_urls):
             if not boats:
                 continue
 
-            # ① 覚醒タイム（カード＋テキスト送信）
+            # ① 覚醒タイム（カードのみ送信）
             if kakusei_race_id not in notified_races:
                 kakusei_alerts = []
                 is_triggered = False
@@ -558,7 +554,7 @@ def monitor_shinsum(venue_urls):
                         "recommended_combos": [main_eye, sub_eye],
                     }
 
-            # ② 勝率判定（カード＋テキスト送信）
+            # ② 勝率判定（カードのみ送信）
             if rate_race_id not in notified_races:
                 w1_rate = None
                 other_rates = []
@@ -620,7 +616,7 @@ def monitor_shinsum(venue_urls):
                             "recommended_combos": [main_eye, sub_eye],
                         }
 
-            # ③ スリットアラート（カード＋テキスト送信）
+            # ③ スリットアラート（カードのみ送信）
             if slit_race_id not in notified_races:
                 race_shinsum_str = json.dumps(shinsum_data.get(rno_key, {}), ensure_ascii=False)
                 race_arare_str = json.dumps(arare_data.get(rno_key, {}), ensure_ascii=False)
