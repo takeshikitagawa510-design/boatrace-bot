@@ -21,15 +21,15 @@
       "3-241-2415"
     ]
   },
-  "20260802_常滑_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 3,
-    "venue_jp": "常滑",
+  "20260802_浜名湖_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 2,
+    "venue_jp": "浜名湖",
     "date": "20260802",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-561-5613",
-      "5-461-4613"
+      "2-314-3145",
+      "3-214-2145"
     ]
   }
 }
