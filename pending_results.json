@@ -42,5 +42,27 @@
       "2-351-3516",
       "3-251-2516"
     ]
+  },
+  "20260802_桐生_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 4,
+    "venue_jp": "桐生",
+    "date": "20260802",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-461-4613",
+      "4-261-2613"
+    ]
+  },
+  "20260802_[女子]_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 4,
+    "venue_jp": "",
+    "date": "20260802",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-461-4613",
+      "4-261-2613"
+    ]
   }
 }
