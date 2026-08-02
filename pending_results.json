@@ -1,57 +1,57 @@
 {
-  "20260802_[女子]_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
-    "rno": 1,
-    "venue_jp": "",
-    "date": "20260802",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-512-5126",
-      "5-312-3126"
-    ]
-  },
-  "20260802_[女子]_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
-    "rno": 2,
-    "venue_jp": "",
-    "date": "20260802",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-351-3516",
-      "3-251-2516"
-    ]
-  },
-  "20260802_[女子]_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
+  "20260803_桐生_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 4,
-    "venue_jp": "",
-    "date": "20260802",
+    "venue_jp": "桐生",
+    "date": "20260803",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "2-461-4613",
       "4-261-2613"
     ]
   },
-  "20260802_[女子]_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
+  "20260803_桐生_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 7,
-    "venue_jp": "",
-    "date": "20260802",
+    "venue_jp": "桐生",
+    "date": "20260803",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "3-146-1462",
       "4-136-1362"
     ]
   },
-  "20260802_[女子]_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
+  "20260803_桐生_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 1,
+    "venue_jp": "桐生",
+    "date": "20260803",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-512-5126",
+      "5-312-3126"
+    ]
+  },
+  "20260803_桐生_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 9,
-    "venue_jp": "",
-    "date": "20260802",
+    "venue_jp": "桐生",
+    "date": "20260803",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
       "4-561-5613",
       "5-461-4613"
+    ]
+  },
+  "20260803_桐生_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 2,
+    "venue_jp": "桐生",
+    "date": "20260803",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-351-3516",
+      "3-251-2516"
     ]
   }
 }
