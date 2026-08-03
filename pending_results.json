@@ -54,28 +54,6 @@
       "3-251-2516"
     ]
   },
-  "20260803_尼崎_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 6,
-    "venue_jp": "尼崎",
-    "date": "20260803",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
-    ]
-  },
-  "20260803_多摩川_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 4,
-    "venue_jp": "多摩川",
-    "date": "20260803",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
-    ]
-  },
   "20260803_浜名湖_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
     "rno": 5,
@@ -85,6 +63,17 @@
     "recommended_combos": [
       "2-156-1564",
       "5-126-1264"
+    ]
+  },
+  "20260803_平和島_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 4,
+    "venue_jp": "平和島",
+    "date": "20260803",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-561-5614",
+      "5-261-2614"
     ]
   }
 }
