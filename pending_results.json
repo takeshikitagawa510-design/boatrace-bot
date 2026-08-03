@@ -31,5 +31,27 @@
       "2-146-1463",
       "4-126-1263"
     ]
+  },
+  "20260803_[女子]_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 11,
+    "venue_jp": "",
+    "date": "20260803",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  },
+  "20260803_桐生_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
+    "date": "20260803",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
