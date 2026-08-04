@@ -120,17 +120,6 @@
       "3-124-1245"
     ]
   },
-  "20260804_多摩川_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 3,
-    "venue_jp": "多摩川",
-    "date": "20260804",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-162-1625",
-      "6-132-1325"
-    ]
-  },
   "20260804_多摩川_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamakawa",
     "rno": 4,
@@ -327,17 +316,6 @@
     "recommended_combos": [
       "2-645-6451",
       "6-245-2451"
-    ]
-  },
-  "20260804_浜名湖_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 4,
-    "venue_jp": "浜名湖",
-    "date": "20260804",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-165-1652",
-      "6-145-1452"
     ]
   }
 }
