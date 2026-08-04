@@ -462,6 +462,11 @@ def monitor_shinsum(venue_urls):
         is_joshi = "joshi" in path_parts
 
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
+
+        # 💡 【追加】"boatrace" や空文字の場合のみ「住之江」に自動変換
+        if pure_venue in ["boatrace", ""]:
+            pure_venue = "住之江"
+
         venue_japanese = f"[女子]{pure_venue}" if is_joshi else pure_venue
 
         timestamp = int(time.time() * 1000)
