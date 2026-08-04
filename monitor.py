@@ -115,7 +115,6 @@ def send_discord_text(webhook_url, title, description, fields=[]):
         f"{fields_block}"
     )
 
-    # embeds キーを含めず、content のみ送信する
     payload = {
         "content": plain_content
     }
@@ -439,9 +438,9 @@ def monitor_shinsum(venue_urls):
         "mikuni": "三国", "marugame": "丸亀", "miyajima": "宮島", "tokuyama": "徳山",
         "ashiya": "芦屋", "omura": "大村", "omura_sg": "大村", "gamagori": "蒲郡",
         "hamanako_sg": "浜名湖", "hamanako": "浜名湖", "heiwajima": "平和島",
-        "tamagawa": "多摩川", "tamakawa": "多摩川", "tsu": "津", "biwako": "びわこ", "suminoe": "住之江",
-        "amagasaki": "尼崎", "naruto": "鳴門", "karatsu": "唐津", "kojima": "児島",
-        "wakamatsu": "若松", "fukuoka": "福岡", "shimonoseki": "下関",
+        "tamagawa": "多摩川", "tamakawa": "多摩川", "tsu": "津", "biwako": "びわこ",
+        "suminoe": "住之江", "amagasaki": "尼崎", "naruto": "鳴門", "karatsu": "唐津",
+        "kojima": "児島", "wakamatsu": "若松", "fukuoka": "福岡", "shimonoseki": "下関",
     }
 
     pending_results = {}
@@ -462,11 +461,6 @@ def monitor_shinsum(venue_urls):
         is_joshi = "joshi" in path_parts
 
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
-
-        # 💡 【追加】"boatrace" や空文字の場合のみ「住之江」に自動変換
-        if pure_venue in ["boatrace", ""]:
-            pure_venue = "住之江"
-
         venue_japanese = f"[女子]{pure_venue}" if is_joshi else pure_venue
 
         timestamp = int(time.time() * 1000)
