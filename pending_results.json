@@ -163,5 +163,16 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20260804_下関_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 5,
+    "venue_jp": "下関",
+    "date": "20260804",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-461-4615",
+      "4-361-3615"
+    ]
   }
 }
