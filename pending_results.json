@@ -153,15 +153,15 @@
       "3-246-2461"
     ]
   },
-  "20260804_下関_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 5,
-    "venue_jp": "下関",
+  "20260804_平和島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 12,
+    "venue_jp": "平和島",
     "date": "20260804",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-461-4615",
-      "4-361-3615"
+      "2-145-1453",
+      "4-125-1253"
     ]
   }
 }
