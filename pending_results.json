@@ -174,5 +174,27 @@
       "2-634-6341",
       "6-234-2341"
     ]
+  },
+  "20260804_桐生_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 7,
+    "venue_jp": "桐生",
+    "date": "20260804",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-153-1536",
+      "5-123-1236"
+    ]
+  },
+  "20260804_[女子]_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 7,
+    "venue_jp": "",
+    "date": "20260804",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-153-1536",
+      "5-123-1236"
+    ]
   }
 }
