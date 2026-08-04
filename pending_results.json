@@ -10,17 +10,6 @@
       "4-231-2315"
     ]
   },
-  "20260804_平和島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 9,
-    "venue_jp": "平和島",
-    "date": "20260804",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20260804_唐津_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/karatsu",
     "rno": 1,
@@ -173,6 +162,17 @@
     "recommended_combos": [
       "2-345-3456",
       "3-245-2456"
+    ]
+  },
+  "20260804_下関_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 3,
+    "venue_jp": "下関",
+    "date": "20260804",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
