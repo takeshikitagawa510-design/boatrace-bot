@@ -131,17 +131,6 @@
       "4-126-1263"
     ]
   },
-  "20260804_下関_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 6,
-    "venue_jp": "下関",
-    "date": "20260804",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20260804_boatrace_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/boatrace",
     "rno": 4,
@@ -151,17 +140,6 @@
     "recommended_combos": [
       "2-346-3461",
       "3-246-2461"
-    ]
-  },
-  "20260804_平和島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 12,
-    "venue_jp": "平和島",
-    "date": "20260804",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
     ]
   },
   "20260804_boatrace_6_rate": {
