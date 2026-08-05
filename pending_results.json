@@ -373,15 +373,15 @@
       "5-123-1236"
     ]
   },
-  "20260805_鳴門_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 6,
-    "venue_jp": "鳴門",
+  "20260805_三国_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 7,
+    "venue_jp": "三国",
     "date": "20260805",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-136-1362",
-      "6-143-1432"
+      "2-165-1654",
+      "6-125-1254"
     ]
   }
 }
