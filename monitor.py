@@ -33,14 +33,14 @@ PENDING_PICKUP_FILE = "pending_pickup_races.json"
 
 JST = timezone(timedelta(hours=+9), "JST")
 NOW = datetime.now(JST)
-TODAY_STR = NOW.strftime("%Y%m%d")  # 本日の日付 (例: 20260806)
+TODAY_STR = NOW.strftime("%Y%m%d")
 
-# 🌙 対策A：深夜帯（23:00 〜 06:59）は通知連投防止のため実行を停止
+# 🌙 深夜帯（23:00 〜 06:59）は通知連投防止のため実行を停止
 if 23 <= NOW.hour or NOW.hour < 7:
-    print(f"🌙 現在時刻({NOW.strftime('%H:%M')})は深夜・早朝帯のため、通知連投防止により処理を一時停止します。")
+    print(f"🌙 現在時刻({NOW.strftime('%H:%M')})は深夜・早朝帯のため、処理を一時停止します。")
     sys.exit(0)
 
-# 💡 tamakawa, tamagawa 双方を「多摩川 (5)」として判定できるよう設定
+# 💡 会場変換マッピング
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -80,7 +80,7 @@ session.headers.update({
     )
 })
 
-# 💡 リアルタイム監視用：カード（Embed）のみ送信（content なし）
+# 💡 リアルタイム監視用：カード（Embed）送信
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFFF):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
@@ -102,7 +102,7 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-# 💡 的中・回収実績用：テキストのみ送信（embeds 一切なし）
+# 💡 的中・回収実績用：テキスト送信
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
@@ -145,30 +145,38 @@ def perform_login():
 def update_venues():
     global today_venues
     try:
-        resp = session.get(DATA_URL, auth=AUTH, timeout=10)
-        if resp.status_code == 401:
-            print("⚠️ 認証エラー: ID/PASSWORDを確認してください。")
-            return
-
-        resp.encoding = "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        base_clean_url = DATA_URL.rstrip("/")
-
-        for a in soup.find_all("a"):
-            href = a.get("href")
-            if not href or any(
-                skip in href for skip in ["login", "logout", "wp-", "/checker/", "#", "javascript:"]
-            ):
+        # トップページおよび女子戦ポータルの双方からリンクを抽出
+        target_pages = [DATA_URL, "https://boatrace-shinsum.com/joshi/"]
+        
+        for p_url in target_pages:
+            resp = session.get(p_url, auth=AUTH, timeout=10)
+            if resp.status_code != 200:
                 continue
 
-            full_url = urljoin(DATA_URL, href)
-            if "boatrace-shinsum.com" in full_url:
-                clean_url = full_url.split("?")[0].rstrip("/")
-                if clean_url and clean_url != base_clean_url:
-                    today_venues.add(clean_url + "/")
+            resp.encoding = "utf-8"
+            soup = BeautifulSoup(resp.text, "html.parser")
+            base_clean_url = DATA_URL.rstrip("/")
 
+            for a in soup.find_all("a"):
+                href = a.get("href")
+                if not href or any(
+                    skip in href for skip in ["login", "logout", "wp-", "/checker/", "#", "javascript:"]
+                ):
+                    continue
+
+                full_url = urljoin(DATA_URL, href)
+                if "boatrace-shinsum.com" in full_url:
+                    clean_url = full_url.split("?")[0].rstrip("/")
+                    if clean_url and clean_url != base_clean_url:
+                        today_venues.add(clean_url + "/")
+
+        # 女子戦ポータルそのものも明示的に追加
+        today_venues.add("https://boatrace-shinsum.com/joshi/")
+
+        # 予備URL（女子戦含む）
         fallback_venues = [
             "https://boatrace-shinsum.com/omura/",
+            "https://boatrace-shinsum.com/joshi/",
             "https://boatrace-shinsum.com/joshi/omura/",
             "https://boatrace-shinsum.com/omura_sg/",
             "https://boatrace-shinsum.com/wakamatsu/",
@@ -340,8 +348,9 @@ def generate_probability_eye(boats):
 # 💰 4. 万舟ピックアップ結果照会ロジック
 # ==========================================
 def fetch_official_result_simple(venue_jp, rno, date_str):
-    """ BOATRACE公式サイトから指定レースの3連単結果と払戻金を取得 """
-    place_no = VENUE_NO_MAP.get(venue_jp)
+    # [女子] タグを除去して検索
+    clean_venue = venue_jp.replace("[女子]", "").strip()
+    place_no = VENUE_NO_MAP.get(clean_venue)
     if not place_no:
         return None, 0
 
@@ -383,7 +392,6 @@ def fetch_official_result_simple(venue_jp, rno, date_str):
     return None, 0
 
 def check_pickup_manshu_results():
-    """ pending_pickup_races.json のレース結果を追跡し、万舟(1万円以上)だった場合🎯｜ai的中・回収実績 へ通知 """
     if not os.path.exists(PENDING_PICKUP_FILE):
         return
 
@@ -410,12 +418,11 @@ def check_pickup_manshu_results():
         if winning_combo:
             print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
             
-            # 💰 的中・回収実績は「プレーンテキストのみ (send_discord_text)」で送信
             if payout >= 10000:
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R"},
-                    {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
+                    {"name": "🎲 確定出目", "value": f"3连単 {winning_combo}"},
                     {"name": "💰 払戻金", "value": f"{payout:,}円"},
                 ]
                 send_discord_text(
@@ -464,11 +471,15 @@ def monitor_shinsum(venue_urls):
         clean_base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}"
 
         path_parts = [p for p in base_path.split("/") if p]
-        venue_id_name = next((p for p in reversed(path_parts) if p != "joshi"), "")
+        
+        # 💡 女子戦判定ロジックを強化
         is_joshi = "joshi" in path_parts
+        path_parts_no_joshi = [p for p in path_parts if p != "joshi"]
+        
+        venue_id_name = path_parts_no_joshi[-1] if path_parts_no_joshi else ""
 
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
-        venue_japanese = f"[女子]{pure_venue}" if is_joshi else pure_venue
+        venue_japanese = f"[女子]{pure_venue}" if (is_joshi and pure_venue) else (pure_venue or "女子競艇")
 
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
@@ -489,7 +500,7 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 対策B：データ内の日付チェックの厳格化（当日以外のデータは完全に弾く）
+        # データ内の日付チェック
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
@@ -522,7 +533,7 @@ def monitor_shinsum(venue_urls):
             if not boats:
                 continue
 
-            # ① 覚醒タイム（カードのみ送信）
+            # ① 覚醒タイム
             if kakusei_race_id not in notified_races:
                 kakusei_alerts = []
                 is_triggered = False
@@ -560,7 +571,7 @@ def monitor_shinsum(venue_urls):
                         "recommended_combos": [main_eye, sub_eye],
                     }
 
-            # ② 勝率判定（カードのみ送信）
+            # ② 勝率判定
             if rate_race_id not in notified_races:
                 w1_rate = None
                 other_rates = []
@@ -622,7 +633,7 @@ def monitor_shinsum(venue_urls):
                             "recommended_combos": [main_eye, sub_eye],
                         }
 
-            # ③ スリットアラート（カードのみ送信）
+            # ③ スリットアラート
             if slit_race_id not in notified_races:
                 race_shinsum_str = json.dumps(shinsum_data.get(rno_key, {}), ensure_ascii=False)
                 race_arare_str = json.dumps(arare_data.get(rno_key, {}), ensure_ascii=False)
