@@ -145,7 +145,6 @@ def perform_login():
 def update_venues():
     global today_venues
     try:
-        # トップページおよび女子戦ポータルの双方からリンクを抽出
         target_pages = [DATA_URL, "https://boatrace-shinsum.com/joshi/"]
         
         for p_url in target_pages:
@@ -170,11 +169,12 @@ def update_venues():
                     if clean_url and clean_url != base_clean_url:
                         today_venues.add(clean_url + "/")
 
-        # 女子戦ポータルそのものも明示的に追加
+        # 女子戦ポータルと全会場フォールバックを追加
         today_venues.add("https://boatrace-shinsum.com/joshi/")
 
-        # 予備URL（女子戦含む）
         fallback_venues = [
+            "https://boatrace-shinsum.com/naruto/",
+            "https://boatrace-shinsum.com/joshi/naruto/",
             "https://boatrace-shinsum.com/omura/",
             "https://boatrace-shinsum.com/joshi/",
             "https://boatrace-shinsum.com/joshi/omura/",
@@ -348,7 +348,6 @@ def generate_probability_eye(boats):
 # 💰 4. 万舟ピックアップ結果照会ロジック
 # ==========================================
 def fetch_official_result_simple(venue_jp, rno, date_str):
-    # [女子] タグを除去して検索
     clean_venue = venue_jp.replace("[女子]", "").strip()
     place_no = VENUE_NO_MAP.get(clean_venue)
     if not place_no:
@@ -422,7 +421,7 @@ def check_pickup_manshu_results():
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
                     {"name": "📍 対象レース", "value": f"{v_name} {rno}R"},
-                    {"name": "🎲 確定出目", "value": f"3连単 {winning_combo}"},
+                    {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
                     {"name": "💰 払戻金", "value": f"{payout:,}円"},
                 ]
                 send_discord_text(
@@ -472,7 +471,6 @@ def monitor_shinsum(venue_urls):
 
         path_parts = [p for p in base_path.split("/") if p]
         
-        # 💡 女子戦判定ロジックを強化
         is_joshi = "joshi" in path_parts
         path_parts_no_joshi = [p for p in path_parts if p != "joshi"]
         
@@ -500,7 +498,7 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # データ内の日付チェック
+        # 💡 データ内の日付が存在しかつ今日と違う場合のみスキップ（判定を緩和）
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
@@ -510,8 +508,8 @@ def monitor_shinsum(venue_urls):
                     data_date = clean_d
                     break
 
-        if not data_date or data_date != TODAY_STR:
-            print(f"⏭️ 【スキップ】{venue_japanese} は日付不明または過去データです ({data_date} != {TODAY_STR})")
+        if data_date and data_date != TODAY_STR:
+            print(f"⏭️ 【スキップ】{venue_japanese} は過去データです ({data_date} != {TODAY_STR})")
             continue
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
