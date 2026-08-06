@@ -75,5 +75,27 @@
       "2-453-4531",
       "4-253-2531"
     ]
+  },
+  "20260806_戸田_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 12,
+    "venue_jp": "戸田",
+    "date": "20260806",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-165-1653",
+      "6-145-1453"
+    ]
+  },
+  "20260806_下関_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 3,
+    "venue_jp": "下関",
+    "date": "20260806",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
