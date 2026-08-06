@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import sys
 import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin, urlparse
@@ -31,7 +32,13 @@ PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUP_FILE = "pending_pickup_races.json"
 
 JST = timezone(timedelta(hours=+9), "JST")
-TODAY_STR = datetime.now(JST).strftime("%Y%m%d")  # 本日の日付 (例: 20260801)
+NOW = datetime.now(JST)
+TODAY_STR = NOW.strftime("%Y%m%d")  # 本日の日付 (例: 20260806)
+
+# 🌙 対策A：深夜帯（23:00 〜 06:59）は通知連投防止のため実行を停止
+if 23 <= NOW.hour or NOW.hour < 7:
+    print(f"🌙 現在時刻({NOW.strftime('%H:%M')})は深夜・早朝帯のため、通知連投防止により処理を一時停止します。")
+    sys.exit(0)
 
 # 💡 tamakawa, tamagawa 双方を「多摩川 (5)」として判定できるよう設定
 VENUE_NO_MAP = {
@@ -482,7 +489,7 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 データ内の日付チェック
+        # 💡 対策B：データ内の日付チェックの厳格化（当日以外のデータは完全に弾く）
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
@@ -492,8 +499,8 @@ def monitor_shinsum(venue_urls):
                     data_date = clean_d
                     break
 
-        if data_date and data_date != TODAY_STR:
-            print(f"⏭️ 【スキップ】{venue_japanese} は過去の日付データです ({data_date} != {TODAY_STR})")
+        if not data_date or data_date != TODAY_STR:
+            print(f"⏭️ 【スキップ】{venue_japanese} は日付不明または過去データです ({data_date} != {TODAY_STR})")
             continue
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
