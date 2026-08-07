@@ -6,6 +6,10 @@ on:
     - cron: '30 14 * * *'
   workflow_dispatch:
 
+# 💡 1. 自動コミット(git push)を許可する権限を追加
+permissions:
+  contents: write
+
 jobs:
   update-data:
     runs-on: ubuntu-latest
@@ -23,6 +27,11 @@ jobs:
           pip install requests bs4 curl_cffi pandas
 
       - name: データ更新 ＆ 辞書生成スクリプト実行
+        # 💡 2. タイムアウト設定(10分) ＆ 環境変数(Secrets)の引き渡し
+        timeout-minutes: 10
+        env:
+          SHINSUM_USER: ${{ secrets.SHINSUM_USER }}
+          SHINSUM_PASS: ${{ secrets.SHINSUM_PASS }}
         run: python update_data.py
 
       - name: 更新されたCSVとJSONをGitHubへ自動保存
