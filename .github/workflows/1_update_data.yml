@@ -41,4 +41,5 @@ jobs:
           git add manshu_half_year_recovery.csv scoring_dictionary.json
           git status
           git commit -m "Auto update: CSV and scoring_dictionary [skip ci]" || exit 0
+          git pull --rebase origin main
           git push
