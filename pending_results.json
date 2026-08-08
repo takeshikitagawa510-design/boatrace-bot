@@ -10,17 +10,6 @@
       "5-461-4613"
     ]
   },
-  "20260808_平和島_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 4,
-    "venue_jp": "平和島",
-    "date": "20260808",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-562-5621",
-      "5-462-4621"
-    ]
-  },
   "20260808_三国_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 11,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "3-145-1452",
       "4-135-1352"
+    ]
+  },
+  "20260808_戸田_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 7,
+    "venue_jp": "戸田",
+    "date": "20260808",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-142-1426",
+      "4-132-1326"
     ]
   }
 }
