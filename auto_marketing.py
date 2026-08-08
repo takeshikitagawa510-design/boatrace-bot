@@ -32,8 +32,9 @@ def generate_marketing_post():
 ・「絶対当たる」等の誇大表現は禁止。
 """
     try:
+        # ★ ここを gemini-1.5-flash に修正
         response = ai_client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-1.5-flash',
             contents=prompt
         )
         return response.text.strip()
@@ -42,7 +43,7 @@ def generate_marketing_post():
         return None
 
 def run_auto_post():
-    """自動ポスト投稿の実行（API無料枠で100%確実に動作）"""
+    """自動ポスト投稿の実行"""
     post_text = generate_marketing_post()
     if post_text:
         try:
