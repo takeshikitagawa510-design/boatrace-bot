@@ -14,10 +14,10 @@ jobs:
       - name: Python環境構築
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: ライブラリのインストール
-        run: pip install tweepy google-generativeai
+        run: pip install tweepy google-genai
 
       - name: 自動集客実行
         env:
