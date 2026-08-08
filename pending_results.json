@@ -1,13 +1,24 @@
 {
-  "20260808_多摩川_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+  "20260808_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 5,
+    "venue_jp": "児島",
+    "date": "20260808",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20260808_平和島_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
     "rno": 3,
-    "venue_jp": "多摩川",
+    "venue_jp": "平和島",
     "date": "20260808",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-513-5134",
-      "5-213-2134"
+      "3-156-1564",
+      "5-136-1364"
     ]
   }
 }
