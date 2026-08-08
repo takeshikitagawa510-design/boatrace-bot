@@ -1,2 +1,29 @@
-- name: ライブラリのインストール
-        run: pip install tweepy openai
+name: 3. Auto Marketing Bot
+
+on:
+  schedule:
+    - cron: '25,55 * * * *'
+  workflow_dispatch:
+
+jobs:
+  marketing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Python環境構築
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: ライブラリのインストール
+        run: pip install tweepy google-generativeai
+
+      - name: 自動集客実行
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python auto_marketing.py
