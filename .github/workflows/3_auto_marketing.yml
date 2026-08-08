@@ -2,9 +2,8 @@ name: 3. Auto Marketing Bot
 
 on:
   schedule:
-    # 1日3回（朝・昼・ナイター前の時間帯）に自動ポスト投稿
     - cron: '0 2,5,9 * * *'
-  workflow_dispatch: # 手動実行用
+  workflow_dispatch:
 
 jobs:
   marketing:
@@ -18,7 +17,7 @@ jobs:
           python-version: '3.11'
 
       - name: ライブラリのインストール
-        run: pip install tweepy google-genai
+        run: pip install tweepy google-generativeai
 
       - name: 自動投稿実行
         env:
