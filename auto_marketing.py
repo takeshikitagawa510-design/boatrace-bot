@@ -32,9 +32,9 @@ def generate_marketing_post():
 ・「絶対当たる」等の誇大表現は禁止。
 """
     try:
-        # ★ ここを gemini-1.5-flash に修正
+        # gemini-2.0-flash を使用
         response = ai_client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.0-flash',
             contents=prompt
         )
         return response.text.strip()
