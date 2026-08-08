@@ -43,15 +43,26 @@
       "5-146-1463"
     ]
   },
-  "20260808_戸田_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 11,
-    "venue_jp": "戸田",
+  "20260808_大村_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 3,
+    "venue_jp": "大村",
+    "date": "20260808",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-356-3561",
+      "3-256-2561"
+    ]
+  },
+  "20260808_boatrace_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 3,
+    "venue_jp": "boatrace",
     "date": "20260808",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
+      "2-164-1643",
+      "6-124-1243"
     ]
   }
 }
