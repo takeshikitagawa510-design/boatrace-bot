@@ -1,8 +1,6 @@
 import os
-import random
-import time
 import tweepy
-from google import genai
+import google.generativeai as genai
 
 # X API (v2) 認証
 client = tweepy.Client(
@@ -13,7 +11,7 @@ client = tweepy.Client(
 )
 
 # Gemini API 認証
-ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 def generate_marketing_post():
     """競艇ファンの目を引く自動投稿文をGeminiで生成"""
@@ -32,11 +30,8 @@ def generate_marketing_post():
 ・「絶対当たる」等の誇大表現は禁止。
 """
     try:
-        # 無料枠で最も安定する gemini-1.5-flash を指定
-        response = ai_client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=prompt
-        )
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
         print(f"Geminiポスト生成エラー: {e}")
