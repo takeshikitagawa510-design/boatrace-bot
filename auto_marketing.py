@@ -2,21 +2,24 @@ import os
 import random
 import time
 import tweepy
-import openai  # pip install openai
+import google.generativeai as genai
 
-# APIキー設定
+# X API認証
 client = tweepy.Client(
     consumer_key=os.environ["X_API_KEY"],
     consumer_secret=os.environ["X_API_SECRET"],
     access_token=os.environ["X_ACCESS_TOKEN"],
     access_token_secret=os.environ["X_ACCESS_SECRET"]
 )
-openai.api_key = os.environ["OPENAI_API_KEY"]
+
+# Gemini API設定
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+model = genai.GenerativeModel('gemini-1.5-flash') # 軽量・高速モデル
 
 KEYWORDS = ["競艇 負けた", "イン飛び", "万舟 欲しい", "展示タイム"]
 
 def generate_human_reply(tweet_text):
-    """相手のツイートに合わせた『人間味のあるセンス抜群のコメント』をAIで作成"""
+    """Geminiを使って『人間味のあるセンス抜群のコメント』を作成"""
     prompt = f"""
 以下の競艇に関する一般ユーザーのツイートに対して、自然で親しみやすい「競艇好きの個人（データ重視派）」としてリプライ（返信）を1文作成してください。
 
@@ -29,15 +32,10 @@ def generate_human_reply(tweet_text):
 ・30〜50文字程度の短文にする。
 """
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # 軽量で高品質なモデル
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=100,
-            temperature=0.7
-        )
-        return response.choices[0].message.content.strip()
+        response = model.generate_content(prompt)
+        return response.text.strip()
     except Exception as e:
-        print(f"AI生成エラー: {e}")
+        print(f"Gemini生成エラー: {e}")
         return None
 
 def run_auto_marketing():
@@ -45,7 +43,7 @@ def run_auto_marketing():
     print(f"検索キーワード: {target_kw}")
 
     try:
-        # 返信（reply）やリツイートを除外して検索
+        # 返信やリツイートを除外して検索
         tweets = client.search_recent_tweets(
             query=f"{target_kw} -is:retweet -is:reply",
             max_results=5
@@ -60,7 +58,7 @@ def run_auto_marketing():
                 client.like(tweet.id)
                 print(f"Liked: {tweet.id}")
 
-                # 2. AIによる自然なコメント生成＆送信
+                # 2. Geminiによる自然なコメント生成＆送信
                 reply_text = generate_human_reply(tweet.text)
                 if reply_text:
                     client.create_tweet(
