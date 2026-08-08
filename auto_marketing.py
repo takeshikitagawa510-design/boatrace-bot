@@ -14,7 +14,7 @@ client = tweepy.Client(
 
 # Gemini API設定
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash') # 軽量・高速モデル
+model = genai.GenerativeModel('gemini-3-flash-preview') # 軽量・高速モデル
 
 KEYWORDS = ["競艇 負けた", "イン飛び", "万舟 欲しい", "展示タイム"]
 
