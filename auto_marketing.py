@@ -12,24 +12,24 @@ client = tweepy.Client(
     access_token_secret=os.environ["X_ACCESS_SECRET"]
 )
 
-# Gemini API 認証 (最新SDK)
+# Gemini API 認証
 ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-# 集客ターゲットキーワード（競艇ファンの投稿）
-KEYWORDS = ["競艇 負けた", "イン飛び", "万舟 欲しい", "展示タイム", "ボートレース 予想"]
+def generate_marketing_post():
+    """競艇ファンの目を引く自動投稿文をGeminiで生成"""
+    prompt = """
+競艇ファン（特に負けて悩んでいる人やデータ派）の興味を惹く、X（Twitter）用のポスト（120文字以内）を1つ作成してください。
 
-def generate_human_reply(tweet_text):
-    """Geminiを使ってセンスのある自然な共感コメントを作成"""
-    prompt = f"""
-以下の競艇に関する一般ユーザーのツイートに対して、自然で親しみやすい「競艇好きの個人（データ重視派）」としてリプライ（返信）を1文作成してください。
-
-【相手のツイート】: "{tweet_text}"
+【テーマの例（ランダムに意識する）】:
+・展示タイムと実際の舟足のギャップ（イン飛びの危険信号）
+・オッズの歪みと万舟の狙い方
+・競艇で負ける人の共通パターンとデータ重視の重要性
 
 【条件】:
-・絵文字は1〜2個程度にし、テンションが高すぎない落ち着いたトーンにする。
-・「絶対当たる」「予想売ります」「サロンへどうぞ」などの業者感・宣伝感・スパム感は完全に排除する。
-・競艇好きとして共感するか、展示・データ視点の軽い一言を添える。
-・30〜50文字程度の短文にする。
+・専門家っぽく落ち着いたトーン（「〜ですね」「〜が重要」など）。
+・最後に自然な形で「無料DiscordでリアルタイムAIアラート配信中👇」と添える。
+・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想 #万舟）。
+・「絶対当たる」等の誇大表現は禁止。
 """
     try:
         response = ai_client.models.generate_content(
@@ -38,47 +38,19 @@ def generate_human_reply(tweet_text):
         )
         return response.text.strip()
     except Exception as e:
-        print(f"Gemini生成エラー: {e}")
+        print(f"Geminiポスト生成エラー: {e}")
         return None
 
-def run_auto_marketing():
-    target_kw = random.choice(KEYWORDS)
-    print(f"検索キーワード: {target_kw}")
-
-    try:
-        # 最新ツイートを検索（リツイート・リプライは除外）
-        tweets = client.search_recent_tweets(
-            query=f"{target_kw} -is:retweet -is:reply",
-            max_results=5
-        )
-
-        if not tweets.data:
-            print("該当するツイートが見つかりませんでした。")
-            return
-
-        for tweet in tweets.data:
-            try:
-                # 1. 自動いいね
-                client.like(tweet.id)
-                print(f"Liked tweet ID: {tweet.id}")
-
-                # 2. Geminiによる自然なコメント作成＆自動リプライ
-                reply_text = generate_human_reply(tweet.text)
-                if reply_text:
-                    client.create_tweet(
-                        text=reply_text,
-                        in_reply_to_tweet_id=tweet.id
-                    )
-                    print(f"Replied: {reply_text}")
-
-                # 人間らしさを出すランダム待ち時間（15〜30秒）
-                time.sleep(random.randint(15, 30))
-
-            except Exception as e:
-                print(f"処理スキップ/エラー（重複など）: {e}")
-
-    except Exception as e:
-        print(f"API検索エラー: {e}")
+def run_auto_post():
+    """自動ポスト投稿の実行（API無料枠で100%確実に動作）"""
+    post_text = generate_marketing_post()
+    if post_text:
+        try:
+            res = client.create_tweet(text=post_text)
+            print(f"[自動投稿成功] Tweet ID: {res.data['id']}")
+            print(f"投稿内容:\n{post_text}")
+        except Exception as e:
+            print(f"[自動投稿エラー]: {e}")
 
 if __name__ == "__main__":
-    run_auto_marketing()
+    run_auto_post()
