@@ -29,16 +29,25 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想 #万舟）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    try:
-        # 最新の標準モデル gemini-2.5-flash を使用
-        response = ai_client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt
-        )
-        return response.text.strip()
-    except Exception as e:
-        print(f"Geminiポスト生成エラー: {e}")
-        return None
+    # 試行するモデルの候補リスト（順にテスト）
+    candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
+
+    for model_name in candidate_models:
+        try:
+            print(f"モデル {model_name} で文章生成を試みます...")
+            response = ai_client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
+            if response.text:
+                print(f"モデル {model_name} で生成成功！")
+                return response.text.strip()
+        except Exception as e:
+            print(f"モデル {model_name} でエラーが発生しました: {e}")
+            continue
+
+    print("すべてのモデルで生成に失敗しました。")
+    return None
 
 def run_auto_post():
     """自動ポスト投稿の実行"""
