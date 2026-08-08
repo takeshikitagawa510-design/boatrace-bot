@@ -1,13 +1,13 @@
 {
-  "20260808_戸田_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 4,
-    "venue_jp": "戸田",
+  "20260808_多摩川_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 3,
+    "venue_jp": "多摩川",
     "date": "20260808",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-561-5612",
-      "5-361-3612"
+      "2-513-5134",
+      "5-213-2134"
     ]
   }
 }
