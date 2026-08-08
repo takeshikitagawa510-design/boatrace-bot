@@ -24,11 +24,12 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python main.py
 
-      # 👇 ここを追加！（生成された pending_pickup_races.json をGitHubに保存する）
+      # 👇 ここを修正（pull --rebase を挟んで競合を防ぐ）
       - name: 判定待ちデータの自動コミット＆プッシュ
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add pending_pickup_races.json
           git commit -m "Auto update: pending_pickup_races.json [skip ci]" || exit 0
-          git push
+          git pull --rebase origin main
+          git push origin main
