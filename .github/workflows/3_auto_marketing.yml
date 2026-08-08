@@ -17,7 +17,7 @@ jobs:
           python-version: '3.11'
 
       - name: ライブラリのインストール
-        run: pip install tweepy google-generativeai
+        run: pip install tweepy google-genai
 
       - name: 自動投稿実行
         env:
