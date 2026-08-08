@@ -32,9 +32,9 @@ def generate_marketing_post():
 ・「絶対当たる」等の誇大表現は禁止。
 """
     try:
-        # gemini-2.0-flash を使用
+        # 無料枠で最も安定する gemini-1.5-flash を指定
         response = ai_client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-1.5-flash',
             contents=prompt
         )
         return response.text.strip()
