@@ -10,11 +10,11 @@ client = tweepy.Client(
     access_token_secret=os.environ["X_ACCESS_SECRET"]
 )
 
-# Gemini API 認証 (最新SDK)
+# Gemini API 認証
 ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 def generate_marketing_post():
-    """競艇ファンの目を引く自動投稿文をGeminiで生成"""
+    """Gemini AIを使って質の高い競艇集客ポストを生成"""
     prompt = """
 競艇ファン（特に負けて悩んでいる人やデータ派）の興味を惹く、X（Twitter）用のポスト（120文字以内）を1つ作成してください。
 
@@ -29,25 +29,15 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想 #万舟）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    # 試行するモデルの候補リスト（順にテスト）
-    candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
-
-    for model_name in candidate_models:
-        try:
-            print(f"モデル {model_name} で文章生成を試みます...")
-            response = ai_client.models.generate_content(
-                model=model_name,
-                contents=prompt
-            )
-            if response.text:
-                print(f"モデル {model_name} で生成成功！")
-                return response.text.strip()
-        except Exception as e:
-            print(f"モデル {model_name} でエラーが発生しました: {e}")
-            continue
-
-    print("すべてのモデルで生成に失敗しました。")
-    return None
+    try:
+        response = ai_client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Gemini APIエラー: {e}")
+        return None
 
 def run_auto_post():
     """自動ポスト投稿の実行"""
@@ -55,10 +45,10 @@ def run_auto_post():
     if post_text:
         try:
             res = client.create_tweet(text=post_text)
-            print(f"[自動投稿成功] Tweet ID: {res.data['id']}")
+            print(f"[Gemini AI自動投稿成功] Tweet ID: {res.data['id']}")
             print(f"投稿内容:\n{post_text}")
         except Exception as e:
-            print(f"[自動投稿エラー]: {e}")
+            print(f"[X投稿エラー]: {e}")
 
 if __name__ == "__main__":
     run_auto_post()
