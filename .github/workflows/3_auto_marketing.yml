@@ -1,25 +1,27 @@
-name: 3. Auto Marketing Bot
+name: Auto Marketing Post
 
 on:
+  workflow_dispatch: # 手動実行ボタン
   schedule:
-    - cron: '0 2,5,9 * * *'
-  workflow_dispatch:
+    # 日本時間 12:00 (UTC 03:00) に自動起動
+    - cron: '0 3 * * *'
 
 jobs:
-  marketing:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Python環境構築
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: ライブラリのインストール
-        run: pip install tweepy google-genai
-
-      - name: 自動投稿実行
+          
+      - name: Install Dependencies
+        run: |
+          pip install tweepy google-genai
+          
+      - name: Run Script
         env:
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
