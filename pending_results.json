@@ -53,5 +53,16 @@
       "4-562-5623",
       "5-462-4623"
     ]
+  },
+  "20260809_丸亀_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 9,
+    "venue_jp": "丸亀",
+    "date": "20260809",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-146-1465",
+      "4-136-1365"
+    ]
   }
 }
