@@ -1,8 +1,6 @@
 import os
-import time
 import tweepy
 from google import genai
-from google.genai import errors
 
 # X API (v2) 認証
 client = tweepy.Client(
@@ -14,29 +12,6 @@ client = tweepy.Client(
 
 # Gemini API 認証
 ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-
-def get_all_candidate_models():
-    """アカウントで利用可能な全モデル一覧を取得してリスト化"""
-    candidates = []
-    try:
-        models = ai_client.models.list()
-        for model in models:
-            model_name = getattr(model, 'name', '') or str(model)
-            clean_name = model_name.replace('models/', '')
-            # テキスト生成系モデルを抽出
-            if 'flash' in clean_name or 'pro' in clean_name:
-                candidates.append(clean_name)
-    except Exception as e:
-        print(f"モデル一覧の取得中にエラーが発生しました: {e}")
-    
-    # 取得できなかった場合のバックアップ固定候補
-    default_candidates = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite']
-    for m in default_candidates:
-        if m not in candidates:
-            candidates.append(m)
-            
-    print(f"試行対象のモデル候補リスト: {candidates}")
-    return candidates
 
 def generate_marketing_post():
     prompt = """
@@ -53,24 +28,19 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    candidate_models = get_all_candidate_models()
+    model_name = 'gemini-flash-latest'
 
-    for model_name in candidate_models:
-        try:
-            print(f"[{model_name}] での生成を試みます...")
-            response = ai_client.models.generate_content(
-                model=model_name,
-                contents=prompt
-            )
-            if response and response.text:
-                print(f"🎉 [{model_name}] で生成に成功しました！")
-                return response.text.strip()
-        except errors.APIError as e:
-            print(f"⚠️ [{model_name}] APIエラー (Code: {e.code}): {e.message}")
-        except Exception as e:
-            print(f"⚠️ [{model_name}] エラー: {e}")
-        
-        time.sleep(1)
+    try:
+        print(f"[{model_name}] で文章を生成中...")
+        response = ai_client.models.generate_content(
+            model=model_name,
+            contents=prompt
+        )
+        if response and response.text:
+            print("✅ Gemini AIによる文章生成に成功しました！")
+            return response.text.strip()
+    except Exception as e:
+        print(f"❌ Gemini APIエラー: {e}")
 
     return None
 
@@ -78,15 +48,16 @@ def run_auto_post():
     post_text = generate_marketing_post()
     
     if not post_text:
-        print("❌ 全てのモデルで文章生成に失敗したため、処理を停止しました。")
-        raise Exception("Gemini APIからの文章取得に失敗しました。")
+        print("❌ AIの文章生成に失敗したため処理を中断します。")
+        return
+
+    print(f"\n--- [生成された投稿文] ---\n{post_text}\n---------------------------\n")
 
     try:
         res = client.create_tweet(text=post_text)
         print(f"🎉 [X自動投稿成功] Tweet ID: {res.data['id']}")
-        print(f"--- 投稿内容 ---\n{post_text}\n--------------")
     except Exception as e:
-        print(f"❌ [X投稿エラー]: {e}")
+        print(f"❌ [X投稿失敗]: {e}")
         raise e
 
 if __name__ == "__main__":
