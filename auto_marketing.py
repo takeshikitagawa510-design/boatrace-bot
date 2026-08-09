@@ -1,4 +1,5 @@
 import os
+import time
 import tweepy
 from google import genai
 from google.genai import errors
@@ -11,7 +12,7 @@ client = tweepy.Client(
     access_token_secret=os.environ["X_ACCESS_SECRET"]
 )
 
-# Gemini API 認証
+# Gemini API 認証 (Tier 1 前払いキー)
 ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 def generate_marketing_post():
@@ -29,21 +30,24 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    try:
-        # 最新の Interactions API を使用
-        response = ai_client.interactions.create(
-            model='gemini-2.0-flash',
-            input=prompt
-        )
-        if response and hasattr(response, 'text') and response.text:
-            return response.text.strip()
-        elif response and hasattr(response, 'outputs'):
-            # 出力構造がオブジェクト形式の場合の取得処理
-            return str(response.outputs).strip()
-    except errors.APIError as e:
-        print(f"Gemini APIエラー: {e}")
-    except Exception as e:
-        print(f"予期せぬエラー: {e}")
+    # サーバー一時不具合(500エラー)対策で最大3回リトライ
+    for attempt in range(1, 4):
+        try:
+            print(f"Gemini API呼び出し試行 [{attempt}/3]...")
+            response = ai_client.models.generate_content(
+                model='gemini-2.0-flash',
+                contents=prompt
+            )
+            if response and response.text:
+                print("Gemini AIによる文章生成成功！")
+                return response.text.strip()
+        except errors.APIError as e:
+            print(f"Gemini APIエラー: {e.message}")
+        except Exception as e:
+            print(f"予期せぬエラー: {e}")
+        
+        # 失敗時は1秒待って再試行
+        time.sleep(1)
 
     return None
 
