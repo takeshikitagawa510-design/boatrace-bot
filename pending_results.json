@@ -21,28 +21,6 @@
       "5-126-1263"
     ]
   },
-  "20260809_三国_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 9,
-    "venue_jp": "三国",
-    "date": "20260809",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
-    ]
-  },
-  "20260809_尼崎_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 5,
-    "venue_jp": "尼崎",
-    "date": "20260809",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
   "20260809_鳴門_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto",
     "rno": 9,
@@ -52,6 +30,17 @@
     "recommended_combos": [
       "2-153-1534",
       "5-123-1234"
+    ]
+  },
+  "20260809_戸田_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20260809",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-152-1526",
+      "5-142-1426"
     ]
   }
 }
