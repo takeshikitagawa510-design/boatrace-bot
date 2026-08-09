@@ -1,4 +1,6 @@
 import os
+import time
+import random
 import tweepy
 from google import genai
 
@@ -31,13 +33,11 @@ def generate_marketing_post():
     model_name = 'gemini-flash-latest'
 
     try:
-        print(f"[{model_name}] で文章を生成中...")
         response = ai_client.models.generate_content(
             model=model_name,
             contents=prompt
         )
         if response and response.text:
-            print("✅ Gemini AIによる文章生成に成功しました！")
             return response.text.strip()
     except Exception as e:
         print(f"❌ Gemini APIエラー: {e}")
@@ -45,6 +45,13 @@ def generate_marketing_post():
     return None
 
 def run_auto_post():
+    # 🤖 0〜480分（0〜8時間）の範囲でランダム待機し、12:00〜20:00の間に投稿
+    delay_seconds = random.randint(0, 28800)
+    delay_minutes = round(delay_seconds / 60, 1)
+    print(f"⏳ 12:00〜20:00のランダム投稿のため、{delay_minutes} 分間待機します...")
+    time.sleep(delay_seconds)
+
+    print("📝 文章生成を開始します...")
     post_text = generate_marketing_post()
     
     if not post_text:
