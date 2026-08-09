@@ -29,8 +29,8 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    # 無料枠の制限状態がモデルごとに異なる場合があるため、複数のモデルを順に試行
-    candidate_models = ['gemini-2.0-flash-lite', 'gemini-2.0-flash']
+    # Tier 1 環境向けの最新モデル指定
+    candidate_models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite']
 
     for model_name in candidate_models:
         try:
