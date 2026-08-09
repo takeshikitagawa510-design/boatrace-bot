@@ -30,24 +30,29 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    # サーバー一時不具合(500エラー)対策で最大3回リトライ
     for attempt in range(1, 4):
         try:
-            print(f"Gemini API呼び出し試行 [{attempt}/3]...")
-            response = ai_client.models.generate_content(
+            print(f"Gemini Interactions API呼び出し試行 [{attempt}/3]...")
+            # Tier 1 環境必須の Interactions API
+            response = ai_client.interactions.create(
                 model='gemini-2.0-flash',
-                contents=prompt
+                input=prompt
             )
-            if response and response.text:
+            
+            # テキスト抽出処理
+            if hasattr(response, 'text') and response.text:
                 print("Gemini AIによる文章生成成功！")
                 return response.text.strip()
+            elif hasattr(response, 'outputs') and response.outputs:
+                text_result = str(response.outputs).strip()
+                print("Gemini AIによる文章生成成功！")
+                return text_result
         except errors.APIError as e:
             print(f"Gemini APIエラー: {e.message}")
         except Exception as e:
             print(f"予期せぬエラー: {e}")
         
-        # 失敗時は1秒待って再試行
-        time.sleep(1)
+        time.sleep(2)
 
     return None
 
