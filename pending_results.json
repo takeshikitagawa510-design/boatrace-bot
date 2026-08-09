@@ -10,28 +10,6 @@
       "3-124-1246"
     ]
   },
-  "20260809_唐津_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/karatsu",
-    "rno": 7,
-    "venue_jp": "唐津",
-    "date": "20260809",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-156-1562",
-      "5-136-1362"
-    ]
-  },
-  "20260809_戸田_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 3,
-    "venue_jp": "戸田",
-    "date": "20260809",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-136-1364",
-      "3-126-1264"
-    ]
-  },
   "20260809_女子競艇_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 3,
