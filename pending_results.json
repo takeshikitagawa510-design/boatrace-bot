@@ -75,5 +75,16 @@
       "2-365-3651",
       "3-265-2651"
     ]
+  },
+  "20260809_戸田_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 12,
+    "venue_jp": "戸田",
+    "date": "20260809",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-162-1624",
+      "6-132-1324"
+    ]
   }
 }
