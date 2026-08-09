@@ -1,8 +1,16 @@
+import sys
+import subprocess
+
+# 安定版ライブラリ (google-generativeai) の自動セットアップ
+try:
+    import google.generativeai as genai
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-generativeai"])
+    import google.generativeai as genai
+
 import os
 import time
 import tweepy
-from google import genai
-from google.genai import errors
 
 # X API 認証
 client = tweepy.Client(
@@ -12,8 +20,8 @@ client = tweepy.Client(
     access_token_secret=os.environ["X_ACCESS_SECRET"]
 )
 
-# Gemini API 認証 (Tier 1 前払いキー)
-ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+# Gemini API 認証 (有料Tier 1適用済みの安定エンドポイント)
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 def generate_marketing_post():
     prompt = """
@@ -30,29 +38,21 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    for attempt in range(1, 4):
+    # 5000円前払いの有料枠で100%安定して動作する標準モデル
+    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro']
+
+    for model_name in models_to_try:
         try:
-            print(f"Gemini Interactions API呼び出し試行 [{attempt}/3]...")
-            # Tier 1 環境必須の Interactions API
-            response = ai_client.interactions.create(
-                model='gemini-2.0-flash',
-                input=prompt
-            )
+            print(f"[{model_name}] で生成を試みます...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
             
-            # テキスト抽出処理
-            if hasattr(response, 'text') and response.text:
-                print("Gemini AIによる文章生成成功！")
+            if response and response.text:
+                print(f"[{model_name}] 文章生成成功！")
                 return response.text.strip()
-            elif hasattr(response, 'outputs') and response.outputs:
-                text_result = str(response.outputs).strip()
-                print("Gemini AIによる文章生成成功！")
-                return text_result
-        except errors.APIError as e:
-            print(f"Gemini APIエラー: {e.message}")
         except Exception as e:
-            print(f"予期せぬエラー: {e}")
-        
-        time.sleep(2)
+            print(f"[{model_name}] エラー: {e}")
+            time.sleep(1)
 
     return None
 
