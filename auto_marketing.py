@@ -29,8 +29,8 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    # Tier 1 環境向けの最新モデル指定
-    candidate_models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite']
+    # Paid Tierで利用する標準モデル
+    candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite']
 
     for model_name in candidate_models:
         try:
@@ -39,7 +39,7 @@ def generate_marketing_post():
                 model=model_name,
                 contents=prompt
             )
-            if response.text:
+            if response and response.text:
                 print(f"[{model_name}] 生成成功！")
                 return response.text.strip()
         except errors.APIError as e:
