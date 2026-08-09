@@ -32,15 +32,15 @@
       "5-132-1326"
     ]
   },
-  "20260809_三国_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 12,
-    "venue_jp": "三国",
+  "20260809_児島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 8,
+    "venue_jp": "児島",
     "date": "20260809",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-163-1635",
-      "6-123-1235"
+      "3-164-1645",
+      "6-134-1345"
     ]
   }
 }
