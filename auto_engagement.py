@@ -15,19 +15,24 @@ client = tweepy.Client(
 # Gemini API 認証
 ai_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-def generate_reply_text(target_tweet_text):
+# 💡 データ分析・考察コメントが刺さる「期待値の高いキーワード」
+EXPERT_KEYWORDS = ["展示", "舟足", "オッズ", "買い目", "イン飛び", "進入", "モーター", "データ", "万舟"]
+
+def generate_expert_reply(target_tweet_text):
+    """プロの競艇データアナリストとして、本質的で自然なコメントを生成"""
     prompt = f"""
-以下の競艇に関するツイートに対して、自然で共感するような返信（リプライ）文を1つ作成してください。
+あなたは高度なデータ分析を行う「競艇AIアナリスト」です。
+以下の競艇に関するツイートに対して、見た人が「お、この人は分かってるな」と感じるような、鋭く本質的な返信（リプライ）文を1つ作成してください。
 
 【対象のツイート】:
 "{target_tweet_text}"
 
-【条件】:
-・60文字以内の短い文章。
-・競艇好きの仲間として共感・応援するトーン（またはデータ重視の視点）。
-・押し売りや宣伝っぽさを消すこと。
-・「絶対当たる」「予想売ります」などのスパム的表現は禁止。
-・絵文字を1〜2個使用OK。
+【返信文の条件】:
+・70文字〜100文字程度。
+・単なる挨拶やお祝い・慰めは禁止。
+・展示タイムと実舟足のギャップ、オッズの歪み、イン過剰人気の危険性など「プロ視点のデータ考察」を自然に1言含めること。
+・上から目線にならず、知識人として落ち着いた知的なトーン。
+・売り込みやDiscordリンクの添付は禁止（プロフィールへ自然に興味を持たせるため）。
 """
     model_name = 'gemini-flash-latest'
 
@@ -43,53 +48,90 @@ def generate_reply_text(target_tweet_text):
 
     return None
 
-def run_engagement():
-    # 競艇関連のキーワードで直近のポストを検索
-    search_query = "競艇 OR ボートレース OR 万舟 -is:retweet -is:reply"
-    print(f"🔍 検索クエリ: {search_query} で最新投稿を取得中...")
+def run_influencer_engagement():
+    search_query = "(競艇 OR ボートレース) -is:retweet -is:reply"
+    print("🔍 競艇関連ポストを大量スキャン中...")
 
     try:
-        # 最新の関連ツイートを取得
+        # 最新の競艇ツイートを最大10件取得
         tweets = client.search_recent_tweets(
             query=search_query,
             max_results=10,
-            tweet_fields=["created_at", "author_id", "text"]
+            tweet_fields=["created_at", "public_metrics", "author_id"],
+            expansions=["author_id"],
+            user_fields=["public_metrics", "username", "name"]
         )
 
         if not tweets.data:
-            print("該当するポストが見つかりませんでした。")
+            print("スキャン結果: 該当ポストなし。")
             return
 
-        # ランダムで1つのツイートを選択してアクション
-        target_tweet = random.choice(tweets.data)
+        users = {u.id: u for u in tweets.includes["users"]} if "users" in tweets.includes else {}
+
+        # ----------------------------------------------------
+        # 🔥 ① ヒットした全ポストに片っ端から「いいね」をつける！
+        # ----------------------------------------------------
+        print(f"\n❤️  【いいね祭り開始】取得した {len(tweets.data)} 件のポストにいいねをつけます...")
+        
+        high_value_candidates = []
+
+        for tweet in tweets.data:
+            author = users.get(tweet.author_id)
+            follower_count = author.public_metrics["followers_count"] if author else 0
+            tweet_likes = tweet.public_metrics.get("like_count", 0)
+            text = tweet.text
+
+            # 全件にいいね実行
+            try:
+                client.like(tweet.id)
+                print(f"  └ ❤️ [いいね成功] ID: {tweet.id}")
+            except Exception as e:
+                # 既にいいね済みの場合はスキップ
+                print(f"  └ ⚠️ [いいね失敗/スキップ]: {e}")
+
+            # 連続いいねによるスパム判定（ロック）を防ぐため、1秒待機
+            time.sleep(1)
+
+            # ----------------------------------------------------
+            # 🎯 ② コメント用の厳選フィルター（期待値チェック）
+            # ----------------------------------------------------
+            is_influential = follower_count >= 500 or tweet_likes >= 3
+            has_expert_topic = any(kw in text for kw in EXPERT_KEYWORDS)
+
+            if is_influential and has_expert_topic:
+                high_value_candidates.append((tweet, author, follower_count))
+
+        # ----------------------------------------------------
+        # 💬 ③ 厳選条件に合ったポストがあれば1件だけ本質コメント送信
+        # ----------------------------------------------------
+        print("\n💬 【コメント判定】期待値の高いポストをチェック中...")
+
+        if not high_value_candidates:
+            print("🛑 コメント条件に合う高期待値のポストが見つからなかったため、いいねのみで終了します（無駄金防ぎ）。")
+            return
+
+        # 期待値に合う投稿の中から1つ厳選
+        target_tweet, target_author, followers = random.choice(high_value_candidates)
         tweet_id = target_tweet.id
         tweet_text = target_tweet.text
+        author_name = target_author.name if target_author else "不明"
 
-        print(f"\n🎯 ターゲットポストを発見 [ID: {tweet_id}]:")
-        print(f"「{tweet_text}」\n")
+        print(f"\n🎯 厳選ターゲットにコメント送信を開始します！")
+        print(f"👤 投稿者: {author_name} (フォロワー: {followers}人)")
+        print(f"💬 投稿内容: 「{tweet_text}」\n")
 
-        # 1. 自動いいね
-        try:
-            client.like(tweet_id)
-            print("❤️  [自動いいね成功]")
-        except Exception as e:
-            print(f"⚠️  [いいね失敗]: {e}")
-
-        # ちょっと待機（連続操作感を消す）
-        time.sleep(5)
-
-        # 2. 自動コメント（リプライ）
-        reply_text = generate_reply_text(tweet_text)
+        # 本質的なAI考察コメントを生成して送信
+        reply_text = generate_expert_reply(tweet_text)
         if reply_text:
-            print(f"💬 生成された返信文: {reply_text}")
+            print(f"💡 AI生成された本質コメント:\n{reply_text}\n")
             res = client.create_tweet(
                 text=reply_text,
                 in_reply_to_tweet_id=tweet_id
             )
-            print(f"🎉 [自動コメント成功] Reply ID: {res.data['id']}")
+            print(f"🎉 [厳選コメント送信成功] Reply ID: {res.data['id']}")
 
     except Exception as e:
-        print(f"❌ エンゲージメント処理エラー: {e}")
+        print(f"❌ エラー発生: {e}")
 
 if __name__ == "__main__":
-    run_engagement()
+    run_influencer_engagement()
