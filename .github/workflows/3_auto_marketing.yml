@@ -1,9 +1,9 @@
 name: Auto Marketing Post
 
 on:
-  workflow_dispatch: # 手動実行ボタン
+  workflow_dispatch: # 手動実行用ボタンを残す
   schedule:
-    # 日本時間 12:00 (UTC 03:00) に自動起動
+    # 日本時間 12:00 (UTC 03:00) に毎日自動起動
     - cron: '0 3 * * *'
 
 jobs:
