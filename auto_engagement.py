@@ -4,8 +4,9 @@ import random
 import tweepy
 from google import genai
 
-# X API (v2) 認証
+# X API (v2) 認証（bearer_tokenを追加）
 client = tweepy.Client(
+    bearer_token=os.environ.get("X_BEARER_TOKEN"),
     consumer_key=os.environ["X_API_KEY"],
     consumer_secret=os.environ["X_API_SECRET"],
     access_token=os.environ["X_ACCESS_TOKEN"],
@@ -86,7 +87,6 @@ def run_influencer_engagement():
                 client.like(tweet.id)
                 print(f"  └ ❤️ [いいね成功] ID: {tweet.id}")
             except Exception as e:
-                # 既にいいね済みの場合はスキップ
                 print(f"  └ ⚠️ [いいね失敗/スキップ]: {e}")
 
             # 連続いいねによるスパム判定（ロック）を防ぐため、1秒待機
