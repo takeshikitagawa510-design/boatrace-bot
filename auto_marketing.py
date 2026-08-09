@@ -29,23 +29,21 @@ def generate_marketing_post():
 ・ハッシュタグを2〜3個付ける（例: #競艇 #ボートレース #競艇予想）。
 ・「絶対当たる」等の誇大表現は禁止。
 """
-    # Paid Tierで利用する標準モデル
-    candidate_models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite']
-
-    for model_name in candidate_models:
-        try:
-            print(f"[{model_name}] 生成を試みます...")
-            response = ai_client.models.generate_content(
-                model=model_name,
-                contents=prompt
-            )
-            if response and response.text:
-                print(f"[{model_name}] 生成成功！")
-                return response.text.strip()
-        except errors.APIError as e:
-            print(f"[{model_name}] APIエラー発生 (Code: {e.code}): {e.message}")
-        except Exception as e:
-            print(f"[{model_name}] 予期せぬエラー: {e}")
+    try:
+        # 最新の Interactions API を使用
+        response = ai_client.interactions.create(
+            model='gemini-2.0-flash',
+            input=prompt
+        )
+        if response and hasattr(response, 'text') and response.text:
+            return response.text.strip()
+        elif response and hasattr(response, 'outputs'):
+            # 出力構造がオブジェクト形式の場合の取得処理
+            return str(response.outputs).strip()
+    except errors.APIError as e:
+        print(f"Gemini APIエラー: {e}")
+    except Exception as e:
+        print(f"予期せぬエラー: {e}")
 
     return None
 
@@ -53,12 +51,12 @@ def run_auto_post():
     post_text = generate_marketing_post()
     
     if not post_text:
-        print("❌ 全てのモデルで生成に失敗したため、投稿をスキップしました。")
+        print("❌ Gemini AIによるポスト文章生成に失敗しました。")
         return
 
     try:
         res = client.create_tweet(text=post_text)
-        print(f"[X投稿成功] Tweet ID: {res.data['id']}")
+        print(f"[X自動投稿成功] Tweet ID: {res.data['id']}")
         print(f"投稿内容:\n{post_text}")
     except Exception as e:
         print(f"❌ [X投稿エラー]: {e}")
