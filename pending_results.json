@@ -31,5 +31,27 @@
       "2-135-1356",
       "3-125-1256"
     ]
+  },
+  "20260810_多摩川_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 1,
+    "venue_jp": "多摩川",
+    "date": "20260810",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  },
+  "20260810_女子競艇_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 3,
+    "venue_jp": "",
+    "date": "20260810",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
