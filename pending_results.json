@@ -20,27 +20,5 @@
       "2-135-1354",
       "3-125-1254"
     ]
-  },
-  "20260810_鳴門_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 8,
-    "venue_jp": "鳴門",
-    "date": "20260810",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
-  "20260810_多摩川_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 2,
-    "venue_jp": "多摩川",
-    "date": "20260810",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
   }
 }
