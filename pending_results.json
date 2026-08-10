@@ -32,15 +32,15 @@
       "5-316-3162"
     ]
   },
-  "20260810_丸亀_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 2,
-    "venue_jp": "丸亀",
+  "20260810_児島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 11,
+    "venue_jp": "児島",
     "date": "20260810",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
+      "2-351-3514",
+      "3-251-2514"
     ]
   }
 }
