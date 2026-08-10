@@ -21,15 +21,26 @@
       "3-125-1254"
     ]
   },
-  "20260810_児島_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 10,
-    "venue_jp": "児島",
+  "20260810_大村_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 2,
+    "venue_jp": "大村",
     "date": "20260810",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
+      "3-516-5162",
+      "5-316-3162"
+    ]
+  },
+  "20260810_丸亀_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 2,
+    "venue_jp": "丸亀",
+    "date": "20260810",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-156-1563",
+      "5-146-1463"
     ]
   }
 }
