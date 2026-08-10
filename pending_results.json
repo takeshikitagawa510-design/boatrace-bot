@@ -1,15 +1,4 @@
 {
-  "20260810_唐津_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/karatsu",
-    "rno": 5,
-    "venue_jp": "唐津",
-    "date": "20260810",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-154-1543",
-      "5-124-1243"
-    ]
-  },
   "20260810_女子競艇_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 1,
