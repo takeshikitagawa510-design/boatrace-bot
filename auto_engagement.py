@@ -4,7 +4,7 @@ import random
 import tweepy
 from google import genai
 
-# X API (v2) 認証（bearer_tokenを追加）
+# X API (v2) 認証
 client = tweepy.Client(
     bearer_token=os.environ.get("X_BEARER_TOKEN"),
     consumer_key=os.environ["X_API_KEY"],
@@ -51,73 +51,63 @@ def generate_expert_reply(target_tweet_text):
 
 def run_influencer_engagement():
     search_query = "(競艇 OR ボートレース) -is:retweet -is:reply"
-    print("🔍 競艇関連ポストを大量スキャン中...")
+    print("🔍 競艇関連ポストを省エネモードでスキャン中...")
 
     try:
-        # 最新の競艇ツイートを最大10件取得
+        # コスト削減のため、取得数を5件に絞り、ユーザープロフィールの追加取得(expansions)を廃止
         tweets = client.search_recent_tweets(
             query=search_query,
-            max_results=10,
-            tweet_fields=["created_at", "public_metrics", "author_id"],
-            expansions=["author_id"],
-            user_fields=["public_metrics", "username", "name"]
+            max_results=5,
+            tweet_fields=["created_at", "public_metrics"]
         )
 
         if not tweets.data:
             print("スキャン結果: 該当ポストなし。")
             return
 
-        users = {u.id: u for u in tweets.includes["users"]} if "users" in tweets.includes else {}
+        # 取得した中から1〜2件だけに絞って「いいね」を実行（API消費を抑制）
+        target_tweets = random.sample(tweets.data, min(2, len(tweets.data)))
 
-        # ----------------------------------------------------
-        # 🔥 ① ヒットした全ポストに片っ端から「いいね」をつける！
-        # ----------------------------------------------------
-        print(f"\n❤️  【いいね祭り開始】取得した {len(tweets.data)} 件のポストにいいねをつけます...")
+        print(f"\n❤️ 【省エネいいね開始】厳選した {len(target_tweets)} 件にいいねをつけます...")
         
         high_value_candidates = []
 
-        for tweet in tweets.data:
-            author = users.get(tweet.author_id)
-            follower_count = author.public_metrics["followers_count"] if author else 0
+        for tweet in target_tweets:
             tweet_likes = tweet.public_metrics.get("like_count", 0)
             text = tweet.text
 
-            # 全件にいいね実行
+            # いいね実行
             try:
                 client.like(tweet.id)
                 print(f"  └ ❤️ [いいね成功] ID: {tweet.id}")
             except Exception as e:
                 print(f"  └ ⚠️ [いいね失敗/スキップ]: {e}")
 
-            # 連続いいねによるスパム判定（ロック）を防ぐため、1秒待機
             time.sleep(1)
 
             # ----------------------------------------------------
-            # 🎯 ② コメント用の厳選フィルター（期待値チェック）
+            # 🎯 コメント判定（ユーザー読み込みコストをかけず、本文のキーワードのみで判定）
             # ----------------------------------------------------
-            is_influential = follower_count >= 500 or tweet_likes >= 3
             has_expert_topic = any(kw in text for kw in EXPERT_KEYWORDS)
 
-            if is_influential and has_expert_topic:
-                high_value_candidates.append((tweet, author, follower_count))
+            if has_expert_topic:
+                high_value_candidates.append(tweet)
 
         # ----------------------------------------------------
-        # 💬 ③ 厳選条件に合ったポストがあれば1件だけ本質コメント送信
+        # 💬 条件に合ったポストがあれば1件だけ本質コメント送信
         # ----------------------------------------------------
-        print("\n💬 【コメント判定】期待値の高いポストをチェック中...")
+        print("\n💬 【コメント判定】チェック中...")
 
         if not high_value_candidates:
-            print("🛑 コメント条件に合う高期待値のポストが見つからなかったため、いいねのみで終了します（無駄金防ぎ）。")
+            print("🛑 コメント条件に合うポストが無いため、いいねのみで終了します（API代節約）。")
             return
 
-        # 期待値に合う投稿の中から1つ厳選
-        target_tweet, target_author, followers = random.choice(high_value_candidates)
+        # 1つ厳選してコメント
+        target_tweet = random.choice(high_value_candidates)
         tweet_id = target_tweet.id
         tweet_text = target_tweet.text
-        author_name = target_author.name if target_author else "不明"
 
-        print(f"\n🎯 厳選ターゲットにコメント送信を開始します！")
-        print(f"👤 投稿者: {author_name} (フォロワー: {followers}人)")
+        print(f"\n🎯 ターゲットにコメント送信を開始します！")
         print(f"💬 投稿内容: 「{tweet_text}」\n")
 
         # 本質的なAI考察コメントを生成して送信
