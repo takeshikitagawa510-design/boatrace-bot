@@ -65,15 +65,15 @@
       "4-261-2615"
     ]
   },
-  "20260811_丸亀_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 10,
-    "venue_jp": "丸亀",
+  "20260811_下関_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 6,
+    "venue_jp": "下関",
     "date": "20260811",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
+      "3-156-1562",
+      "5-136-1362"
     ]
   }
 }
