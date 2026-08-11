@@ -43,17 +43,6 @@
       "4-132-1325"
     ]
   },
-  "20260811_多摩川_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 8,
-    "venue_jp": "多摩川",
-    "date": "20260811",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
-    ]
-  },
   "20260811_女子競艇_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 10,
@@ -74,6 +63,17 @@
     "recommended_combos": [
       "2-356-3564",
       "3-256-2564"
+    ]
+  },
+  "20260811_平和島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 8,
+    "venue_jp": "平和島",
+    "date": "20260811",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-153-1532",
+      "5-143-1432"
     ]
   }
 }
