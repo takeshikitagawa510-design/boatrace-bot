@@ -54,28 +54,6 @@
       "6-154-1543"
     ]
   },
-  "20260811_丸亀_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 2,
-    "venue_jp": "丸亀",
-    "date": "20260811",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "5-164-1642",
-      "6-154-1542"
-    ]
-  },
-  "20260811_桐生_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 2,
-    "venue_jp": "桐生",
-    "date": "20260811",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "5-143-1432",
-      "6-154-1543"
-    ]
-  },
   "20260811_女子競艇_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 11,
