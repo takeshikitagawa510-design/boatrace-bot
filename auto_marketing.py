@@ -35,8 +35,8 @@ X（Twitter）で競艇ファンの「いいね」や「リポスト（RT）」�
 ・「〜なんだよね」「〜だわ」「〜すぎる」「〜で草」など、開発者がリアルにXで呟いている人間味のあるトーン。
 ・130文字前後で、読んだ人が「へぇ〜」「確かに」と思わずリポストしたくなる分析オタク感を出してください。
 """
-    # 最新のモデル名を指定
-    model_name = 'gemini-1.5-flash'
+    # 新しいSDKに合わせたモデル指定
+    model_name = 'gemini-2.5-flash'
 
     try:
         response = ai_client.models.generate_content(
