@@ -1,15 +1,4 @@
 {
-  "20260812_蒲郡_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 1,
-    "venue_jp": "蒲郡",
-    "date": "20260812",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20260812_浜名湖_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
     "rno": 9,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "2-136-1364",
       "3-126-1264"
+    ]
+  },
+  "20260812_児島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 10,
+    "venue_jp": "児島",
+    "date": "20260812",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
     ]
   }
 }
