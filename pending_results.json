@@ -20,5 +20,27 @@
       "2-341-3416",
       "3-241-2416"
     ]
+  },
+  "20260812_大村_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 9,
+    "venue_jp": "大村",
+    "date": "20260812",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-143-1436",
+      "4-123-1236"
+    ]
+  },
+  "20260812_女子競艇_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 9,
+    "venue_jp": "",
+    "date": "20260812",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-143-1436",
+      "4-123-1236"
+    ]
   }
 }
