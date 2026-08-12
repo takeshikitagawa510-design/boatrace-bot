@@ -10,15 +10,15 @@
       "5-136-1364"
     ]
   },
-  "20260812_下関_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 1,
-    "venue_jp": "下関",
+  "20260812_福岡_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 12,
+    "venue_jp": "福岡",
     "date": "20260812",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-451-4512",
-      "4-351-3512"
+      "2-143-1435",
+      "4-123-1235"
     ]
   }
 }
