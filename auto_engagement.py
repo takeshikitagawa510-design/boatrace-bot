@@ -35,7 +35,8 @@ def generate_expert_reply(target_tweet_text):
 ・上から目線にならず、知識人として落ち着いた知的なトーン。
 ・売り込みやDiscordリンクの添付は禁止（プロフィールへ自然に興味を持たせるため）。
 """
-    model_name = 'gemini-flash-latest'
+    # 修正: 正しいモデル名に変更
+    model_name = 'gemini-2.5-flash'
 
     try:
         response = ai_client.models.generate_content(
@@ -51,13 +52,13 @@ def generate_expert_reply(target_tweet_text):
 
 def run_influencer_engagement():
     search_query = "(競艇 OR ボートレース) -is:retweet -is:reply"
-    print("🔍 競艇関連ポストを省エネモードでスキャン中...")
+    print("🔍 競艇関連ポストをスキャン中...")
 
     try:
-        # コスト削減のため、取得数を5件に絞り、ユーザープロフィールの追加取得(expansions)を廃止
+        # 修正: X APIの仕様に従い max_results を最小値の 10 に設定
         tweets = client.search_recent_tweets(
             query=search_query,
-            max_results=5,
+            max_results=10,
             tweet_fields=["created_at", "public_metrics"]
         )
 
@@ -65,7 +66,7 @@ def run_influencer_engagement():
             print("スキャン結果: 該当ポストなし。")
             return
 
-        # 取得した中から1〜2件だけに絞って「いいね」を実行（API消費を抑制）
+        # 取得した10件の中から2件だけに絞って「いいね」を実行（API消費を抑制）
         target_tweets = random.sample(tweets.data, min(2, len(tweets.data)))
 
         print(f"\n❤️ 【省エネいいね開始】厳選した {len(target_tweets)} 件にいいねをつけます...")
@@ -73,7 +74,6 @@ def run_influencer_engagement():
         high_value_candidates = []
 
         for tweet in target_tweets:
-            tweet_likes = tweet.public_metrics.get("like_count", 0)
             text = tweet.text
 
             # いいね実行
@@ -85,17 +85,13 @@ def run_influencer_engagement():
 
             time.sleep(1)
 
-            # ----------------------------------------------------
-            # 🎯 コメント判定（ユーザー読み込みコストをかけず、本文のキーワードのみで判定）
-            # ----------------------------------------------------
+            # キーワード判定
             has_expert_topic = any(kw in text for kw in EXPERT_KEYWORDS)
 
             if has_expert_topic:
                 high_value_candidates.append(tweet)
 
-        # ----------------------------------------------------
-        # 💬 条件に合ったポストがあれば1件だけ本質コメント送信
-        # ----------------------------------------------------
+        # コメント判定
         print("\n💬 【コメント判定】チェック中...")
 
         if not high_value_candidates:
