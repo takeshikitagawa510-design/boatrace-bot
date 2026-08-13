@@ -1,1 +1,24 @@
-{}
+{
+  "20260813_芦屋_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 6,
+    "venue_jp": "芦屋",
+    "date": "20260813",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-465-4651",
+      "4-365-3651"
+    ]
+  },
+  "20260813_戸田_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 1,
+    "venue_jp": "戸田",
+    "date": "20260813",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-451-4513",
+      "4-251-2513"
+    ]
+  }
+}
