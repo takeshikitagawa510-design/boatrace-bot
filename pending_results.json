@@ -21,15 +21,15 @@
       "4-325-3256"
     ]
   },
-  "20260813_戸田_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 10,
-    "venue_jp": "戸田",
+  "20260813_蒲郡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 3,
+    "venue_jp": "蒲郡",
     "date": "20260813",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-165-1654",
-      "6-135-1354"
+      "2-136-1365",
+      "3-126-1265"
     ]
   }
 }
