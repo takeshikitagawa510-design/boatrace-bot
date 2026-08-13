@@ -1,15 +1,4 @@
 {
-  "20260813_児島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 9,
-    "venue_jp": "児島",
-    "date": "20260813",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-164-1642",
-      "6-134-1342"
-    ]
-  },
   "20260813_boatrace_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/boatrace",
     "rno": 1,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "2-641-6413",
       "6-241-2413"
+    ]
+  },
+  "20260813_平和島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 8,
+    "venue_jp": "平和島",
+    "date": "20260813",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-162-1625",
+      "6-142-1425"
     ]
   }
 }
