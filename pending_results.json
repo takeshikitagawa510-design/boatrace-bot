@@ -1,24 +1,24 @@
 {
-  "20260814_浜名湖_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 9,
-    "venue_jp": "浜名湖",
-    "date": "20260814",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
-  "20260814_平和島_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 8,
-    "venue_jp": "平和島",
+  "20260814_桐生_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 2,
+    "venue_jp": "桐生",
     "date": "20260814",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
+      "4-563-5631",
+      "5-463-4631"
+    ]
+  },
+  "20260814_boatrace_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 2,
+    "venue_jp": "boatrace",
+    "date": "20260814",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-345-3451",
+      "3-245-2451"
     ]
   }
 }
