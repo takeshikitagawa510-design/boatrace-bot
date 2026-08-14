@@ -20,5 +20,49 @@
       "2-135-1356",
       "3-125-1256"
     ]
+  },
+  "20260814_大村_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 3,
+    "venue_jp": "大村",
+    "date": "20260814",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20260814_女子競艇_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 3,
+    "venue_jp": "",
+    "date": "20260814",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20260814_尼崎_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 12,
+    "venue_jp": "尼崎",
+    "date": "20260814",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
+    ]
+  },
+  "20260814_蒲郡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 3,
+    "venue_jp": "蒲郡",
+    "date": "20260814",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3614",
+      "3-261-2614"
+    ]
   }
 }
