@@ -64,5 +64,16 @@
       "2-361-3614",
       "3-261-2614"
     ]
+  },
+  "20260814_浜名湖_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 11,
+    "venue_jp": "浜名湖",
+    "date": "20260814",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-345-3451",
+      "3-245-2451"
+    ]
   }
 }
