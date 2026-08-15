@@ -1,15 +1,4 @@
 {
-  "20260815_三国_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 5,
-    "venue_jp": "三国",
-    "date": "20260815",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-165-1654",
-      "6-125-1254"
-    ]
-  },
   "20260815_芦屋_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 5,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "2-153-1536",
       "5-123-1236"
+    ]
+  },
+  "20260815_徳山_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 5,
+    "venue_jp": "徳山",
+    "date": "20260815",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-356-3564",
+      "3-256-2564"
     ]
   }
 }
