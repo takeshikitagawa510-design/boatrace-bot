@@ -21,15 +21,15 @@
       "3-125-1256"
     ]
   },
-  "20260815_戸田_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 11,
-    "venue_jp": "戸田",
+  "20260815_多摩川_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 10,
+    "venue_jp": "多摩川",
     "date": "20260815",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
