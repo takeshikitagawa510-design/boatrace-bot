@@ -9,5 +9,16 @@
       "4-156-1563",
       "5-146-1463"
     ]
+  },
+  "20260815_戸田_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 9,
+    "venue_jp": "戸田",
+    "date": "20260815",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-136-1365",
+      "3-126-1265"
+    ]
   }
 }
