@@ -65,17 +65,6 @@
       "4-123-1236"
     ]
   },
-  "20260815_大村_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 11,
-    "venue_jp": "大村",
-    "date": "20260815",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-143-1436",
-      "4-123-1236"
-    ]
-  },
   "20260815_下関_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/shimonoseki",
     "rno": 7,
@@ -85,6 +74,17 @@
     "recommended_combos": [
       "3-124-1246",
       "4-132-1326"
+    ]
+  },
+  "20260815_boatrace_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 12,
+    "venue_jp": "boatrace",
+    "date": "20260815",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1452",
+      "4-135-1352"
     ]
   }
 }
