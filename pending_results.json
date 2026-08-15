@@ -1,26 +1,4 @@
 {
-  "20260815_宮島_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 3,
-    "venue_jp": "宮島",
-    "date": "20260815",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-156-1564",
-      "5-136-1364"
-    ]
-  },
-  "20260815_戸田_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 3,
-    "venue_jp": "戸田",
-    "date": "20260815",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20260815_芦屋_8_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 8,
@@ -30,6 +8,17 @@
     "recommended_combos": [
       "2-146-1465",
       "4-126-1265"
+    ]
+  },
+  "20260815_浜名湖_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 2,
+    "venue_jp": "浜名湖",
+    "date": "20260815",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "5-163-1632",
+      "6-153-1532"
     ]
   }
 }
