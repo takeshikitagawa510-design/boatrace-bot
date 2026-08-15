@@ -1,15 +1,4 @@
 {
-  "20260815_多摩川_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 4,
-    "venue_jp": "多摩川",
-    "date": "20260815",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-421-4215",
-      "4-321-3215"
-    ]
-  },
   "20260815_徳山_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 10,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "3-146-1465",
       "4-136-1365"
+    ]
+  },
+  "20260815_宮島_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 6,
+    "venue_jp": "宮島",
+    "date": "20260815",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-465-4652",
+      "4-365-3652"
     ]
   }
 }
