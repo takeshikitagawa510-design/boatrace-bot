@@ -32,17 +32,6 @@
       "4-135-1356"
     ]
   },
-  "20260816_桐生_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 11,
-    "venue_jp": "桐生",
-    "date": "20260816",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-461-4615",
-      "4-361-3615"
-    ]
-  },
   "20260816_boatrace_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/boatrace",
     "rno": 11,
@@ -52,6 +41,17 @@
     "recommended_combos": [
       "3-456-4562",
       "4-356-3562"
+    ]
+  },
+  "20260816_下関_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 7,
+    "venue_jp": "下関",
+    "date": "20260816",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
