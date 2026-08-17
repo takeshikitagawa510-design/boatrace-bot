@@ -31,5 +31,27 @@
       "5-164-1642",
       "6-154-1542"
     ]
+  },
+  "20260817_女子競艇_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 5,
+    "venue_jp": "",
+    "date": "20260817",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  },
+  "20260817_大村_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 5,
+    "venue_jp": "大村",
+    "date": "20260817",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
