@@ -1,26 +1,4 @@
 {
-  "20260817_鳴門_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 9,
-    "venue_jp": "鳴門",
-    "date": "20260817",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-416-4163",
-      "4-216-2163"
-    ]
-  },
-  "20260817_多摩川_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 3,
-    "venue_jp": "多摩川",
-    "date": "20260817",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
   "20260817_戸田_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 5,
