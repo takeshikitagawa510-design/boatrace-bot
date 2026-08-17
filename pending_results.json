@@ -1,15 +1,4 @@
 {
-  "20260817_徳山_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 10,
-    "venue_jp": "徳山",
-    "date": "20260817",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-345-3451",
-      "3-245-2451"
-    ]
-  },
   "20260817_三国_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 11,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "3-162-1625",
       "6-132-1325"
+    ]
+  },
+  "20260817_宮島_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 7,
+    "venue_jp": "宮島",
+    "date": "20260817",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-564-5643",
+      "5-264-2643"
     ]
   }
 }
