@@ -76,15 +76,15 @@
       "6-132-1325"
     ]
   },
-  "20260818_若松_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 2,
-    "venue_jp": "若松",
+  "20260818_女子競艇_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 11,
+    "venue_jp": "",
     "date": "20260818",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-531-5312",
-      "5-431-4312"
+      "2-456-4563",
+      "4-256-2563"
     ]
   }
 }
