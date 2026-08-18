@@ -31,5 +31,16 @@
       "5-612-6123",
       "6-512-5123"
     ]
+  },
+  "20260818_三国_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 7,
+    "venue_jp": "三国",
+    "date": "20260818",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-621-6213",
+      "6-521-5213"
+    ]
   }
 }
