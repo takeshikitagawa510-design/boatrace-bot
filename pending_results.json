@@ -86,5 +86,16 @@
       "2-456-4563",
       "4-256-2563"
     ]
+  },
+  "20260818_boatrace_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 6,
+    "venue_jp": "boatrace",
+    "date": "20260818",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-165-1654",
+      "6-135-1354"
+    ]
   }
 }
