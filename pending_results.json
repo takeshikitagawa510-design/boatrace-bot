@@ -1,13 +1,24 @@
 {
-  "20260818_鳴門_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 5,
-    "venue_jp": "鳴門",
+  "20260818_宮島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 1,
+    "venue_jp": "宮島",
     "date": "20260818",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
+      "2-136-1364",
+      "3-126-1264"
+    ]
+  },
+  "20260818_女子競艇_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 1,
+    "venue_jp": "",
+    "date": "20260818",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-125-1256",
+      "5-142-1426"
     ]
   }
 }
