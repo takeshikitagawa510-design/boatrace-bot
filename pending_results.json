@@ -65,17 +65,6 @@
       "3-124-1245"
     ]
   },
-  "20260818_宮島_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 6,
-    "venue_jp": "宮島",
-    "date": "20260818",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-341-3416",
-      "3-241-2416"
-    ]
-  },
   "20260818_びわこ_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/biwako",
     "rno": 7,
@@ -85,6 +74,17 @@
     "recommended_combos": [
       "2-361-3614",
       "3-261-2614"
+    ]
+  },
+  "20260818_徳山_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 11,
+    "venue_jp": "徳山",
+    "date": "20260818",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-462-4621",
+      "4-362-3621"
     ]
   }
 }
