@@ -35,19 +35,24 @@ X（Twitter）で競艇ファンの「いいね」や「リポスト（RT）」�
 ・「〜なんだよね」「〜だわ」「〜すぎる」「〜で草」など、開発者がリアルにXで呟いている人間味のあるトーン。
 ・130文字前後で、読んだ人が「へぇ〜」「確かに」と思わずリポストしたくなる分析オタク感を出してください。
 """
-    # 以前正常に動作していたモデル名に戻す
-    model_name = 'gemini-flash-latest'
+    # 混雑時に順次試すモデル候補
+    candidate_models = ['gemini-flash-latest', 'gemini-pro-latest']
 
-    try:
-        response = ai_client.models.generate_content(
-            model=model_name,
-            contents=prompt
-        )
-        if response and response.text:
-            return response.text.strip()
-    except Exception as e:
-        print(f"❌ Gemini APIエラー: {e}")
+    for model_name in candidate_models:
+        for attempt in range(3):
+            try:
+                print(f"🔄 文章生成を試行中... (モデル: {model_name} / 試行回数: {attempt + 1})")
+                response = ai_client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                if response and response.text:
+                    return response.text.strip()
+            except Exception as e:
+                print(f"⚠️ APIレスポンス待機/エラー ({model_name}): {e}")
+                time.sleep(5)  # 混雑時は5秒待って再試行
 
+    print("❌ すべての候補モデルで生成に失敗しました。")
     return None
 
 def run_auto_post():
