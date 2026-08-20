@@ -42,5 +42,16 @@
       "3-425-4251",
       "4-325-3251"
     ]
+  },
+  "20260820_多摩川_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 5,
+    "venue_jp": "多摩川",
+    "date": "20260820",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
+    ]
   }
 }
