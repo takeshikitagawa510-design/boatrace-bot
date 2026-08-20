@@ -31,5 +31,27 @@
       "2-431-4315",
       "4-231-2315"
     ]
+  },
+  "20260820_尼崎_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 11,
+    "venue_jp": "尼崎",
+    "date": "20260820",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20260820_平和島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 8,
+    "venue_jp": "平和島",
+    "date": "20260820",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-156-1562",
+      "5-146-1462"
+    ]
   }
 }
