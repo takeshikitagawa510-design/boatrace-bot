@@ -10,15 +10,26 @@
       "4-135-1352"
     ]
   },
-  "20260820_尼崎_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+  "20260820_女子競艇_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 5,
-    "venue_jp": "尼崎",
+    "venue_jp": "",
     "date": "20260820",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20260820_多摩川_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 3,
+    "venue_jp": "多摩川",
+    "date": "20260820",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
     ]
   }
 }
