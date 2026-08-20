@@ -31,5 +31,16 @@
       "2-431-4315",
       "4-231-2315"
     ]
+  },
+  "20260820_丸亀_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 12,
+    "venue_jp": "丸亀",
+    "date": "20260820",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
