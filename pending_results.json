@@ -54,15 +54,15 @@
       "4-135-1356"
     ]
   },
-  "20260821_浜名湖_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+  "20260821_平和島_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
     "rno": 7,
-    "venue_jp": "浜名湖",
+    "venue_jp": "平和島",
     "date": "20260821",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-152-1524",
-      "5-132-1324"
+      "2-356-3561",
+      "3-256-2561"
     ]
   }
 }
