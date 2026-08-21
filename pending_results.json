@@ -1,1 +1,24 @@
-{}
+{
+  "20260821_唐津_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 6,
+    "venue_jp": "唐津",
+    "date": "20260821",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1452",
+      "4-135-1352"
+    ]
+  },
+  "20260821_尼崎_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 2,
+    "venue_jp": "尼崎",
+    "date": "20260821",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-142-1425",
+      "4-132-1325"
+    ]
+  }
+}
