@@ -1,15 +1,4 @@
 {
-  "20260821_戸田_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 2,
-    "venue_jp": "戸田",
-    "date": "20260821",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-361-3615",
-      "3-261-2615"
-    ]
-  },
   "20260821_尼崎_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 3,
@@ -19,6 +8,28 @@
     "recommended_combos": [
       "2-164-1643",
       "6-124-1243"
+    ]
+  },
+  "20260821_浜名湖_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 1,
+    "venue_jp": "浜名湖",
+    "date": "20260821",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-156-1563",
+      "5-146-1463"
+    ]
+  },
+  "20260821_女子競艇_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 3,
+    "venue_jp": "",
+    "date": "20260821",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
     ]
   }
 }
