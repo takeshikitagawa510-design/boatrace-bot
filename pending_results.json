@@ -10,17 +10,6 @@
       "3-126-1264"
     ]
   },
-  "20260822_福岡_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 6,
-    "venue_jp": "福岡",
-    "date": "20260822",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-456-4561",
-      "4-256-2561"
-    ]
-  },
   "20260822_平和島_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/heiwajima",
     "rno": 7,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "2-135-1354",
       "3-125-1254"
+    ]
+  },
+  "20260822_女子競艇_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 9,
+    "venue_jp": "",
+    "date": "20260822",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-164-1642",
+      "6-134-1342"
     ]
   }
 }
