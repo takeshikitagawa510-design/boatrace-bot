@@ -20,5 +20,16 @@
       "5-126-1263",
       "6-152-1523"
     ]
+  },
+  "20260822_福岡_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 6,
+    "venue_jp": "福岡",
+    "date": "20260822",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-456-4561",
+      "4-256-2561"
+    ]
   }
 }
