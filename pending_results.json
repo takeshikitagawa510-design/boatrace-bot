@@ -31,5 +31,16 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20260822_蒲郡_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 11,
+    "venue_jp": "蒲郡",
+    "date": "20260822",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
   }
 }
