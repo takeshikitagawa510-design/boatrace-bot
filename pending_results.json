@@ -31,5 +31,16 @@
       "3-164-1642",
       "6-134-1342"
     ]
+  },
+  "20260823_大村_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 4,
+    "venue_jp": "大村",
+    "date": "20260823",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-154-1546",
+      "5-124-1246"
+    ]
   }
 }
