@@ -9,5 +9,16 @@
       "3-146-1462",
       "4-136-1362"
     ]
+  },
+  "20260823_徳山_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 7,
+    "venue_jp": "徳山",
+    "date": "20260823",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
+    ]
   }
 }
