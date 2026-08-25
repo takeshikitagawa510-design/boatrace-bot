@@ -10,15 +10,15 @@
       "5-123-1236"
     ]
   },
-  "20260825_宮島_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 1,
-    "venue_jp": "宮島",
+  "20260825_尼崎_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 2,
+    "venue_jp": "尼崎",
     "date": "20260825",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
