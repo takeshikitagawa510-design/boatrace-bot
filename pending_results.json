@@ -31,5 +31,27 @@
       "3-146-1465",
       "4-136-1365"
     ]
+  },
+  "20260826_浜名湖_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 2,
+    "venue_jp": "浜名湖",
+    "date": "20260826",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
+  },
+  "20260826_女子競艇_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 8,
+    "venue_jp": "",
+    "date": "20260826",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-354-3541",
+      "3-254-2541"
+    ]
   }
 }
