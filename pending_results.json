@@ -54,15 +54,15 @@
       "3-125-1256"
     ]
   },
-  "20260826_丸亀_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 3,
-    "venue_jp": "丸亀",
+  "20260826_浜名湖_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 11,
+    "venue_jp": "浜名湖",
     "date": "20260826",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-462-4625",
-      "4-362-3625"
+      "5-163-1634",
+      "6-153-1534"
     ]
   }
 }
