@@ -1,15 +1,4 @@
 {
-  "20260826_徳山_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 3,
-    "venue_jp": "徳山",
-    "date": "20260826",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-125-1256",
-      "5-142-1426"
-    ]
-  },
   "20260826_女子競艇_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 3,
