@@ -20,5 +20,27 @@
       "2-134-1345",
       "3-124-1245"
     ]
+  },
+  "20260827_kiryu_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu_sg",
+    "rno": 11,
+    "venue_jp": "kiryu_sg",
+    "date": "20260827",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-346-3465",
+      "3-246-2465"
+    ]
+  },
+  "20260827_桐生_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
+    "date": "20260827",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-346-3465",
+      "3-246-2465"
+    ]
   }
 }
