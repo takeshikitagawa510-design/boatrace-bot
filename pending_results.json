@@ -10,15 +10,26 @@
       "4-256-2561"
     ]
   },
-  "20260828_びわこ_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 3,
-    "venue_jp": "びわこ",
+  "20260828_鳴門_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 8,
+    "venue_jp": "鳴門",
     "date": "20260828",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
+      "2-341-3415",
+      "3-241-2415"
+    ]
+  },
+  "20260828_平和島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 1,
+    "venue_jp": "平和島",
+    "date": "20260828",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-162-1625",
+      "6-142-1425"
     ]
   }
 }
