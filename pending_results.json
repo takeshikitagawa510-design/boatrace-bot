@@ -21,17 +21,6 @@
       "5-126-1264"
     ]
   },
-  "20260829_平和島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 9,
-    "venue_jp": "平和島",
-    "date": "20260829",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "5-163-1632",
-      "6-153-1532"
-    ]
-  },
   "20260829_多摩川_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamakawa",
     "rno": 10,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-456-4563",
       "4-256-2563"
+    ]
+  },
+  "20260829_蒲郡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 3,
+    "venue_jp": "蒲郡",
+    "date": "20260829",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-462-4621",
+      "4-362-3621"
     ]
   }
 }
