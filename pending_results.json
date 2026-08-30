@@ -31,5 +31,27 @@
       "2-145-1456",
       "4-125-1256"
     ]
+  },
+  "20260830_蒲郡_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 4,
+    "venue_jp": "蒲郡",
+    "date": "20260830",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
+    ]
+  },
+  "20260830_児島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 11,
+    "venue_jp": "児島",
+    "date": "20260830",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
