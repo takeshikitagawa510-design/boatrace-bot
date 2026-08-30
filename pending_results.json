@@ -21,17 +21,6 @@
       "4-125-1253"
     ]
   },
-  "20260830_宮島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 9,
-    "venue_jp": "宮島",
-    "date": "20260830",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "5-146-1463",
-      "6-154-1543"
-    ]
-  },
   "20260830_桐生_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 1,
@@ -52,6 +41,17 @@
     "recommended_combos": [
       "2-145-1453",
       "4-125-1253"
+    ]
+  },
+  "20260830_多摩川_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 8,
+    "venue_jp": "多摩川",
+    "date": "20260830",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "データ不足により算出不可",
+      "対象なし"
     ]
   }
 }
