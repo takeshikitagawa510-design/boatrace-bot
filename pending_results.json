@@ -21,15 +21,15 @@
       "4-125-1253"
     ]
   },
-  "20260830_多摩川_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 8,
-    "venue_jp": "多摩川",
+  "20260830_下関_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 1,
+    "venue_jp": "下関",
     "date": "20260830",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "データ不足により算出不可",
-      "対象なし"
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
