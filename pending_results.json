@@ -21,17 +21,6 @@
       "4-135-1356"
     ]
   },
-  "20260831_徳山_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 12,
-    "venue_jp": "徳山",
-    "date": "20260831",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20260831_女子競艇_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 7,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "2-361-3614",
       "3-261-2614"
+    ]
+  },
+  "20260831_児島_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 7,
+    "venue_jp": "児島",
+    "date": "20260831",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-563-5634",
+      "5-263-2634"
     ]
   }
 }
