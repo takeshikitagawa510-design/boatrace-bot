@@ -53,5 +53,27 @@
       "5-164-1643",
       "6-154-1543"
     ]
+  },
+  "20260831_女子競艇_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 12,
+    "venue_jp": "",
+    "date": "20260831",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-126-1265",
+      "6-132-1325"
+    ]
+  },
+  "20260831_蒲郡_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 5,
+    "venue_jp": "蒲郡",
+    "date": "20260831",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-463-4631",
+      "4-263-2631"
+    ]
   }
 }
