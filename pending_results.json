@@ -43,17 +43,6 @@
       "5-123-1236"
     ]
   },
-  "20260901_下関_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 2,
-    "venue_jp": "下関",
-    "date": "20260901",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
-    ]
-  },
   "20260901_多摩川_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamakawa",
     "rno": 10,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "6-145-1453",
       "対象なし"
+    ]
+  },
+  "20260901_boatrace_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 3,
+    "venue_jp": "boatrace",
+    "date": "20260901",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-465-4652",
+      "4-365-3652"
     ]
   }
 }
