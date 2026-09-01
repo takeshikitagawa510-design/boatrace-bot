@@ -64,5 +64,27 @@
       "3-465-4652",
       "4-365-3652"
     ]
+  },
+  "20260901_女子競艇_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 11,
+    "venue_jp": "",
+    "date": "20260901",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20260901_下関_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 3,
+    "venue_jp": "下関",
+    "date": "20260901",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
