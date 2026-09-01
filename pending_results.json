@@ -9,5 +9,27 @@
       "2-356-3561",
       "3-256-2561"
     ]
+  },
+  "20260901_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 5,
+    "venue_jp": "児島",
+    "date": "20260901",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-142-1426",
+      "4-132-1326"
+    ]
+  },
+  "20260901_徳山_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 10,
+    "venue_jp": "徳山",
+    "date": "20260901",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-562-5621",
+      "5-362-3621"
+    ]
   }
 }
