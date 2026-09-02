@@ -1,13 +1,13 @@
 {
-  "20260902_宮島_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 3,
-    "venue_jp": "宮島",
+  "20260902_福岡_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 2,
+    "venue_jp": "福岡",
     "date": "20260902",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-345-3456",
-      "3-245-2456"
+      "4-165-1652",
+      "6-145-1452"
     ]
   }
 }
