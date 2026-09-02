@@ -20,5 +20,27 @@
       "2-135-1354",
       "3-125-1254"
     ]
+  },
+  "20260902_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 5,
+    "venue_jp": "児島",
+    "date": "20260902",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-561-5614",
+      "5-361-3614"
+    ]
+  },
+  "20260902_芦屋_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 11,
+    "venue_jp": "芦屋",
+    "date": "20260902",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
