@@ -10,17 +10,6 @@
       "3-124-1245"
     ]
   },
-  "20260902_児島_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 5,
-    "venue_jp": "児島",
-    "date": "20260902",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-561-5614",
-      "5-361-3614"
-    ]
-  },
   "20260902_芦屋_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 11,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "2-134-1345",
       "3-124-1245"
+    ]
+  },
+  "20260902_女子競艇_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 6,
+    "venue_jp": "",
+    "date": "20260902",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-153-1536",
+      "5-143-1436"
     ]
   }
 }
