@@ -1,15 +1,4 @@
 {
-  "20260903_尼崎_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 3,
-    "venue_jp": "尼崎",
-    "date": "20260903",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-461-4613",
-      "4-261-2613"
-    ]
-  },
   "20260903_戸田_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 3,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "2-641-6415",
       "6-241-2415"
+    ]
+  },
+  "20260903_宮島_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 3,
+    "venue_jp": "宮島",
+    "date": "20260903",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-145-1452",
+      "4-135-1352"
     ]
   }
 }
