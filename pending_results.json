@@ -1,26 +1,4 @@
 {
-  "20260903_宮島_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 4,
-    "venue_jp": "宮島",
-    "date": "20260903",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-125-1254",
-      "5-132-1324"
-    ]
-  },
-  "20260903_三国_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 9,
-    "venue_jp": "三国",
-    "date": "20260903",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20260903_児島_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 3,
