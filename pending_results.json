@@ -20,5 +20,16 @@
       "2-134-1345",
       "3-124-1245"
     ]
+  },
+  "20260903_児島_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 3,
+    "venue_jp": "児島",
+    "date": "20260903",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "6-142-1425",
+      "対象なし"
+    ]
   }
 }
