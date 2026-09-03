@@ -20,5 +20,16 @@
       "2-136-1365",
       "3-126-1265"
     ]
+  },
+  "20260903_若松_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 1,
+    "venue_jp": "若松",
+    "date": "20260903",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5613",
+      "5-461-4613"
+    ]
   }
 }
