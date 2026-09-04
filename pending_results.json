@@ -10,17 +10,6 @@
       "5-123-1236"
     ]
   },
-  "20260904_福岡_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 3,
-    "venue_jp": "福岡",
-    "date": "20260904",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20260904_三国_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 10,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "3-145-1452",
       "4-135-1352"
+    ]
+  },
+  "20260904_戸田_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 6,
+    "venue_jp": "戸田",
+    "date": "20260904",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-361-3614",
+      "3-261-2614"
     ]
   }
 }
