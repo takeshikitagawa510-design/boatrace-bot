@@ -53,5 +53,16 @@
       "2-163-1635",
       "6-123-1235"
     ]
+  },
+  "20260905_蒲郡_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 6,
+    "venue_jp": "蒲郡",
+    "date": "20260905",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
