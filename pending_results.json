@@ -42,5 +42,27 @@
       "2-451-4513",
       "4-251-2513"
     ]
+  },
+  "20260905_蒲郡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 3,
+    "venue_jp": "蒲郡",
+    "date": "20260905",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3614",
+      "3-261-2614"
+    ]
+  },
+  "20260905_宮島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 11,
+    "venue_jp": "宮島",
+    "date": "20260905",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-456-4561",
+      "4-356-3561"
+    ]
   }
 }
