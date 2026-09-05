@@ -35,18 +35,21 @@ def generate_expert_reply(target_tweet_text):
 ・上から目線にならず、知識人として落ち着いた知的なトーン。
 ・売り込みやDiscordリンクの添付は禁止（プロフィールへ自然に興味を持たせるため）。
 """
-    # 修正: 正しいモデル名に変更
-    model_name = 'gemini-2.5-flash'
+    # 安定稼働するモデル候補とリトライ機構
+    candidate_models = ['gemini-flash-latest', 'gemini-pro-latest']
 
-    try:
-        response = ai_client.models.generate_content(
-            model=model_name,
-            contents=prompt
-        )
-        if response and response.text:
-            return response.text.strip()
-    except Exception as e:
-        print(f"❌ Gemini APIエラー: {e}")
+    for model_name in candidate_models:
+        for attempt in range(3):
+            try:
+                response = ai_client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                if response and response.text:
+                    return response.text.strip()
+            except Exception as e:
+                print(f"⚠️ Gemini API待機/エラー ({model_name}): {e}")
+                time.sleep(5)
 
     return None
 
@@ -55,7 +58,7 @@ def run_influencer_engagement():
     print("🔍 競艇関連ポストをスキャン中...")
 
     try:
-        # 修正: X APIの仕様に従い max_results を最小値の 10 に設定
+        # X API仕様に準拠 (min 10)
         tweets = client.search_recent_tweets(
             query=search_query,
             max_results=10,
@@ -66,7 +69,7 @@ def run_influencer_engagement():
             print("スキャン結果: 該当ポストなし。")
             return
 
-        # 取得した10件の中から2件だけに絞って「いいね」を実行（API消費を抑制）
+        # 取得した10件の中から2件に絞って「いいね」を実行
         target_tweets = random.sample(tweets.data, min(2, len(tweets.data)))
 
         print(f"\n❤️ 【省エネいいね開始】厳選した {len(target_tweets)} 件にいいねをつけます...")
