@@ -20,5 +20,16 @@
       "2-145-1456",
       "4-125-1256"
     ]
+  },
+  "20260905_尼崎_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 9,
+    "venue_jp": "尼崎",
+    "date": "20260905",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-346-3461",
+      "3-246-2461"
+    ]
   }
 }
