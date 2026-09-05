@@ -53,5 +53,16 @@
       "2-163-1635",
       "6-123-1235"
     ]
+  },
+  "20260905_boatrace_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 9,
+    "venue_jp": "boatrace",
+    "date": "20260905",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-153-1534",
+      "5-123-1234"
+    ]
   }
 }
