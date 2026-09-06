@@ -1,15 +1,4 @@
 {
-  "20260906_平和島_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 10,
-    "venue_jp": "平和島",
-    "date": "20260906",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
-    ]
-  },
   "20260906_宮島_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/miyajima",
     "rno": 10,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "2-145-1453",
       "4-125-1253"
+    ]
+  },
+  "20260906_boatrace_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 2,
+    "venue_jp": "boatrace",
+    "date": "20260906",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "5-143-1436",
+      "6-154-1543"
     ]
   }
 }
