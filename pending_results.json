@@ -9,5 +9,27 @@
       "3-156-1562",
       "5-136-1362"
     ]
+  },
+  "20260907_びわこ_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 1,
+    "venue_jp": "びわこ",
+    "date": "20260907",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-532-5321",
+      "5-432-4321"
+    ]
+  },
+  "20260907_鳴門_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 5,
+    "venue_jp": "鳴門",
+    "date": "20260907",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
+    ]
   }
 }
