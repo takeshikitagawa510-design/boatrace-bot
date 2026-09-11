@@ -1,26 +1,4 @@
 {
-  "20260911_浜名湖_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 2,
-    "venue_jp": "浜名湖",
-    "date": "20260911",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
-    ]
-  },
-  "20260911_多摩川_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 3,
-    "venue_jp": "多摩川",
-    "date": "20260911",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
-    ]
-  },
   "20260911_戸田_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 4,
