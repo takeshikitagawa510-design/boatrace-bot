@@ -1,1 +1,24 @@
-{}
+{
+  "20260911_尼崎_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 7,
+    "venue_jp": "尼崎",
+    "date": "20260911",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1452",
+      "4-135-1352"
+    ]
+  },
+  "20260911_浜名湖_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 5,
+    "venue_jp": "浜名湖",
+    "date": "20260911",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-314-3146",
+      "3-214-2146"
+    ]
+  }
+}
