@@ -20,5 +20,27 @@
       "2-136-1365",
       "3-126-1265"
     ]
+  },
+  "20260911_boatrace_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 1,
+    "venue_jp": "boatrace",
+    "date": "20260911",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
+    ]
+  },
+  "20260911_若松_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 1,
+    "venue_jp": "若松",
+    "date": "20260911",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-346-3461",
+      "3-246-2461"
+    ]
   }
 }
