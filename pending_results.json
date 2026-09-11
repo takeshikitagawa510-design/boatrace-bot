@@ -9,5 +9,16 @@
       "2-364-3641",
       "3-264-2641"
     ]
+  },
+  "20260911_大村_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura_sg",
+    "rno": 1,
+    "venue_jp": "大村",
+    "date": "20260911",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-136-1365",
+      "3-126-1265"
+    ]
   }
 }
