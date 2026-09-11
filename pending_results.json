@@ -10,15 +10,15 @@
       "4-126-1265"
     ]
   },
-  "20260911_若松_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 1,
-    "venue_jp": "若松",
+  "20260911_尼崎_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 11,
+    "venue_jp": "尼崎",
     "date": "20260911",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-346-3461",
-      "3-246-2461"
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
