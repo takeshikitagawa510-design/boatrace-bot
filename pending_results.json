@@ -1,13 +1,13 @@
 {
-  "20260912_多摩川_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 3,
-    "venue_jp": "多摩川",
+  "20260912_徳山_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 4,
+    "venue_jp": "徳山",
     "date": "20260912",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-164-1642",
-      "6-134-1342"
+      "3-124-1245",
+      "4-132-1325"
     ]
   }
 }
