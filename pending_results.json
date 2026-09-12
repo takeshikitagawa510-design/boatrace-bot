@@ -10,17 +10,6 @@
       "4-356-3561"
     ]
   },
-  "20260912_多摩川_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 10,
-    "venue_jp": "多摩川",
-    "date": "20260912",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20260912_女子競艇_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 11,
@@ -52,6 +41,17 @@
     "recommended_combos": [
       "3-165-1654",
       "6-135-1354"
+    ]
+  },
+  "20260912_浜名湖_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 10,
+    "venue_jp": "浜名湖",
+    "date": "20260912",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
     ]
   }
 }
