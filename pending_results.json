@@ -9,5 +9,27 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20260912_宮島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 5,
+    "venue_jp": "宮島",
+    "date": "20260912",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3416",
+      "3-241-2416"
+    ]
+  },
+  "20260912_浜名湖_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 3,
+    "venue_jp": "浜名湖",
+    "date": "20260912",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-142-1426",
+      "4-132-1326"
+    ]
   }
 }
