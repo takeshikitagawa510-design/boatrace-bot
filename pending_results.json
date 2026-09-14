@@ -53,5 +53,16 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20260914_女子競艇_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 9,
+    "venue_jp": "",
+    "date": "20260914",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3614",
+      "3-261-2614"
+    ]
   }
 }
