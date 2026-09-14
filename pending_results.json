@@ -64,5 +64,16 @@
       "2-361-3614",
       "3-261-2614"
     ]
+  },
+  "20260914_徳山_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 9,
+    "venue_jp": "徳山",
+    "date": "20260914",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-146-1462",
+      "4-136-1362"
+    ]
   }
 }
