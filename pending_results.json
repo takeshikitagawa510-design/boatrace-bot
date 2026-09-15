@@ -20,5 +20,27 @@
       "3-145-1456",
       "4-135-1356"
     ]
+  },
+  "20260915_徳山_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 11,
+    "venue_jp": "徳山",
+    "date": "20260915",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-162-1623",
+      "6-152-1523"
+    ]
+  },
+  "20260915_平和島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 11,
+    "venue_jp": "平和島",
+    "date": "20260915",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-563-5631",
+      "5-463-4631"
+    ]
   }
 }
