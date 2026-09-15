@@ -9,5 +9,16 @@
       "6-143-1435",
       "対象なし"
     ]
+  },
+  "20260915_びわこ_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 10,
+    "venue_jp": "びわこ",
+    "date": "20260915",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-143-1435",
+      "4-123-1235"
+    ]
   }
 }
