@@ -32,15 +32,15 @@
       "3-126-1264"
     ]
   },
-  "20260916_tamakawa_sg_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
-    "rno": 10,
-    "venue_jp": "tamakawa_sg",
+  "20260916_尼崎_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 11,
+    "venue_jp": "尼崎",
     "date": "20260916",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
+      "2-613-6135",
+      "6-213-2135"
     ]
   }
 }
