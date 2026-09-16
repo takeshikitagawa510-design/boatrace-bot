@@ -1,13 +1,13 @@
 {
-  "20260916_平和島_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 5,
-    "venue_jp": "平和島",
+  "20260916_女子競艇_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 6,
+    "venue_jp": "",
     "date": "20260916",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
+      "3-152-1524",
+      "5-132-1324"
     ]
   }
 }
