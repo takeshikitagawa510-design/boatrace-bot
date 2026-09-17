@@ -76,17 +76,6 @@
       "5-146-1463"
     ]
   },
-  "20260917_蒲郡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 2,
-    "venue_jp": "蒲郡",
-    "date": "20260917",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-165-1653",
-      "6-125-1253"
-    ]
-  },
   "20260917_下関_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/shimonoseki",
     "rno": 2,
@@ -129,6 +118,17 @@
     "recommended_combos": [
       "3-456-4562",
       "4-356-3562"
+    ]
+  },
+  "20260917_尼崎_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 12,
+    "venue_jp": "尼崎",
+    "date": "20260917",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-461-4615",
+      "4-361-3615"
     ]
   }
 }
