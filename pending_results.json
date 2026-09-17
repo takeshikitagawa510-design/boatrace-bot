@@ -76,17 +76,6 @@
       "5-146-1463"
     ]
   },
-  "20260917_丸亀_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 2,
-    "venue_jp": "丸亀",
-    "date": "20260917",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-152-1526",
-      "5-142-1426"
-    ]
-  },
   "20260917_蒲郡_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/gamagori",
     "rno": 2,
@@ -118,6 +107,28 @@
     "recommended_combos": [
       "2-143-1435",
       "4-123-1235"
+    ]
+  },
+  "20260917_平和島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 11,
+    "venue_jp": "平和島",
+    "date": "20260917",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-143-1432",
+      "6-154-1543"
+    ]
+  },
+  "20260917_児島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 11,
+    "venue_jp": "児島",
+    "date": "20260917",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-456-4562",
+      "4-356-3562"
     ]
   }
 }
