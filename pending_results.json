@@ -65,15 +65,15 @@
       "3-265-2651"
     ]
   },
-  "20260917_徳山_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 10,
-    "venue_jp": "徳山",
+  "20260917_tamakawa_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
+    "rno": 11,
+    "venue_jp": "tamakawa_sg",
     "date": "20260917",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-153-1532",
-      "5-143-1432"
+      "4-156-1563",
+      "5-146-1463"
     ]
   }
 }
