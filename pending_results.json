@@ -75,5 +75,27 @@
       "4-165-1652",
       "6-145-1452"
     ]
+  },
+  "20260918_boatrace_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 1,
+    "venue_jp": "boatrace",
+    "date": "20260918",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-345-3451",
+      "3-245-2451"
+    ]
+  },
+  "20260918_児島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 10,
+    "venue_jp": "児島",
+    "date": "20260918",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-152-1524",
+      "5-132-1324"
+    ]
   }
 }
