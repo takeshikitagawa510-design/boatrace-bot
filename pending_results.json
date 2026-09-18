@@ -65,15 +65,15 @@
       "6-514-5143"
     ]
   },
-  "20260918_戸田_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 8,
-    "venue_jp": "戸田",
+  "20260918_tamakawa_sg_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
+    "rno": 9,
+    "venue_jp": "tamakawa_sg",
     "date": "20260918",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-162-1625",
-      "6-132-1325"
+      "2-136-1365",
+      "3-126-1265"
     ]
   }
 }
