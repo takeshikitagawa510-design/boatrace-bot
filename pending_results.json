@@ -65,15 +65,15 @@
       "6-514-5143"
     ]
   },
-  "20260919_児島_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 8,
-    "venue_jp": "児島",
+  "20260919_宮島_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 9,
+    "venue_jp": "宮島",
     "date": "20260919",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
