@@ -65,15 +65,26 @@
       "3-265-2651"
     ]
   },
-  "20260920_戸田_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 2,
-    "venue_jp": "戸田",
+  "20260920_浜名湖_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 1,
+    "venue_jp": "浜名湖",
     "date": "20260920",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
+      "3-124-1245",
+      "4-132-1325"
+    ]
+  },
+  "20260920_尼崎_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 3,
+    "venue_jp": "尼崎",
+    "date": "20260920",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-364-3645",
+      "3-264-2645"
     ]
   }
 }
