@@ -65,26 +65,15 @@
       "3-265-2651"
     ]
   },
-  "20260920_鳴門_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 8,
-    "venue_jp": "鳴門",
-    "date": "20260920",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-125-1256",
-      "5-142-1426"
-    ]
-  },
-  "20260920_tamakawa_sg_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
+  "20260920_戸田_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 4,
-    "venue_jp": "tamakawa_sg",
+    "venue_jp": "戸田",
     "date": "20260920",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-143-1435",
-      "4-123-1235"
+      "2-345-3451",
+      "3-245-2451"
     ]
   }
 }
