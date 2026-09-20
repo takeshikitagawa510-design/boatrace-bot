@@ -76,15 +76,15 @@
       "4-132-1325"
     ]
   },
-  "20260920_尼崎_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+  "20260920_戸田_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 3,
-    "venue_jp": "尼崎",
+    "venue_jp": "戸田",
     "date": "20260920",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-364-3645",
-      "3-264-2645"
+      "3-146-1462",
+      "4-136-1362"
     ]
   }
 }
