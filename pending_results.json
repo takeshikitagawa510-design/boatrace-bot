@@ -97,5 +97,16 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20260920_桐生_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
+    "date": "20260920",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
