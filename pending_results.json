@@ -64,5 +64,16 @@
       "2-365-3651",
       "3-265-2651"
     ]
+  },
+  "20260920_戸田_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 2,
+    "venue_jp": "戸田",
+    "date": "20260920",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1365",
+      "3-126-1265"
+    ]
   }
 }
