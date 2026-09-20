@@ -76,17 +76,6 @@
       "5-126-1263"
     ]
   },
-  "20260920_浜名湖_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 9,
-    "venue_jp": "浜名湖",
-    "date": "20260920",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
   "20260920_児島_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 10,
@@ -96,6 +85,17 @@
     "recommended_combos": [
       "2-146-1465",
       "4-126-1265"
+    ]
+  },
+  "20260920_boatrace_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 2,
+    "venue_jp": "boatrace",
+    "date": "20260920",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
