@@ -64,27 +64,5 @@
       "2-365-3651",
       "3-265-2651"
     ]
-  },
-  "20260920_尼崎_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 9,
-    "venue_jp": "尼崎",
-    "date": "20260920",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-564-5641",
-      "5-364-3641"
-    ]
-  },
-  "20260920_児島_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 8,
-    "venue_jp": "児島",
-    "date": "20260920",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-154-1543",
-      "5-124-1243"
-    ]
   }
 }
