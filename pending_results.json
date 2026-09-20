@@ -65,15 +65,15 @@
       "3-265-2651"
     ]
   },
-  "20260920_浜名湖_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 8,
-    "venue_jp": "浜名湖",
+  "20260920_桐生_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 1,
+    "venue_jp": "桐生",
     "date": "20260920",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-156-1562",
-      "5-136-1362"
+      "2-453-4536",
+      "4-253-2536"
     ]
   }
 }
