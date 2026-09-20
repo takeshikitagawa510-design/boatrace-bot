@@ -108,5 +108,16 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20260920_桐生_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 12,
+    "venue_jp": "桐生",
+    "date": "20260920",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-514-5146",
+      "5-314-3146"
+    ]
   }
 }
