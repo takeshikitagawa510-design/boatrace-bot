@@ -64,5 +64,16 @@
       "2-365-3651",
       "3-265-2651"
     ]
+  },
+  "20260921_tamakawa_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
+    "rno": 11,
+    "venue_jp": "tamakawa_sg",
+    "date": "20260921",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
+    ]
   }
 }
