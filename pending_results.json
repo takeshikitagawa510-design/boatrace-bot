@@ -65,17 +65,6 @@
       "3-265-2651"
     ]
   },
-  "20260921_tamakawa_sg_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa_sg",
-    "rno": 11,
-    "venue_jp": "tamakawa_sg",
-    "date": "20260921",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
-    ]
-  },
   "20260921_boatrace_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/boatrace",
     "rno": 2,
@@ -107,6 +96,17 @@
     "recommended_combos": [
       "3-516-5162",
       "5-316-3162"
+    ]
+  },
+  "20260921_boatrace_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 3,
+    "venue_jp": "boatrace",
+    "date": "20260921",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
