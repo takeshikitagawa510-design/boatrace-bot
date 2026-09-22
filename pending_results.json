@@ -75,5 +75,27 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20260922_児島_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 2,
+    "venue_jp": "児島",
+    "date": "20260922",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20260922_徳山_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 7,
+    "venue_jp": "徳山",
+    "date": "20260922",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
+    ]
   }
 }
