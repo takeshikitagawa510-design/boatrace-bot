@@ -76,17 +76,6 @@
       "3-124-1245"
     ]
   },
-  "20260922_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20260922",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
-    ]
-  },
   "20260922_徳山_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 9,
@@ -107,6 +96,28 @@
     "recommended_combos": [
       "2-143-1436",
       "4-123-1236"
+    ]
+  },
+  "20260922_浜名湖_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 4,
+    "venue_jp": "浜名湖",
+    "date": "20260922",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
+    ]
+  },
+  "20260922_福岡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 3,
+    "venue_jp": "福岡",
+    "date": "20260922",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1365",
+      "3-126-1265"
     ]
   }
 }
