@@ -86,5 +86,27 @@
       "3-145-1452",
       "4-135-1352"
     ]
+  },
+  "20260922_浜名湖_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 5,
+    "venue_jp": "浜名湖",
+    "date": "20260922",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-351-3516",
+      "3-251-2516"
+    ]
+  },
+  "20260922_福岡_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 4,
+    "venue_jp": "福岡",
+    "date": "20260922",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
