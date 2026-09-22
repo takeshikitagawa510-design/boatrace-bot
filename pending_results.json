@@ -87,15 +87,15 @@
       "4-361-3612"
     ]
   },
-  "20260922_児島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 12,
-    "venue_jp": "児島",
+  "20260922_若松_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 5,
+    "venue_jp": "若松",
     "date": "20260922",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-341-3416",
-      "3-241-2416"
+      "5-432-4321",
+      "6-543-5432"
     ]
   }
 }
