@@ -21,15 +21,15 @@
       "3-124-1245"
     ]
   },
-  "20260924_福岡_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 3,
-    "venue_jp": "福岡",
+  "20260924_徳山_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 10,
+    "venue_jp": "徳山",
     "date": "20260924",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
