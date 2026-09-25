@@ -32,26 +32,15 @@
       "5-126-1263"
     ]
   },
-  "20260925_尼崎_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 10,
-    "venue_jp": "尼崎",
+  "20260925_びわこ_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 11,
+    "venue_jp": "びわこ",
     "date": "20260925",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
-    ]
-  },
-  "20260925_下関_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 1,
-    "venue_jp": "下関",
-    "date": "20260925",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
+      "2-154-1543",
+      "5-124-1243"
     ]
   }
 }
