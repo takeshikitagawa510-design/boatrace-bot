@@ -9,5 +9,16 @@
       "2-354-3541",
       "3-254-2541"
     ]
+  },
+  "20260929_鳴門_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 11,
+    "venue_jp": "鳴門",
+    "date": "20260929",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-461-4613",
+      "4-261-2613"
+    ]
   }
 }
