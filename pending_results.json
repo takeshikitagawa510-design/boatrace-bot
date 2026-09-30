@@ -1,13 +1,13 @@
 {
-  "20260930_戸田_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
+  "20260930_児島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 8,
-    "venue_jp": "戸田",
+    "venue_jp": "児島",
     "date": "20260930",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
