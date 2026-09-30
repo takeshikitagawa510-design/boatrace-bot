@@ -1,1 +1,13 @@
-{}
+{
+  "20260930_多摩川_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 1,
+    "venue_jp": "多摩川",
+    "date": "20260930",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "6-125-1254",
+      "対象なし"
+    ]
+  }
+}
