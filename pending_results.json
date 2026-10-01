@@ -9,5 +9,16 @@
       "2-561-5613",
       "5-261-2613"
     ]
+  },
+  "20261001_平和島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 10,
+    "venue_jp": "平和島",
+    "date": "20261001",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-514-5142",
+      "5-314-3142"
+    ]
   }
 }
