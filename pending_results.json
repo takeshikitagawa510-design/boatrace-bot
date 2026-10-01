@@ -1,15 +1,4 @@
 {
-  "20261001_福岡_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 10,
-    "venue_jp": "福岡",
-    "date": "20261001",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
-    ]
-  },
   "20261001_boatrace_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/boatrace",
     "rno": 2,
