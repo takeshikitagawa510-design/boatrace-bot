@@ -1,1 +1,35 @@
-{}
+{
+  "20261002_下関_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 12,
+    "venue_jp": "下関",
+    "date": "20261002",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-154-1543",
+      "5-124-1243"
+    ]
+  },
+  "20261002_下関_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 4,
+    "venue_jp": "下関",
+    "date": "20261002",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-316-3164",
+      "3-216-2164"
+    ]
+  },
+  "20261002_下関_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 9,
+    "venue_jp": "下関",
+    "date": "20261002",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-563-5631",
+      "5-463-4631"
+    ]
+  }
+}
