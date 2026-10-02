@@ -10,17 +10,6 @@
       "5-124-1243"
     ]
   },
-  "20261002_下関_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 4,
-    "venue_jp": "下関",
-    "date": "20261002",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-316-3164",
-      "3-216-2164"
-    ]
-  },
   "20261002_下関_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/shimonoseki",
     "rno": 9,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-541-5416",
       "5-241-2416"
+    ]
+  },
+  "20261002_蒲郡_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 5,
+    "venue_jp": "蒲郡",
+    "date": "20261002",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "5-132-1326",
+      "6-153-1532"
     ]
   }
 }
