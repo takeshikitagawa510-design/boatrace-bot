@@ -31,5 +31,16 @@
       "4-563-5631",
       "5-463-4631"
     ]
+  },
+  "20261002_児島_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 9,
+    "venue_jp": "児島",
+    "date": "20261002",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-163-1634",
+      "6-123-1234"
+    ]
   }
 }
