@@ -31,5 +31,27 @@
       "4-563-5631",
       "5-463-4631"
     ]
+  },
+  "20261002_boatrace_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 4,
+    "venue_jp": "boatrace",
+    "date": "20261002",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-541-5416",
+      "5-241-2416"
+    ]
+  },
+  "20261002_丸亀_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 4,
+    "venue_jp": "丸亀",
+    "date": "20261002",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-152-1524",
+      "5-132-1324"
+    ]
   }
 }
