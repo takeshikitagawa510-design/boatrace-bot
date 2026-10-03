@@ -31,5 +31,27 @@
       "2-136-1364",
       "3-126-1264"
     ]
+  },
+  "20261003_児島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 10,
+    "venue_jp": "児島",
+    "date": "20261003",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-561-5614",
+      "5-361-3614"
+    ]
+  },
+  "20261003_福岡_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 10,
+    "venue_jp": "福岡",
+    "date": "20261003",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-154-1543",
+      "5-124-1243"
+    ]
   }
 }
