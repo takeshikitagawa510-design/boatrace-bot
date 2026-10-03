@@ -10,17 +10,6 @@
       "6-314-3145"
     ]
   },
-  "20261003_唐津_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/karatsu",
-    "rno": 9,
-    "venue_jp": "唐津",
-    "date": "20261003",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20261003_徳山_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 9,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "2-136-1364",
       "3-126-1264"
+    ]
+  },
+  "20261003_戸田_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20261003",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-146-1462",
+      "4-136-1362"
     ]
   }
 }
