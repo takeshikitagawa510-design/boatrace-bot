@@ -20,5 +20,16 @@
       "2-136-1364",
       "3-126-1264"
     ]
+  },
+  "20261003_boatrace_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 6,
+    "venue_jp": "boatrace",
+    "date": "20261003",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-164-1645",
+      "6-134-1345"
+    ]
   }
 }
