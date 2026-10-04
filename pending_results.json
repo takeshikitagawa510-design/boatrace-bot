@@ -1,13 +1,13 @@
 {
-  "20261004_戸田_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 6,
-    "venue_jp": "戸田",
+  "20261004_尼崎_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 7,
+    "venue_jp": "尼崎",
     "date": "20261004",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-146-1463",
-      "4-126-1263"
+      "2-145-1453",
+      "4-125-1253"
     ]
   }
 }
