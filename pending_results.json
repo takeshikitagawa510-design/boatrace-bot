@@ -1,26 +1,4 @@
 {
-  "20261004_尼崎_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 2,
-    "venue_jp": "尼崎",
-    "date": "20261004",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-564-5643",
-      "5-264-2643"
-    ]
-  },
-  "20261004_多摩川_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamakawa",
-    "rno": 2,
-    "venue_jp": "多摩川",
-    "date": "20261004",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
-    ]
-  },
   "20261004_戸田_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 2,
@@ -30,6 +8,17 @@
     "recommended_combos": [
       "2-135-1356",
       "3-125-1256"
+    ]
+  },
+  "20261004_福岡_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 2,
+    "venue_jp": "福岡",
+    "date": "20261004",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
