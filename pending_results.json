@@ -1,15 +1,4 @@
 {
-  "20261004_mikuni_sg_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
-    "rno": 5,
-    "venue_jp": "mikuni_sg",
-    "date": "20261004",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-345-3456",
-      "3-245-2456"
-    ]
-  },
   "20261004_尼崎_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 5,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "2-153-1534",
       "5-123-1234"
+    ]
+  },
+  "20261004_福岡_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 5,
+    "venue_jp": "福岡",
+    "date": "20261004",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
     ]
   }
 }
