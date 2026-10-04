@@ -1,15 +1,4 @@
 {
-  "20261004_福岡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 2,
-    "venue_jp": "福岡",
-    "date": "20261004",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-163-1635",
-      "6-123-1235"
-    ]
-  },
   "20261004_徳山_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 7,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "3-142-1425",
       "4-132-1325"
+    ]
+  },
+  "20261004_浜名湖_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 2,
+    "venue_jp": "浜名湖",
+    "date": "20261004",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
