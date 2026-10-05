@@ -20,5 +20,16 @@
       "4-163-1632",
       "6-143-1432"
     ]
+  },
+  "20261005_mikuni_sg_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
+    "rno": 7,
+    "venue_jp": "mikuni_sg",
+    "date": "20261005",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-345-3451",
+      "3-245-2451"
+    ]
   }
 }
