@@ -21,15 +21,15 @@
       "6-143-1432"
     ]
   },
-  "20261005_徳山_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 5,
-    "venue_jp": "徳山",
+  "20261005_戸田_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 1,
+    "venue_jp": "戸田",
     "date": "20261005",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
