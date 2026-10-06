@@ -53,5 +53,16 @@
       "5-612-6124",
       "6-512-5124"
     ]
+  },
+  "20261006_boatrace_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 8,
+    "venue_jp": "boatrace",
+    "date": "20261006",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
