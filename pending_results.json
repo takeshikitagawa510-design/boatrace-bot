@@ -31,5 +31,16 @@
       "2-346-3465",
       "3-246-2465"
     ]
+  },
+  "20261006_mikuni_sg_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
+    "rno": 4,
+    "venue_jp": "mikuni_sg",
+    "date": "20261006",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-453-4536",
+      "4-253-2536"
+    ]
   }
 }
