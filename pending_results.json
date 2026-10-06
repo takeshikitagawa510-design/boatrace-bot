@@ -21,17 +21,6 @@
       "6-123-1235"
     ]
   },
-  "20261006_mikuni_sg_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
-    "rno": 9,
-    "venue_jp": "mikuni_sg",
-    "date": "20261006",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-452-4521",
-      "4-352-3521"
-    ]
-  },
   "20261006_多摩川_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamakawa",
     "rno": 9,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "3-146-1462",
       "4-136-1362"
+    ]
+  },
+  "20261006_戸田_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 9,
+    "venue_jp": "戸田",
+    "date": "20261006",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1452",
+      "4-135-1352"
     ]
   }
 }
