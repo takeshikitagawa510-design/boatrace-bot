@@ -20,5 +20,27 @@
       "2-163-1635",
       "6-123-1235"
     ]
+  },
+  "20261006_多摩川_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 6,
+    "venue_jp": "多摩川",
+    "date": "20261006",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-463-4631",
+      "4-263-2631"
+    ]
+  },
+  "20261006_尼崎_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 6,
+    "venue_jp": "尼崎",
+    "date": "20261006",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
+    ]
   }
 }
