@@ -20,27 +20,5 @@
       "2-154-1543",
       "5-124-1243"
     ]
-  },
-  "20261007_児島_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 11,
-    "venue_jp": "児島",
-    "date": "20261007",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-164-1642",
-      "6-134-1342"
-    ]
-  },
-  "20261007_mikuni_sg_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
-    "rno": 12,
-    "venue_jp": "mikuni_sg",
-    "date": "20261007",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
   }
 }
