@@ -21,15 +21,26 @@
       "5-124-1243"
     ]
   },
-  "20261007_徳山_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 4,
-    "venue_jp": "徳山",
+  "20261007_鳴門_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 5,
+    "venue_jp": "鳴門",
     "date": "20261007",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-165-1652",
-      "6-135-1352"
+      "2-136-1364",
+      "3-126-1264"
+    ]
+  },
+  "20261007_常滑_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 1,
+    "venue_jp": "常滑",
+    "date": "20261007",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
     ]
   }
 }
