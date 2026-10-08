@@ -31,16 +31,5 @@
       "3-462-4621",
       "4-362-3621"
     ]
-  },
-  "20261008_mikuni_sg_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni_sg",
-    "rno": 5,
-    "venue_jp": "mikuni_sg",
-    "date": "20261008",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
-    ]
   }
 }
