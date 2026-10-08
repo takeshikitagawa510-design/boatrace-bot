@@ -31,27 +31,5 @@
       "3-462-4621",
       "4-362-3621"
     ]
-  },
-  "20261008_児島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 12,
-    "venue_jp": "児島",
-    "date": "20261008",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-163-1632",
-      "6-143-1432"
-    ]
-  },
-  "20261008_桐生_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 4,
-    "venue_jp": "桐生",
-    "date": "20261008",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-451-4516",
-      "4-351-3516"
-    ]
   }
 }
