@@ -20,5 +20,27 @@
       "2-634-6341",
       "6-234-2341"
     ]
+  },
+  "20261009_多摩川_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 11,
+    "venue_jp": "多摩川",
+    "date": "20261009",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-145-1456",
+      "4-135-1356"
+    ]
+  },
+  "20261009_蒲郡_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 2,
+    "venue_jp": "蒲郡",
+    "date": "20261009",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-561-5613",
+      "5-261-2613"
+    ]
   }
 }
