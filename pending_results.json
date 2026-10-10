@@ -53,5 +53,16 @@
       "5-613-6132",
       "6-513-5132"
     ]
+  },
+  "20261010_boatrace_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 10,
+    "venue_jp": "boatrace",
+    "date": "20261010",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-462-4625",
+      "4-362-3625"
+    ]
   }
 }
