@@ -1,15 +1,4 @@
 {
-  "20261011_唐津_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/karatsu",
-    "rno": 9,
-    "venue_jp": "唐津",
-    "date": "20261011",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
-    ]
-  },
   "20261011_徳山_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 9,
