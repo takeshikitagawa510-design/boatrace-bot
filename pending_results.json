@@ -9,5 +9,16 @@
       "3-164-1642",
       "6-134-1342"
     ]
+  },
+  "20261012_唐津_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 10,
+    "venue_jp": "唐津",
+    "date": "20261012",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
