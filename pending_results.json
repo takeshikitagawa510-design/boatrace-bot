@@ -10,28 +10,6 @@
       "3-124-1245"
     ]
   },
-  "20261012_桐生_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 2,
-    "venue_jp": "桐生",
-    "date": "20261012",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
-  "20261012_丸亀_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 2,
-    "venue_jp": "丸亀",
-    "date": "20261012",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
-    ]
-  },
   "20261012_浜名湖_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
     "rno": 11,
@@ -41,6 +19,17 @@
     "recommended_combos": [
       "4-153-1532",
       "5-143-1432"
+    ]
+  },
+  "20261012_児島_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 11,
+    "venue_jp": "児島",
+    "date": "20261012",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
