@@ -1,24 +1,13 @@
 {
-  "20261012_戸田_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
+  "20261012_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 5,
-    "venue_jp": "戸田",
-    "date": "20261012",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-162-1625",
-      "6-142-1425"
-    ]
-  },
-  "20261012_徳山_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 9,
-    "venue_jp": "徳山",
+    "venue_jp": "児島",
     "date": "20261012",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-154-1543",
-      "5-124-1243"
+      "3-164-1642",
+      "6-134-1342"
     ]
   }
 }
