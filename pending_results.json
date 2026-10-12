@@ -42,5 +42,16 @@
       "2-456-4561",
       "4-256-2561"
     ]
+  },
+  "20261012_boatrace_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/boatrace",
+    "rno": 12,
+    "venue_jp": "boatrace",
+    "date": "20261012",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
