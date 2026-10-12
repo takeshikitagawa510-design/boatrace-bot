@@ -9,5 +9,27 @@
       "2-564-5641",
       "5-264-2641"
     ]
+  },
+  "20261012_戸田_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20261012",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-162-1625",
+      "6-142-1425"
+    ]
+  },
+  "20261012_徳山_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 9,
+    "venue_jp": "徳山",
+    "date": "20261012",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-154-1543",
+      "5-124-1243"
+    ]
   }
 }
