@@ -500,19 +500,22 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 今日開催されているか厳密にチェック（日付不一致または日付未記載は過去データとみなしスキップ）
+        # 💡 データ内の日付が存在し、かつ今日と明確に異なる場合のみスキップ
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
+                # トップまたは1R目の中の日付キーを探す
                 date_val = check_d.get("date") or check_d.get("created_at") or ""
+                if not date_val and "1R" in check_d and isinstance(check_d["1R"], dict):
+                    date_val = check_d["1R"].get("date") or ""
                 clean_d = re.sub(r"\D", "", str(date_val))[:8]
                 if len(clean_d) == 8:
                     data_date = clean_d
                     break
 
-        # 日付が今日（TODAY_STR）と一致しない場合は非開催または過去データとして完全除外
-        if data_date != TODAY_STR:
-            print(f"⏭️ 【非開催/過去データ除外】{venue_japanese} (データ日: {data_date} != 今日: {TODAY_STR})")
+        # 日付データが明確に存在して、かつ今日でない場合のみ除外（未設定時は当日の生データとして処理）
+        if data_date and data_date != TODAY_STR:
+            print(f"⏭️ 【過去データ除外】{venue_japanese} (データ日: {data_date} != 今日: {TODAY_STR})")
             continue
             
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
