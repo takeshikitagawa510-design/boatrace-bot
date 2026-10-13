@@ -174,22 +174,17 @@ def update_venues():
         # 女子戦ポータルと全会場フォールバックを追加
         today_venues.add("https://boatrace-shinsum.com/joshi/")
 
-        fallback_venues = [
-            "https://boatrace-shinsum.com/naruto/",
-            "https://boatrace-shinsum.com/joshi/naruto/",
-            "https://boatrace-shinsum.com/omura/",
-            "https://boatrace-shinsum.com/joshi/",
-            "https://boatrace-shinsum.com/joshi/omura/",
-            "https://boatrace-shinsum.com/omura_sg/",
-            "https://boatrace-shinsum.com/wakamatsu/",
-            "https://boatrace-shinsum.com/marugame/",
-            "https://boatrace-shinsum.com/suminoe/",
-            "https://boatrace-shinsum.com/shimonoseki/",
-            "https://boatrace-shinsum.com/kiryu/",
-            "https://boatrace-shinsum.com/gamagori/",
+        # 💡 江戸川と津を除く全国22場をすべて巡回対象にする
+        target_venue_codes = [
+            "kiryu", "toda", "heiwajima", "tamagawa",
+            "hamanako", "gamagori", "tokoname", "mikuni",
+            "biwako", "suminoe", "amagasaki", "naruto", "marugame",
+            "kojima", "miyajima", "tokuyama", "shimonoseki", "wakamatsu",
+            "ashiya", "fukuoka", "karatsu", "omura"
         ]
-        for fv in fallback_venues:
-            today_venues.add(fv)
+        for v_code in target_venue_codes:
+            today_venues.add(f"https://boatrace-shinsum.com/{v_code}/")
+            today_venues.add(f"https://boatrace-shinsum.com/joshi/{v_code}/")
 
         print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
 
@@ -748,11 +743,11 @@ def monitor_shinsum(venue_urls):
                         except:
                             pass
 
-                # 外枠（3〜6号艇）の捲り脅威チェック
+                # 外枠（4〜6号艇）の一撃捲り脅威チェック
                 outer_threat = False
-                for b_outer in boats[2:]:
+                for b_outer in boats[3:]:
                     bo_str = json.dumps(b_outer, ensure_ascii=False)
-                    if ("Imperial" in bo_str or "覚醒" in bo_str) and ("+" in bo_str or "＋" in bo_str):
+                    if ("Imperial" in bo_str or "MAX覚醒" in bo_str) and ("+" in bo_str or "＋" in bo_str):
                         outer_threat = True
                         break
 
