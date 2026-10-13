@@ -35,6 +35,7 @@ jobs:
           SHINSUM_USER: ${{ secrets.SHINSUM_USER }}
           SHINSUM_PASS: ${{ secrets.SHINSUM_PASS }}
           MONITOR_DISCORD_WEBHOOK_URL: ${{ secrets.MONITOR_DISCORD_WEBHOOK_URL }}
+          TETTAN_DISCORD_WEBHOOK_URL: ${{ secrets.TETTAN_DISCORD_WEBHOOK_URL }}
         run: python monitor.py
 
       - name: Run Result Checker
