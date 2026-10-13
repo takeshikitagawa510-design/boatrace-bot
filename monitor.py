@@ -500,7 +500,7 @@ def monitor_shinsum(venue_urls):
         except Exception as e:
             print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
 
-        # 💡 データ内の日付が存在しかつ今日と違う場合のみスキップ（判定を緩和）
+        # 💡 今日開催されているか厳密にチェック（日付不一致または日付未記載は過去データとみなしスキップ）
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
@@ -510,10 +510,11 @@ def monitor_shinsum(venue_urls):
                     data_date = clean_d
                     break
 
-        if data_date and data_date != TODAY_STR:
-            print(f"⏭️ 【スキップ】{venue_japanese} は過去データです ({data_date} != {TODAY_STR})")
+        # 日付が今日（TODAY_STR）と一致しない場合は非開催または過去データとして完全除外
+        if data_date != TODAY_STR:
+            print(f"⏭️ 【非開催/過去データ除外】{venue_japanese} (データ日: {data_date} != 今日: {TODAY_STR})")
             continue
-
+            
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
         for rno_key in all_race_keys:
