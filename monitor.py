@@ -20,6 +20,8 @@ PASSWORD = os.environ.get("SHINSUM_PASS") or "sao"
 
 # ⚡ リアルタイム監視用 Webhook（カードのみ送信）
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
+# 🎯 イン逃げ鉄板用 Webhook（専用チャンネル用。未設定ならリアルタイム監視用にフォールバック）
+TETTAN_DISCORD_WEBHOOK_URL = os.environ.get("TETTAN_DISCORD_WEBHOOK_URL") or DISCORD_WEBHOOK_URL
 
 # 🎯 的中・回収実績用 Webhook（テキストのみ送信）
 RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
@@ -666,6 +668,149 @@ def monitor_shinsum(venue_urls):
                     )
                     notified_races.add(slit_race_id)
                     save_notified_races()
+                    
+            # ==========================================
+            # ④ 🎯 厳選イン逃げ鉄板判定（気配分布型 2〜4点極小買い目）
+            # ==========================================
+            tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
+
+            if tettan_race_id not in notified_races:
+                # 1号艇の判定
+                b1 = boats[0] if len(boats) >= 1 else {}
+                b1_str = json.dumps(b1, ensure_ascii=False)
+
+                w1_rate = 0.0
+                try:
+                    clean_w1 = str(b1.get("rate_1", "")).replace("%", "").replace("+", "").replace("＋", "").strip()
+                    if clean_w1:
+                        w1_rate = float(clean_w1)
+                except:
+                    w1_rate = 0.0
+
+                w1_tdiff = 0.0
+                for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
+                    if cand in b1_str:
+                        try:
+                            start_idx = b1_str.find(cand)
+                            sub_str = b1_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
+                            w1_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
+                            break
+                        except:
+                            pass
+
+                # 2号艇（壁）の判定
+                b2 = boats[1] if len(boats) >= 2 else {}
+                b2_str = json.dumps(b2, ensure_ascii=False)
+                w2_tdiff = 0.0
+                for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
+                    if cand in b2_str:
+                        try:
+                            start_idx = b2_str.find(cand)
+                            sub_str = b2_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
+                            w2_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
+                            break
+                        except:
+                            pass
+
+                # 外枠（3〜6号艇）の捲り脅威チェック
+                outer_threat = False
+                for b_outer in boats[2:]:
+                    bo_str = json.dumps(b_outer, ensure_ascii=False)
+                    if ("Imperial" in bo_str or "覚醒" in bo_str) and ("+" in bo_str or "＋" in bo_str):
+                        outer_threat = True
+                        break
+
+                # イン逃げ成立条件（1がマイナスでなく、2の壁が機能し、外の攻め手なし）
+                is_tettan = (w1_tdiff >= -0.1) and (w2_tdiff >= -0.15) and (not outer_threat) and (w1_rate >= 0.0)
+
+                if is_tettan:
+                    # 相手候補（2〜6号艇）のタイム差スコアリング
+                    opponents = []
+                    for idx, b_other in enumerate(boats[1:], start=2):
+                        o_str = json.dumps(b_other, ensure_ascii=False)
+                        o_tdiff = -99.0
+                        for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
+                            if cand in o_str:
+                                try:
+                                    start_idx = o_str.find(cand)
+                                    sub_str = o_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
+                                    o_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
+                                    break
+                                except:
+                                    pass
+                        opponents.append({"waku": idx, "tdiff": o_tdiff})
+
+                    # 気配スコア順に並べ替え
+                    opponents.sort(key=lambda x: x["tdiff"], reverse=True)
+
+                    r1_waku = opponents[0]["waku"]
+                    r1_tdiff = opponents[0]["tdiff"]
+                    r2_waku = opponents[1]["waku"]
+                    r2_tdiff = opponents[1]["tdiff"]
+                    r3_waku = opponents[2]["waku"]
+                    r3_tdiff = opponents[2]["tdiff"]
+
+                    # ギャップ判定（スコア差の計算）
+                    gap_1_2 = r1_tdiff - r2_tdiff
+                    gap_2_3 = r2_tdiff - r3_tdiff
+
+                    tettan_picks = []
+                    rank_label = ""
+
+                    # 【パターンA: 2艇抜け（例: 3と6が良い） ➔ 1-36-36 の2点】
+                    if gap_2_3 >= 0.15 and r2_tdiff >= 0.0:
+                        tettan_picks = [
+                            f"1-{r1_waku}-{r2_waku}",
+                            f"1-{r2_waku}-{r1_waku}"
+                        ]
+                        rank_label = f"【上位2艇一騎打ち・極選2点】1-{r1_waku}{r2_waku}-{r1_waku}{r2_waku}"
+
+                    # 【パターンB: 1艇突出（例: 4が抜けて相手2艇追走） ➔ 1-4=23 の4点】
+                    elif gap_1_2 >= 0.15:
+                        tettan_picks = [
+                            f"1-{r1_waku}-{r2_waku}",
+                            f"1-{r1_waku}-{r3_waku}",
+                            f"1-{r2_waku}-{r1_waku}",
+                            f"1-{r3_waku}-{r1_waku}"
+                        ]
+                        rank_label = f"【対抗軸1艇・厳選4点】1-{r1_waku}={r2_waku},{r3_waku}"
+
+                    # 【パターンC: 順当イン逃げ（相手団子・2号艇壁重視） ➔ 3点】
+                    else:
+                        if r1_waku == 2:
+                            tettan_picks = [
+                                f"1-2-{r2_waku}",
+                                f"1-2-{r3_waku}"
+                            ]
+                            r4_waku = opponents[3]["waku"]
+                            tettan_picks.append(f"1-2-{r4_waku}")
+                            rank_label = f"【壁厚順当・本線3点】1-2-{r2_waku},{r3_waku},{r4_waku}"
+                        else:
+                            tettan_picks = [
+                                f"1-{r1_waku}-{r2_waku}",
+                                f"1-{r2_waku}-{r1_waku}",
+                                f"1-{r1_waku}-{r3_waku}",
+                                f"1-{r3_waku}-{r1_waku}"
+                            ]
+                            rank_label = f"【本線折り返し・4点】1-{r1_waku}={r2_waku},{r3_waku}"
+
+                    tettan_picks = list(dict.fromkeys(tettan_picks))
+
+                    fields = [
+                        {"name": "🛡️ 判定ランク", "value": f"**{rank_label}**", "inline": False},
+                        {"name": "📊 気配上位艇", "value": f"1番手: `{r1_waku}枠` ({r1_tdiff:+0.2f}) ｜ 2番手: `{r2_waku}枠` ({r2_tdiff:+0.2f}) ｜ 3番手: `{r3_waku}枠` ({r3_tdiff:+0.2f})", "inline": False},
+                        {"name": f"🎯 厳選買い目 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
+                    ]
+
+                    send_discord_embed(
+                        webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
+                        title=f"🎯 厳選イン逃げ鉄板アラート！ 【{venue_japanese} {rno_str}R】",
+                        description="イン逃げ確定級レース！気配上位艇に絞り込んだ極小点数フォーメーションです。",
+                        fields=fields,
+                        color=0x00FF88,
+                    )
+                    notified_races.add(tettan_race_id)
+                    save_notified_races()                    
 
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
