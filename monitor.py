@@ -725,24 +725,55 @@ def monitor_shinsum(venue_urls):
                 is_tettan = (w1_tdiff >= -0.1) and (w2_tdiff >= -0.15) and (not outer_threat) and (w1_rate >= 0.0)
 
                 if is_tettan:
-                    # 相手候補（2〜6号艇）のタイム差スコアリング
+                    # 相手候補（2〜6号艇）のスコアリング
                     opponents = []
                     for idx, b_other in enumerate(boats[1:], start=2):
                         o_str = json.dumps(b_other, ensure_ascii=False)
-                        o_tdiff = -99.0
-                        for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
-                            if cand in o_str:
+                        o_tdiff = None
+
+                        # ① JSON内の直接数値キーを探す（最優先）
+                        for num_key in ["diff", "time_diff", "tdiff", "time_sa", "sa"]:
+                            if num_key in b_other:
                                 try:
-                                    start_idx = o_str.find(cand)
-                                    sub_str = o_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
-                                    o_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
+                                    o_tdiff = float(str(b_other[num_key]).replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
                                     break
                                 except:
                                     pass
-                        opponents.append({"waku": idx, "tdiff": o_tdiff})
 
-                    # 気配スコア順に並べ替え
-                    opponents.sort(key=lambda x: x["tdiff"], reverse=True)
+                        # ② 文字列から正規表現で確実に抽出（+0.09 や +0.15 など全て対応）
+                        if o_tdiff is None:
+                            match = re.search(r"([＋+－\-−]\s*0\.\d{1,2})", o_str)
+                            if match:
+                                try:
+                                    clean_val = match.group(1).replace("＋", "+").replace("－", "-").replace("−", "-").replace(" ", "")
+                                    o_tdiff = float(clean_val)
+                                except:
+                                    pass
+
+                        # 取得できなかった場合のフォールバック
+                        if o_tdiff is None:
+                            o_tdiff = 0.0
+
+                        # ③ 1〜3着率（複勝率/軸指数）のプラス補正も加味
+                        rate_bonus = 0.0
+                        for r_key in ["rate_1", "rate_3", "rate_2", "jiku"]:
+                            if r_key in b_other:
+                                try:
+                                    r_val = float(str(b_other[r_key]).replace("%", "").replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
+                                    rate_bonus += (r_val * 0.01)  # 1%プラスごとに0.01補正
+                                except:
+                                    pass
+
+                        # 総合スコア（タイム差 + 勝率補正）
+                        total_score = o_tdiff + rate_bonus
+                        opponents.append({
+                            "waku": idx,
+                            "tdiff": o_tdiff,
+                            "score": total_score
+                        })
+
+                    # 総合スコアが良い順に並べ替え
+                    opponents.sort(key=lambda x: x["score"], reverse=True)
 
                     r1_waku = opponents[0]["waku"]
                     r1_tdiff = opponents[0]["tdiff"]
@@ -752,11 +783,8 @@ def monitor_shinsum(venue_urls):
                     r3_tdiff = opponents[2]["tdiff"]
 
                     # ギャップ判定（スコア差の計算）
-                    gap_1_2 = r1_tdiff - r2_tdiff
-                    gap_2_3 = r2_tdiff - r3_tdiff
-
-                    tettan_picks = []
-                    rank_label = ""
+                    gap_1_2 = opponents[0]["score"] - opponents[1]["score"]
+                    gap_2_3 = opponents[1]["score"] - opponents[2]["score"]
 
                     # 【パターンA: 2艇抜け（例: 3と6が良い） ➔ 1-36-36 の2点】
                     if gap_2_3 >= 0.15 and r2_tdiff >= 0.0:
