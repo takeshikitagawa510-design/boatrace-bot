@@ -678,44 +678,68 @@ def monitor_shinsum(venue_urls):
                 b1 = boats[0] if len(boats) >= 1 else {}
                 b1_str = json.dumps(b1, ensure_ascii=False)
 
-                # ① 舟券太郎の画面上部「1着率」（例: 榎選手の 51%）を取得
-                base_win_rate = 0.0
-                for rk in ["rate", "win_rate", "rate_1chaku", "first_rate", "r1"]:
+                # ① 1号艇固有の「素の1着率（76%など）」をデータから確実に取得（場平均での推測は完全廃止）
+                base_win_rate = None
+
+                # (A) レースJSON内の直接キーを網羅探索
+                for rk in ["rate", "win_rate", "first_rate", "rate_first", "base_rate", "zenki_rate", "in_rate", "r1"]:
                     if rk in b1:
                         try:
                             clean_v = str(b1[rk]).replace("%", "").replace("+", "").replace("＋", "").strip()
                             if clean_v:
                                 v_num = float(clean_v)
-                                if v_num > base_win_rate:
+                                if v_num >= 20.0:  # インの1着率として有効な値
                                     base_win_rate = v_num
+                                    break
                         except:
                             pass
 
-                # ② 下の表の展示タイム等による上昇率（例: +8%）を取得
-                w1_rate = 0.0
+                # (B) レースJSON文字列から「76%」等のパーセンテージ表記を直接抽出
+                if base_win_rate is None:
+                    # プラス/マイナスが付いていない純粋なパーセント表記を探す
+                    matches = re.findall(r'(?<![+\-＋－−])(\d{2})%', b1_str)
+                    for m in matches:
+                        try:
+                            val_m = float(m)
+                            if 30.0 <= val_m <= 95.0:
+                                base_win_rate = val_m
+                                break
+                        except:
+                            pass
+
+                # (C) 登録番号（登番）からチェッカーデータ（checker_data）の1コース1着率を直接参照
+                if base_win_rate is None and checker_data:
+                    toban1 = None
+                    for exact_key in ["id", "no", "toban", "register_id", "player_id", "touban"]:
+                        if exact_key in b1 and str(b1[exact_key]).isdigit() and 3000 <= int(b1[exact_key]) <= 6000:
+                            toban1 = str(b1[exact_key])
+                            break
+                    if not toban1:
+                        for k, v in b1.items():
+                            if str(v).isdigit() and 3000 <= int(v) <= 6000:
+                                toban1 = str(v)
+                                break
+                    if toban1 and toban1 in checker_data:
+                        w1_data = next((w for w in checker_data[toban1] if w.get("n") == 1), None)
+                        if w1_data:
+                            # 1コース通算1着率（t1 または rows）
+                            base_win_rate = float(w1_data.get("t1", 0.0))
+
+                # ② 下の表の展示タイム等による上昇率（例: +11%）を取得
+                w1_bonus = 0.0
                 try:
                     clean_w1 = str(b1.get("rate_1", "")).replace("%", "").strip()
                     if clean_w1.startswith(("+", "＋", "-", "－", "−")):
-                        w1_rate = float(clean_w1.replace("＋", "+").replace("－", "-").replace("−", "-"))
+                        w1_bonus = float(clean_w1.replace("＋", "+").replace("－", "-").replace("−", "-"))
                 except:
-                    w1_rate = 0.0
+                    w1_bonus = 0.0
 
-                # ③ 最終イン逃げ率の算出（例: 51% + 8% = 59%）
-                # ※基本値が取れていれば足し算、取れていなければ場平均(約53%)＋上昇率で判定
-                if base_win_rate >= 30.0:
-                    final_in_rate = base_win_rate + w1_rate
+                # ③ 選手の1着率が取得できた場合のみ、展示加算を足して最終判定
+                # （取れなかった場合は場平均などで誤魔化さずスキップ）
+                if base_win_rate is not None:
+                    final_in_rate = base_win_rate + w1_bonus
                 else:
-                    base_in_rates = {
-                        "大村": 65.0, "芦屋": 63.0, "徳山": 63.0, "下関": 60.0,
-                        "若松": 58.0, "住之江": 57.0, "丸亀": 56.0, "尼崎": 56.0,
-                        "津": 55.0, "宮島": 55.0, "蒲郡": 55.0, "からつ": 54.0, "唐津": 54.0,
-                        "児島": 54.0, "福岡": 53.0, "三国": 53.0, "びわこ": 52.0,
-                        "浜名湖": 52.0, "鳴門": 51.0, "桐生": 51.0, "常滑": 51.0,
-                        "多摩川": 47.0, "平和島": 46.0, "江戸川": 45.0, "戸田": 44.0,
-                    }
-                    clean_venue_key = venue_japanese.replace("[女子]", "").strip()
-                    venue_base = base_in_rates.get(clean_venue_key, 53.0)
-                    final_in_rate = venue_base + w1_rate
+                    final_in_rate = 0.0
 
                 # 1号艇のシンsumタイム差
                 w1_tdiff = 0.0
@@ -752,7 +776,7 @@ def monitor_shinsum(venue_urls):
                         break
 
                 # 🎯【鉄板判定】
-                # ① イン逃げ率が「70%以上」（浜名湖9Rの59%などはここで落選）
+                # ① 本人の素の勝率＋展示加算が「70%以上」（選手データに基づく厳密計算）
                 # ② 1号艇タイムが凹んでいない (>= -0.05)
                 # ③ 2号艇の壁が機能している (>= -0.10)
                 # ④ 外枠に捲り脅威なし
@@ -762,7 +786,6 @@ def monitor_shinsum(venue_urls):
                     and (w2_tdiff >= -0.10)
                     and (not outer_threat)
                 )
-
                 if is_tettan:
                     # 相手候補（2〜6号艇）のスコアリング
                     opponents = []
