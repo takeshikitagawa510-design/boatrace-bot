@@ -672,7 +672,7 @@ def monitor_shinsum(venue_urls):
                     )
                     notified_races.add(slit_race_id)
                     save_notified_races()
-                    
+
             # ==========================================
             # ④ 🎯 厳選イン逃げ鉄板判定（気配分布型 2〜4点極小買い目）
             # ==========================================
@@ -683,14 +683,46 @@ def monitor_shinsum(venue_urls):
                 b1 = boats[0] if len(boats) >= 1 else {}
                 b1_str = json.dumps(b1, ensure_ascii=False)
 
+                # ① 舟券太郎の画面上部「1着率」（例: 榎選手の 51%）を取得
+                base_win_rate = 0.0
+                for rk in ["rate", "win_rate", "rate_1chaku", "first_rate", "r1"]:
+                    if rk in b1:
+                        try:
+                            clean_v = str(b1[rk]).replace("%", "").replace("+", "").replace("＋", "").strip()
+                            if clean_v:
+                                v_num = float(clean_v)
+                                if v_num > base_win_rate:
+                                    base_win_rate = v_num
+                        except:
+                            pass
+
+                # ② 下の表の展示タイム等による上昇率（例: +8%）を取得
                 w1_rate = 0.0
                 try:
-                    clean_w1 = str(b1.get("rate_1", "")).replace("%", "").replace("+", "").replace("＋", "").strip()
-                    if clean_w1:
-                        w1_rate = float(clean_w1)
+                    clean_w1 = str(b1.get("rate_1", "")).replace("%", "").strip()
+                    if clean_w1.startswith(("+", "＋", "-", "－", "−")):
+                        w1_rate = float(clean_w1.replace("＋", "+").replace("－", "-").replace("−", "-"))
                 except:
                     w1_rate = 0.0
 
+                # ③ 最終イン逃げ率の算出（例: 51% + 8% = 59%）
+                # ※基本値が取れていれば足し算、取れていなければ場平均(約53%)＋上昇率で判定
+                if base_win_rate >= 30.0:
+                    final_in_rate = base_win_rate + w1_rate
+                else:
+                    base_in_rates = {
+                        "大村": 65.0, "芦屋": 63.0, "徳山": 63.0, "下関": 60.0,
+                        "若松": 58.0, "住之江": 57.0, "丸亀": 56.0, "尼崎": 56.0,
+                        "津": 55.0, "宮島": 55.0, "蒲郡": 55.0, "からつ": 54.0, "唐津": 54.0,
+                        "児島": 54.0, "福岡": 53.0, "三国": 53.0, "びわこ": 52.0,
+                        "浜名湖": 52.0, "鳴門": 51.0, "桐生": 51.0, "常滑": 51.0,
+                        "多摩川": 47.0, "平和島": 46.0, "江戸川": 45.0, "戸田": 44.0,
+                    }
+                    clean_venue_key = venue_japanese.replace("[女子]", "").strip()
+                    venue_base = base_in_rates.get(clean_venue_key, 53.0)
+                    final_in_rate = venue_base + w1_rate
+
+                # 1号艇のシンsumタイム差
                 w1_tdiff = 0.0
                 for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
                     if cand in b1_str:
@@ -724,8 +756,17 @@ def monitor_shinsum(venue_urls):
                         outer_threat = True
                         break
 
-                # イン逃げ成立条件（1がマイナスでなく、2の壁が機能し、外の攻め手なし）
-                is_tettan = (w1_tdiff >= -0.1) and (w2_tdiff >= -0.15) and (not outer_threat) and (w1_rate >= 0.0)
+                # 🎯【鉄板判定】
+                # ① イン逃げ率が「70%以上」（浜名湖9Rの59%などはここで落選）
+                # ② 1号艇タイムが凹んでいない (>= -0.05)
+                # ③ 2号艇の壁が機能している (>= -0.10)
+                # ④ 外枠に捲り脅威なし
+                is_tettan = (
+                    (final_in_rate >= 70.0)
+                    and (w1_tdiff >= -0.05)
+                    and (w2_tdiff >= -0.10)
+                    and (not outer_threat)
+                )
 
                 if is_tettan:
                     # 相手候補（2〜6号艇）のスコアリング
