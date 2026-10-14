@@ -461,23 +461,33 @@ def monitor_shinsum(venue_urls):
         except Exception:
             pending_results = {}
 
-    # 🎯 各会場を回る前に joken.json を1回だけ読み込んで高勝率マップを作成
+    # 🎯 各会場を回る前に joken.json を読み込んで高勝率マップを作成
     joken_high_races = {}
     timestamp = int(time.time() * 1000)
-    try:
-        j_url = f"https://boatrace-shinsum.com/joken/joken.json?t={timestamp}"
-        j_resp = session.get(j_url, auth=AUTH, timeout=8)
-        if j_resp.status_code == 200:
-            j_data = j_resp.json()
-            for row in j_data.get("rows", []):
-                v_name = str(row.get("v", "")).strip()
-                r_num = str(row.get("r", "")).strip()
-                inn_rate = float(row.get("inn", 0.0))
-                if v_name and r_num and inn_rate >= 70.0:
-                    joken_high_races[f"{v_name}_{r_num}"] = inn_rate
-            print(f"📦 joken.json から鉄板レース候補 {len(joken_high_races)}件 を読み込みました。")
-    except Exception as e:
-        print(f"⚠️ joken.json 読み込みエラー: {e}")
+    cand_joken_urls = [
+        f"https://boatrace-shinsum.com/joken/joken.json?t={timestamp}",
+        f"https://boatrace-shinsum.com/joken.json?t={timestamp}",
+    ]
+    for j_url in cand_joken_urls:
+        try:
+            j_resp = session.get(j_url, auth=AUTH, timeout=8)
+            print(f"📡 jokenアクセス試行: {j_url} -> HTTP {j_resp.status_code}")
+            if j_resp.status_code == 200:
+                j_data = j_resp.json()
+                rows = j_data.get("rows", [])
+                for row in rows:
+                    v_name = str(row.get("v", "")).strip()
+                    r_num = str(row.get("r", "")).strip()
+                    inn_rate = float(row.get("inn", 0.0))
+                    if v_name and r_num and inn_rate >= 70.0:
+                        joken_high_races[f"{v_name}_{r_num}"] = inn_rate
+                print(f"📦 joken.json 解析成功: 鉄板候補 {len(joken_high_races)}件 を取得 (全{len(rows)}件中)")
+                break
+        except Exception as e:
+            print(f"⚠️ jokenアクセス例外 ({j_url}): {e}")
+
+    if not joken_high_races:
+        print("⚠️ 警告: joken_high_races が空です。")
 
     for venue_url in venue_urls:
         parsed = urlparse(venue_url)
