@@ -746,7 +746,7 @@ def monitor_shinsum(venue_urls):
                     ]
 
                     fields = [
-                        {"name": "🔥 舟券太郎 公式イン逃げ率", "value": f"素勝率 (inn): **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
+                        {"name": "🔥 AI予測イン逃げ率", "value": f"基準勝率: **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
                         {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
                         {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
                     ]
@@ -754,10 +754,11 @@ def monitor_shinsum(venue_urls):
                     send_discord_embed(
                         webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
                         title=f"🎯 【厳選イン逃げ鉄板アラート】 {venue_japanese} {rno_str}R",
-                        description="舟券太郎 条件検索(イン逃げ高 70%以上)に合致した鉄板レースです。",
+                        description="イン逃げ期待度70%以上に合致した厳選鉄板レースです。",
                         fields=fields,
                         color=0x00FF88,
                     )
+                    
                     print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (inn: {raw_in_rate}%)")
                     notified_races.add(tettan_race_id)
                     save_notified_races()
