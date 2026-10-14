@@ -43,15 +43,15 @@
       "5-142-1423"
     ]
   },
-  "20261014_下関_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 6,
-    "venue_jp": "下関",
+  "20261014_大村_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 11,
+    "venue_jp": "大村",
     "date": "20261014",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-512-5123",
-      "5-412-4123"
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
