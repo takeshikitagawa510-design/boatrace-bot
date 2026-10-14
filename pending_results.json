@@ -9,5 +9,27 @@
       "2-165-1653",
       "6-125-1253"
     ]
+  },
+  "20261014_福岡_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 3,
+    "venue_jp": "福岡",
+    "date": "20261014",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-163-1632",
+      "6-143-1432"
+    ]
+  },
+  "20261014_芦屋_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 8,
+    "venue_jp": "芦屋",
+    "date": "20261014",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
   }
 }
