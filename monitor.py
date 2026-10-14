@@ -461,6 +461,24 @@ def monitor_shinsum(venue_urls):
         except Exception:
             pending_results = {}
 
+    # 🎯 各会場を回る前に joken.json を1回だけ読み込んで高勝率マップを作成
+    joken_high_races = {}
+    timestamp = int(time.time() * 1000)
+    try:
+        j_url = f"https://boatrace-shinsum.com/joken/joken.json?t={timestamp}"
+        j_resp = session.get(j_url, auth=AUTH, timeout=8)
+        if j_resp.status_code == 200:
+            j_data = j_resp.json()
+            for row in j_data.get("rows", []):
+                v_name = str(row.get("v", "")).strip()
+                r_num = str(row.get("r", "")).strip()
+                inn_rate = float(row.get("inn", 0.0))
+                if v_name and r_num and inn_rate >= 70.0:
+                    joken_high_races[f"{v_name}_{r_num}"] = inn_rate
+            print(f"📦 joken.json から鉄板レース候補 {len(joken_high_races)}件 を読み込みました。")
+    except Exception as e:
+        print(f"⚠️ joken.json 読み込みエラー: {e}")
+
     for venue_url in venue_urls:
         parsed = urlparse(venue_url)
         base_path = parsed.path.split('?')[0].rstrip("/")
@@ -674,50 +692,27 @@ def monitor_shinsum(venue_urls):
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
             if tettan_race_id not in notified_races:
-                # 🎯 joken.json を取得して会場・レース別の inn（素勝率）マップを生成
-                joken_high_races = {}
-                try:
-                    j_url = f"https://boatrace-shinsum.com/joken/joken.json?t={timestamp}"
-                    j_resp = session.get(j_url, auth=AUTH, timeout=6)
-                    if j_resp.status_code == 200:
-                        j_data = j_resp.json()
-                        rows = j_data.get("rows", [])
-                        for row in rows:
-                            venue_name = str(row.get("v", "")).strip()
-                            race_num = str(row.get("r", "")).strip()
-                            inn_rate = float(row.get("inn", 0.0))
-                            if venue_name and race_num:
-                                # 例: "住之江_5": 77.0, "大村_5": 79.0
-                                joken_high_races[f"{venue_name}_{race_num}"] = inn_rate
-                except Exception as e:
-                    print(f"⚠️ joken.json 取得エラー: {e}")
-
-                # 現在の会場・レースの照合キー
+                # 事前に読み込んだ joken.json から本レースの inn (素勝率) を照合
                 pure_v = pure_venue.replace("[女子]", "").strip()
                 race_lookup_key = f"{pure_v}_{rno_str}"
-
-                # joken.json 内に対象レースが存在し、かつ inn が 70% 以上のレースを抽出
                 raw_in_rate = joken_high_races.get(race_lookup_key, 0.0)
 
-                # 展示補正値（rate_1）を取得
-                b1 = boats[0] if len(boats) >= 1 else {}
-                ex_bonus = 0.0
-                try:
-                    clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
-                    if clean_b1_rate.startswith(("+", "＋", "-", "－", "−")):
-                        ex_bonus = float(clean_b1_rate.replace("＋", "+").replace("－", "-").replace("−", "-"))
-                except:
-                    ex_bonus = 0.0
-
-                final_rate = raw_in_rate + ex_bonus
-
-                # 💡 実行ログ出力
-                if raw_in_rate > 0:
-                    print(f"🔍 【joken確認】 {venue_japanese} {rno_str}R | inn勝率:{raw_in_rate:.1f}% | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
-
-                # 🎯【鉄板判定】本人のイン勝率（inn）が70%以上の場合のみ通知
+                # 💡 joken一覧に載っている「70%以上」のレースのみ通知処理を行う
                 if raw_in_rate >= 70.0:
-                    # 相手候補（2〜6号艇）のタイム差順に並べ替え
+                    b1 = boats[0] if len(boats) >= 1 else {}
+                    
+                    # 1号艇の展示補正値（rate_1）
+                    ex_bonus = 0.0
+                    try:
+                        clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
+                        if clean_b1_rate.startswith(("+", "＋", "-", "－", "−")):
+                            ex_bonus = float(clean_b1_rate.replace("＋", "+").replace("－", "-").replace("−", "-"))
+                    except:
+                        ex_bonus = 0.0
+
+                    final_rate = raw_in_rate + ex_bonus
+
+                    # 相手候補（2〜6号艇）のタイム差順ソート
                     opponents = []
                     for idx, b_other in enumerate(boats[1:], start=2):
                         o_tdiff = 0.0
@@ -729,9 +724,9 @@ def monitor_shinsum(venue_urls):
                         opponents.append({"waku": idx, "tdiff": o_tdiff})
 
                     opponents.sort(key=lambda x: x["tdiff"], reverse=True)
-                    r1_waku = opponents[0]["waku"]
-                    r2_waku = opponents[1]["waku"]
-                    r3_waku = opponents[2]["waku"]
+                    r1_waku = opponents[0]["waku"] if len(opponents) > 0 else 2
+                    r2_waku = opponents[1]["waku"] if len(opponents) > 1 else 3
+                    r3_waku = opponents[2]["waku"] if len(opponents) > 2 else 4
 
                     tettan_picks = [
                         f"1-{r1_waku}-{r2_waku}",
@@ -743,16 +738,17 @@ def monitor_shinsum(venue_urls):
                     fields = [
                         {"name": "🔥 舟券太郎 公式イン逃げ率", "value": f"素勝率 (inn): **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
                         {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
-                        {"name": f"🎯 厳選買い目 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
+                        {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
                     ]
 
                     send_discord_embed(
                         webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
                         title=f"🎯 【厳選イン逃げ鉄板アラート】 {venue_japanese} {rno_str}R",
-                        description=f"舟券太郎 条件検索(イン逃げ高 70%以上)に合致した鉄板レースです。",
+                        description="舟券太郎 条件検索(イン逃げ高 70%以上)に合致した鉄板レースです。",
                         fields=fields,
                         color=0x00FF88,
                     )
+                    print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (inn: {raw_in_rate}%)")
                     notified_races.add(tettan_race_id)
                     save_notified_races()
                 
