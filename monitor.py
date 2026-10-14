@@ -669,88 +669,67 @@ def monitor_shinsum(venue_urls):
                     save_notified_races()
 
             # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（新聞API直接取得＋生データ診断モード）
+            # ④ 🎯 厳選イン逃げ鉄板判定（/joken/ イン逃げ高直結モード）
             # ==========================================
+            # 1日1回、または定期的に /joken/ の高勝率レース一覧をロード
+            joken_high_races = {}
+            try:
+                # 裏側で呼ばれるJSON候補、またはHTML本体をスキャン
+                joken_urls = [
+                    "https://boatrace-shinsum.com/joken/joken.json",
+                    "https://boatrace-shinsum.com/joken/data.json",
+                    "https://boatrace-shinsum.com/joken/",
+                ]
+                for j_url in joken_urls:
+                    j_resp = session.get(f"{j_url}?t={timestamp}", auth=AUTH, timeout=6)
+                    if j_resp.status_code == 200:
+                        # JSONとして返ってきた場合
+                        try:
+                            j_data = j_resp.json()
+                            if isinstance(j_data, list):
+                                for item in j_data:
+                                    v_name = item.get("venue") or item.get("place") or item.get("jcd_name", "")
+                                    r_num = str(item.get("round") or item.get("rno") or "").replace("R", "")
+                                    rate_val = float(str(item.get("rate") or item.get("win_rate", 0)).replace("%", ""))
+                                    if v_name and r_num:
+                                        joken_high_races[f"{v_name}_{r_num}"] = rate_val
+                            elif isinstance(j_data, dict):
+                                for k, item in j_data.items():
+                                    if isinstance(item, dict):
+                                        v_name = item.get("venue") or item.get("place", "")
+                                        r_num = str(item.get("rno") or "").replace("R", "")
+                                        rate_val = float(str(item.get("rate", 0)).replace("%", ""))
+                                        if v_name and r_num:
+                                            joken_high_races[f"{v_name}_{r_num}"] = rate_val
+                            if joken_high_races:
+                                break
+                        except:
+                            # HTMLページの場合、正規表現で「場名」「R」「パーセンテージ」を抽出
+                            html_text = j_resp.text
+                            # 例: "住之江 4R ... 75%" や "大村 4R ... 79%" を検出
+                            pattern = r"([一-龥ぁ-ん]{2,4})\s*(\d{1,2})R.*?(\d{2})%"
+                            for m in re.finditer(pattern, html_text):
+                                v_found = m.group(1).strip()
+                                r_found = str(int(m.group(2)))
+                                p_found = float(m.group(3))
+                                if p_found >= 70.0:
+                                    joken_high_races[f"{v_found}_{r_found}"] = p_found
+                        if joken_high_races:
+                            break
+            except Exception as e:
+                print(f"⚠️ joken取得エラー: {e}")
+
+            # 現在巡回中の会場・レースが「joken/」の高イン逃げ対象か照合
+            pure_v = pure_venue.replace("[女子]", "").strip()
+            race_match_key = f"{pure_v}_{rno_str}"
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
-            if tettan_race_id not in notified_races:
+            # 💡 joken一覧に掲載されている高勝率レースのみを対象とする
+            if (race_match_key in joken_high_races) and (tettan_race_id not in notified_races):
+                raw_in_rate = joken_high_races[race_match_key]
+
+                # 1号艇の展示補正値（rate_1）を取得
                 b1 = boats[0] if len(boats) >= 1 else {}
-                b1_str = json.dumps(b1, ensure_ascii=False)
-
-                raw_in_rate = 0.0
-                found_source = "未取得"
-                toban1 = None
-
-                # --------------------------------------------------
-                # 🎯 1. 会場の新聞・出走表専用JSONを直接取得
-                # --------------------------------------------------
-                shinbun_json_data = {}
-                for cand_file in ["shinbun.json", "data.json", "newspaper.json", "race.json"]:
-                    try:
-                        s_url = f"{clean_base_url}/{cand_file}?t={timestamp}"
-                        resp_sb = session.get(s_url, auth=AUTH, timeout=4)
-                        if resp_sb.status_code == 200:
-                            shinbun_json_data = resp_sb.json()
-                            break
-                    except:
-                        pass
-
-                # 新聞JSONから対象レース・1号艇の勝率を取得
-                if shinbun_json_data and rno_key in shinbun_json_data:
-                    sb_race = shinbun_json_data[rno_key]
-                    sb_boats = sb_race.get("boats", []) if isinstance(sb_race, dict) else []
-                    if sb_boats and len(sb_boats) >= 1:
-                        sb_b1 = sb_boats[0]
-                        # 登番・勝率キーを網羅
-                        for k, v in sb_b1.items():
-                            clean_v = str(v).replace("%", "").strip()
-                            if clean_v.isdigit() and 3000 <= int(clean_v) <= 6000:
-                                toban1 = clean_v
-                            if any(rk in k.lower() for rk in ["rate", "win", "1chaku", "first", "p1"]):
-                                try:
-                                    f_val = float(clean_v)
-                                    if 30.0 <= f_val <= 100.0 and f_val > raw_in_rate:
-                                        raw_in_rate = f_val
-                                        found_source = f"新聞JSON[{k}]"
-                                except:
-                                    pass
-
-                # --------------------------------------------------
-                # 🎯 2. b1辞書内・arare_data内からの直接探索
-                # --------------------------------------------------
-                if raw_in_rate == 0.0:
-                    for k, v in b1.items():
-                        clean_v = str(v).replace("%", "").strip()
-                        # 登番
-                        if clean_v.isdigit() and 3000 <= int(clean_v) <= 6000:
-                            toban1 = clean_v
-                        # 勝率（+や-がつかない純粋な数値）
-                        if any(rk in str(k).lower() for rk in ["rate", "win", "r1", "p1"]) and not str(v).startswith(("+", "-", "＋", "－", "−")):
-                            try:
-                                f_val = float(clean_v)
-                                if 30.0 <= f_val <= 100.0 and f_val > raw_in_rate:
-                                    raw_in_rate = f_val
-                                    found_source = f"b1キー[{k}]"
-                            except:
-                                pass
-
-                # --------------------------------------------------
-                # 🎯 3. 登番からチェッカー（checker_data）の1コース勝率を直引き
-                # --------------------------------------------------
-                if raw_in_rate == 0.0 and toban1 and checker_data and str(toban1) in checker_data:
-                    w1_checker = next((w for w in checker_data[str(toban1)] if w.get("n") == 1), None)
-                    if w1_checker:
-                        try:
-                            t1_val = float(w1_checker.get("t1", 0.0))
-                            if t1_val > 0:
-                                raw_in_rate = t1_val
-                                found_source = f"チェッカー直引[{toban1}]"
-                        except:
-                            pass
-
-                # --------------------------------------------------
-                # 🎯 4. 展示からの増減値（+12%など）
-                # --------------------------------------------------
                 ex_bonus = 0.0
                 try:
                     clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
@@ -761,52 +740,47 @@ def monitor_shinsum(venue_urls):
 
                 final_rate = raw_in_rate + ex_bonus
 
-                # 💡 実行ログ（生データのキー一覧も表示して構造を即座に暴く）
-                b1_keys = list(b1.keys()) if isinstance(b1, dict) else []
-                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 素勝率:{raw_in_rate}%({found_source}) | 補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}% | b1キー一覧:{b1_keys}")
+                # 相手候補（2〜6号艇）の展示気配スコアリング
+                opponents = []
+                for idx, b_other in enumerate(boats[1:], start=2):
+                    o_tdiff = 0.0
+                    if "diff" in b_other:
+                        try:
+                            o_tdiff = float(str(b_other["diff"]).replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
+                        except:
+                            pass
+                    opponents.append({"waku": idx, "tdiff": o_tdiff})
 
-                # 🎯【判定】70%以上で通知
-                if final_rate >= 70.0 or raw_in_rate >= 70.0:
-                    opponents = []
-                    for idx, b_other in enumerate(boats[1:], start=2):
-                        o_tdiff = 0.0
-                        for num_key in ["diff", "time_diff", "tdiff", "time_sa", "sa"]:
-                            if num_key in b_other:
-                                try:
-                                    o_tdiff = float(str(b_other[num_key]).replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
-                                    break
-                                except:
-                                    pass
-                        opponents.append({"waku": idx, "tdiff": o_tdiff})
+                opponents.sort(key=lambda x: x["tdiff"], reverse=True)
+                r1_waku = opponents[0]["waku"]
+                r2_waku = opponents[1]["waku"]
+                r3_waku = opponents[2]["waku"]
 
-                    opponents.sort(key=lambda x: x["tdiff"], reverse=True)
-                    r1_waku = opponents[0]["waku"]
-                    r2_waku = opponents[1]["waku"]
-                    r3_waku = opponents[2]["waku"]
+                tettan_picks = [
+                    f"1-{r1_waku}-{r2_waku}",
+                    f"1-{r1_waku}-{r3_waku}",
+                    f"1-{r2_waku}-{r1_waku}",
+                    f"1-{r3_waku}-{r1_waku}"
+                ]
 
-                    tettan_picks = [
-                        f"1-{r1_waku}-{r2_waku}",
-                        f"1-{r1_waku}-{r3_waku}",
-                        f"1-{r2_waku}-{r1_waku}",
-                        f"1-{r3_waku}-{r1_waku}"
-                    ]
+                print(f"🎯 【鉄板検知】 {venue_japanese} {rno_str}R | joken勝率:{raw_in_rate:.1f}% | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
 
-                    fields = [
-                        {"name": "🔥 判定データ", "value": f"素勝率: **{raw_in_rate:.1f}%** ({found_source})\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
-                        {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
-                        {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
-                    ]
+                fields = [
+                    {"name": "🔥 joken公式イン逃げ率", "value": f"基本勝率: **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n合計期待度: **{final_rate:.1f}%**", "inline": False},
+                    {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
+                    {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
+                ]
 
-                    send_discord_embed(
-                        webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
-                        title=f"🎯 【イン逃げ70%超検知】 {venue_japanese} {rno_str}R",
-                        description="1号艇の勝率が基準(70%)を突破したため通知しました。",
-                        fields=fields,
-                        color=0x00FF88,
-                    )
-                    notified_races.add(tettan_race_id)
-                    save_notified_races()
-                    
+                send_discord_embed(
+                    webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
+                    title=f"🎯 【イン逃げ鉄板アラート】 {venue_japanese} {rno_str}R",
+                    description=f"舟券太郎 条件検索(イン逃げ高 75%以上)に該当した厳選レースです。",
+                    fields=fields,
+                    color=0x00FF88,
+                )
+                notified_races.add(tettan_race_id)
+                save_notified_races()
+                
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
