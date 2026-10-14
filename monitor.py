@@ -669,7 +669,7 @@ def monitor_shinsum(venue_urls):
                     save_notified_races()
 
             # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（HTMLスクレイピング直結モード）
+            # ④ 🎯 厳選イン逃げ鉄板判定（新聞API直接取得＋生データ診断モード）
             # ==========================================
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
@@ -677,51 +677,80 @@ def monitor_shinsum(venue_urls):
                 b1 = boats[0] if len(boats) >= 1 else {}
                 b1_str = json.dumps(b1, ensure_ascii=False)
 
-                # ① HTMLページ本体から1号艇の「素の1着率（87%など）」を直接抽出
                 raw_in_rate = 0.0
                 found_source = "未取得"
+                toban1 = None
 
-                # レースのページHTMLを取得して解析
-                try:
-                    # 会場のトップまたは対象レースのHTMLを取得
-                    race_page_url = f"{clean_base_url}/"
-                    page_resp = session.get(race_page_url, auth=AUTH, timeout=5)
-                    if page_resp.status_code == 200:
-                        page_soup = BeautifulSoup(page_resp.text, "html.parser")
-                        
-                        # 該当レース番号（例: 3R）のブロックを探す
-                        # 画面上の「1着率」の列やテーブルの1行目・1号艇のパーセントを取得
-                        text_content = page_soup.get_text()
-                        
-                        # パターン1: 「選手名 1着率」テーブルから1号艇の数値を抽出
-                        # HTML内のテーブル行から1枠のパーセンテージを探す
-                        for tr in page_soup.find_all("tr"):
-                            tr_text = tr.get_text()
-                            if ("1" in tr_text or "白" in tr_text) and "%" in tr_text:
-                                m = re.search(r'(\d{2})%', tr_text)
-                                if m:
-                                    val_cand = float(m.group(1))
-                                    if 30.0 <= val_cand <= 95.0 and val_cand > raw_in_rate:
-                                        raw_in_rate = val_cand
-                                        found_source = "HTMLテーブル"
-                                        break
-                except Exception as e:
-                    pass
+                # --------------------------------------------------
+                # 🎯 1. 会場の新聞・出走表専用JSONを直接取得
+                # --------------------------------------------------
+                shinbun_json_data = {}
+                for cand_file in ["shinbun.json", "data.json", "newspaper.json", "race.json"]:
+                    try:
+                        s_url = f"{clean_base_url}/{cand_file}?t={timestamp}"
+                        resp_sb = session.get(s_url, auth=AUTH, timeout=4)
+                        if resp_sb.status_code == 200:
+                            shinbun_json_data = resp_sb.json()
+                            break
+                    except:
+                        pass
 
-                # ② レースJSON内に埋め込まれているテキストからのバックアップ探索
+                # 新聞JSONから対象レース・1号艇の勝率を取得
+                if shinbun_json_data and rno_key in shinbun_json_data:
+                    sb_race = shinbun_json_data[rno_key]
+                    sb_boats = sb_race.get("boats", []) if isinstance(sb_race, dict) else []
+                    if sb_boats and len(sb_boats) >= 1:
+                        sb_b1 = sb_boats[0]
+                        # 登番・勝率キーを網羅
+                        for k, v in sb_b1.items():
+                            clean_v = str(v).replace("%", "").strip()
+                            if clean_v.isdigit() and 3000 <= int(clean_v) <= 6000:
+                                toban1 = clean_v
+                            if any(rk in k.lower() for rk in ["rate", "win", "1chaku", "first", "p1"]):
+                                try:
+                                    f_val = float(clean_v)
+                                    if 30.0 <= f_val <= 100.0 and f_val > raw_in_rate:
+                                        raw_in_rate = f_val
+                                        found_source = f"新聞JSON[{k}]"
+                                except:
+                                    pass
+
+                # --------------------------------------------------
+                # 🎯 2. b1辞書内・arare_data内からの直接探索
+                # --------------------------------------------------
                 if raw_in_rate == 0.0:
                     for k, v in b1.items():
-                        v_str = str(v)
-                        if "%" in v_str and not v_str.startswith(("+", "-", "＋", "－", "−")):
-                            m = re.search(r'(\d{2})%', v_str)
-                            if m:
-                                val_cand = float(m.group(1))
-                                if 30.0 <= val_cand <= 95.0:
-                                    raw_in_rate = val_cand
-                                    found_source = f"JSON[{k}]"
-                                    break
+                        clean_v = str(v).replace("%", "").strip()
+                        # 登番
+                        if clean_v.isdigit() and 3000 <= int(clean_v) <= 6000:
+                            toban1 = clean_v
+                        # 勝率（+や-がつかない純粋な数値）
+                        if any(rk in str(k).lower() for rk in ["rate", "win", "r1", "p1"]) and not str(v).startswith(("+", "-", "＋", "－", "−")):
+                            try:
+                                f_val = float(clean_v)
+                                if 30.0 <= f_val <= 100.0 and f_val > raw_in_rate:
+                                    raw_in_rate = f_val
+                                    found_source = f"b1キー[{k}]"
+                            except:
+                                pass
 
-                # ③ 展示からの増減値（例: +12%）を取得
+                # --------------------------------------------------
+                # 🎯 3. 登番からチェッカー（checker_data）の1コース勝率を直引き
+                # --------------------------------------------------
+                if raw_in_rate == 0.0 and toban1 and checker_data and str(toban1) in checker_data:
+                    w1_checker = next((w for w in checker_data[str(toban1)] if w.get("n") == 1), None)
+                    if w1_checker:
+                        try:
+                            t1_val = float(w1_checker.get("t1", 0.0))
+                            if t1_val > 0:
+                                raw_in_rate = t1_val
+                                found_source = f"チェッカー直引[{toban1}]"
+                        except:
+                            pass
+
+                # --------------------------------------------------
+                # 🎯 4. 展示からの増減値（+12%など）
+                # --------------------------------------------------
                 ex_bonus = 0.0
                 try:
                     clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
@@ -730,13 +759,13 @@ def monitor_shinsum(venue_urls):
                 except:
                     ex_bonus = 0.0
 
-                # 最終合算値
                 final_rate = raw_in_rate + ex_bonus
 
-                # 💡 実行ログ出力
-                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 素勝率:{raw_in_rate}%({found_source}) | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
+                # 💡 実行ログ（生データのキー一覧も表示して構造を即座に暴く）
+                b1_keys = list(b1.keys()) if isinstance(b1, dict) else []
+                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 素勝率:{raw_in_rate}%({found_source}) | 補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}% | b1キー一覧:{b1_keys}")
 
-                # 🎯【判定】イン勝率70%以上で通知
+                # 🎯【判定】70%以上で通知
                 if final_rate >= 70.0 or raw_in_rate >= 70.0:
                     opponents = []
                     for idx, b_other in enumerate(boats[1:], start=2):
@@ -763,8 +792,8 @@ def monitor_shinsum(venue_urls):
                     ]
 
                     fields = [
-                        {"name": "🔥 取得した1着率", "value": f"素勝率: **{raw_in_rate:.1f}%** ({found_source})\n展示補正: **{ex_bonus:+0.1f}%**\n判定合計: **{final_rate:.1f}%**", "inline": False},
-                        {"name": "📊 相手候補", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
+                        {"name": "🔥 判定データ", "value": f"素勝率: **{raw_in_rate:.1f}%** ({found_source})\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
+                        {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
                         {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
                     ]
 
