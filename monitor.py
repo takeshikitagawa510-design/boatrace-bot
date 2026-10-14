@@ -669,131 +669,89 @@ def monitor_shinsum(venue_urls):
                     save_notified_races()
 
             # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（気配分布型 2〜4点極小買い目）
+            # ④ 🎯 厳選イン逃げ鉄板判定（1着率ダイレクト検証モード）
             # ==========================================
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
             if tettan_race_id not in notified_races:
-                # 1号艇の判定
                 b1 = boats[0] if len(boats) >= 1 else {}
                 b1_str = json.dumps(b1, ensure_ascii=False)
 
-                # ① 1号艇固有の「素の1着率（76%など）」をデータから確実に取得（場平均での推測は完全廃止）
-                base_win_rate = None
+                # ① 1号艇の登番を取得
+                toban1 = ""
+                for exact_key in ["id", "no", "toban", "register_id", "player_id", "touban"]:
+                    if exact_key in b1 and str(b1[exact_key]).isdigit() and 3000 <= int(b1[exact_key]) <= 6000:
+                        toban1 = str(b1[exact_key])
+                        break
+                if not toban1:
+                    for k, v in b1.items():
+                        if str(v).isdigit() and 3000 <= int(v) <= 6000:
+                            toban1 = str(v)
+                            break
 
-                # (A) レースJSON内の直接キーを網羅探索
-                for rk in ["rate", "win_rate", "first_rate", "rate_first", "base_rate", "zenki_rate", "in_rate", "r1"]:
-                    if rk in b1:
+                # ② 画面上部の「素の1着率（87%など）」を全ルートから徹底探索
+                raw_in_rate = 0.0
+                found_source = "未取得"
+
+                # ルートA: b1 辞書内の直接キー
+                for k, v in b1.items():
+                    k_lower = str(k).lower()
+                    if any(target in k_lower for target in ["rate", "win", "first", "r1", "p1"]):
                         try:
-                            clean_v = str(b1[rk]).replace("%", "").replace("+", "").replace("＋", "").strip()
-                            if clean_v:
-                                v_num = float(clean_v)
-                                if v_num >= 20.0:  # インの1着率として有効な値
-                                    base_win_rate = v_num
-                                    break
+                            v_clean = str(v).replace("%", "").strip()
+                            if v_clean.replace(".", "", 1).isdigit():
+                                v_float = float(v_clean)
+                                if 30.0 <= v_float <= 100.0 and v_float > raw_in_rate:
+                                    raw_in_rate = v_float
+                                    found_source = f"キー[{k}]"
                         except:
                             pass
 
-                # (B) レースJSON文字列から「76%」等のパーセンテージ表記を直接抽出
-                if base_win_rate is None:
-                    # プラス/マイナスが付いていない純粋なパーセント表記を探す
+                # ルートB: 文字列から直接「○○%」を抽出
+                if raw_in_rate == 0.0:
                     matches = re.findall(r'(?<![+\-＋－−])(\d{2})%', b1_str)
                     for m in matches:
                         try:
-                            val_m = float(m)
-                            if 30.0 <= val_m <= 95.0:
-                                base_win_rate = val_m
-                                break
+                            v_float = float(m)
+                            if 30.0 <= v_float <= 95.0 and v_float > raw_in_rate:
+                                raw_in_rate = v_float
+                                found_source = "正規表現(%)"
                         except:
                             pass
 
-                # (C) 登録番号（登番）からチェッカーデータ（checker_data）の1コース1着率を直接参照
-                if base_win_rate is None and checker_data:
-                    toban1 = None
-                    for exact_key in ["id", "no", "toban", "register_id", "player_id", "touban"]:
-                        if exact_key in b1 and str(b1[exact_key]).isdigit() and 3000 <= int(b1[exact_key]) <= 6000:
-                            toban1 = str(b1[exact_key])
-                            break
-                    if not toban1:
-                        for k, v in b1.items():
-                            if str(v).isdigit() and 3000 <= int(v) <= 6000:
-                                toban1 = str(v)
-                                break
-                    if toban1 and toban1 in checker_data:
-                        w1_data = next((w for w in checker_data[toban1] if w.get("n") == 1), None)
-                        if w1_data:
-                            # 1コース通算1着率（t1 または rows）
-                            base_win_rate = float(w1_data.get("t1", 0.0))
+                # ルートC: checker_data（マスターデータ）から取得
+                if raw_in_rate == 0.0 and checker_data and toban1 and toban1 in checker_data:
+                    w1_checker = next((w for w in checker_data[toban1] if w.get("n") == 1), None)
+                    if w1_checker:
+                        try:
+                            t1_val = float(w1_checker.get("t1", 0.0))
+                            if t1_val > 0:
+                                raw_in_rate = t1_val
+                                found_source = f"チェッカー[{toban1}]"
+                        except:
+                            pass
 
-                # ② 下の表の展示タイム等による上昇率（例: +11%）を取得
-                w1_bonus = 0.0
+                # ③ 展示からの増減値（+12%など）
+                ex_bonus = 0.0
                 try:
-                    clean_w1 = str(b1.get("rate_1", "")).replace("%", "").strip()
-                    if clean_w1.startswith(("+", "＋", "-", "－", "−")):
-                        w1_bonus = float(clean_w1.replace("＋", "+").replace("－", "-").replace("−", "-"))
+                    clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
+                    if clean_b1_rate.startswith(("+", "＋", "-", "－", "−")):
+                        ex_bonus = float(clean_b1_rate.replace("＋", "+").replace("－", "-").replace("−", "-"))
                 except:
-                    w1_bonus = 0.0
+                    ex_bonus = 0.0
 
-                # ③ 選手の1着率が取得できた場合のみ、展示加算を足して最終判定
-                # （取れなかった場合は場平均などで誤魔化さずスキップ）
-                if base_win_rate is not None:
-                    final_in_rate = base_win_rate + w1_bonus
-                else:
-                    final_in_rate = 0.0
+                # 最終合算値
+                final_rate = raw_in_rate + ex_bonus
 
-                # 1号艇のシンsumタイム差
-                w1_tdiff = 0.0
-                for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
-                    if cand in b1_str:
-                        try:
-                            start_idx = b1_str.find(cand)
-                            sub_str = b1_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
-                            w1_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
-                            break
-                        except:
-                            pass
+                # 💡 実行ログに出力（GitHub Actions のログで即座に追跡可能）
+                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 登番:{toban1} | 素勝率:{raw_in_rate}%({found_source}) | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
 
-                # 2号艇（壁）の判定
-                b2 = boats[1] if len(boats) >= 2 else {}
-                b2_str = json.dumps(b2, ensure_ascii=False)
-                w2_tdiff = 0.0
-                for cand in ["+0.", "＋0.", "-0.", "－0.", "−0."]:
-                    if cand in b2_str:
-                        try:
-                            start_idx = b2_str.find(cand)
-                            sub_str = b2_str[start_idx : start_idx + 5].replace("＋", "+").replace("－", "-").replace("−", "-")
-                            w2_tdiff = float("".join(c for c in sub_str if c in "+-.0123456789"))
-                            break
-                        except:
-                            pass
-
-                # 外枠（4〜6号艇）の一撃捲り脅威チェック
-                outer_threat = False
-                for b_outer in boats[3:]:
-                    bo_str = json.dumps(b_outer, ensure_ascii=False)
-                    if ("Imperial" in bo_str or "MAX覚醒" in bo_str) and ("+" in bo_str or "＋" in bo_str):
-                        outer_threat = True
-                        break
-
-                # 🎯【鉄板判定】
-                # ① 本人の素の勝率＋展示加算が「70%以上」（選手データに基づく厳密計算）
-                # ② 1号艇タイムが凹んでいない (>= -0.05)
-                # ③ 2号艇の壁が機能している (>= -0.10)
-                # ④ 外枠に捲り脅威なし
-                is_tettan = (
-                    (final_in_rate >= 70.0)
-                    and (w1_tdiff >= -0.05)
-                    and (w2_tdiff >= -0.10)
-                    and (not outer_threat)
-                )
-                if is_tettan:
-                    # 相手候補（2〜6号艇）のスコアリング
+                # 🎯【検証判定】壁や外枠は無視し、1着率が70%以上あれば即通知！
+                if final_rate >= 70.0 or raw_in_rate >= 70.0:
+                    # 相手候補（2〜6号艇）のタイム差順ソート
                     opponents = []
                     for idx, b_other in enumerate(boats[1:], start=2):
-                        o_str = json.dumps(b_other, ensure_ascii=False)
-                        o_tdiff = None
-
-                        # ① JSON内の直接数値キーを探す（最優先）
+                        o_tdiff = 0.0
                         for num_key in ["diff", "time_diff", "tdiff", "time_sa", "sa"]:
                             if num_key in b_other:
                                 try:
@@ -801,108 +759,35 @@ def monitor_shinsum(venue_urls):
                                     break
                                 except:
                                     pass
+                        opponents.append({"waku": idx, "tdiff": o_tdiff})
 
-                        # ② 文字列から正規表現で確実に抽出（+0.09 や +0.15 など全て対応）
-                        if o_tdiff is None:
-                            match = re.search(r"([＋+－\-−]\s*0\.\d{1,2})", o_str)
-                            if match:
-                                try:
-                                    clean_val = match.group(1).replace("＋", "+").replace("－", "-").replace("−", "-").replace(" ", "")
-                                    o_tdiff = float(clean_val)
-                                except:
-                                    pass
-
-                        # 取得できなかった場合のフォールバック
-                        if o_tdiff is None:
-                            o_tdiff = 0.0
-
-                        # ③ 1〜3着率（複勝率/軸指数）のプラス補正も加味
-                        rate_bonus = 0.0
-                        for r_key in ["rate_1", "rate_3", "rate_2", "jiku"]:
-                            if r_key in b_other:
-                                try:
-                                    r_val = float(str(b_other[r_key]).replace("%", "").replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
-                                    rate_bonus += (r_val * 0.01)  # 1%プラスごとに0.01補正
-                                except:
-                                    pass
-
-                        # 総合スコア（タイム差 + 勝率補正）
-                        total_score = o_tdiff + rate_bonus
-                        opponents.append({
-                            "waku": idx,
-                            "tdiff": o_tdiff,
-                            "score": total_score
-                        })
-
-                    # 総合スコアが良い順に並べ替え
-                    opponents.sort(key=lambda x: x["score"], reverse=True)
-
+                    opponents.sort(key=lambda x: x["tdiff"], reverse=True)
                     r1_waku = opponents[0]["waku"]
-                    r1_tdiff = opponents[0]["tdiff"]
                     r2_waku = opponents[1]["waku"]
-                    r2_tdiff = opponents[1]["tdiff"]
                     r3_waku = opponents[2]["waku"]
-                    r3_tdiff = opponents[2]["tdiff"]
 
-                    # ギャップ判定（スコア差の計算）
-                    gap_1_2 = opponents[0]["score"] - opponents[1]["score"]
-                    gap_2_3 = opponents[1]["score"] - opponents[2]["score"]
-
-                    # 【パターンA: 2艇抜け（例: 3と6が良い） ➔ 1-36-36 の2点】
-                    if gap_2_3 >= 0.15 and r2_tdiff >= 0.0:
-                        tettan_picks = [
-                            f"1-{r1_waku}-{r2_waku}",
-                            f"1-{r2_waku}-{r1_waku}"
-                        ]
-                        rank_label = f"【上位2艇一騎打ち・極選2点】1-{r1_waku}{r2_waku}-{r1_waku}{r2_waku}"
-
-                    # 【パターンB: 1艇突出（例: 4が抜けて相手2艇追走） ➔ 1-4=23 の4点】
-                    elif gap_1_2 >= 0.15:
-                        tettan_picks = [
-                            f"1-{r1_waku}-{r2_waku}",
-                            f"1-{r1_waku}-{r3_waku}",
-                            f"1-{r2_waku}-{r1_waku}",
-                            f"1-{r3_waku}-{r1_waku}"
-                        ]
-                        rank_label = f"【対抗軸1艇・厳選4点】1-{r1_waku}={r2_waku},{r3_waku}"
-
-                    # 【パターンC: 順当イン逃げ（相手団子・2号艇壁重視） ➔ 3点】
-                    else:
-                        if r1_waku == 2:
-                            tettan_picks = [
-                                f"1-2-{r2_waku}",
-                                f"1-2-{r3_waku}"
-                            ]
-                            r4_waku = opponents[3]["waku"]
-                            tettan_picks.append(f"1-2-{r4_waku}")
-                            rank_label = f"【壁厚順当・本線3点】1-2-{r2_waku},{r3_waku},{r4_waku}"
-                        else:
-                            tettan_picks = [
-                                f"1-{r1_waku}-{r2_waku}",
-                                f"1-{r2_waku}-{r1_waku}",
-                                f"1-{r1_waku}-{r3_waku}",
-                                f"1-{r3_waku}-{r1_waku}"
-                            ]
-                            rank_label = f"【本線折り返し・4点】1-{r1_waku}={r2_waku},{r3_waku}"
-
-                    tettan_picks = list(dict.fromkeys(tettan_picks))
+                    tettan_picks = [
+                        f"1-{r1_waku}-{r2_waku}",
+                        f"1-{r1_waku}-{r3_waku}",
+                        f"1-{r2_waku}-{r1_waku}",
+                        f"1-{r3_waku}-{r1_waku}"
+                    ]
 
                     fields = [
-                        {"name": "🛡️ 判定ランク", "value": f"**{rank_label}**", "inline": False},
-                        {"name": "📊 気配上位艇", "value": f"1番手: `{r1_waku}枠` ({r1_tdiff:+0.2f}) ｜ 2番手: `{r2_waku}枠` ({r2_tdiff:+0.2f}) ｜ 3番手: `{r3_waku}枠` ({r3_tdiff:+0.2f})", "inline": False},
-                        {"name": f"🎯 厳選買い目 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
+                        {"name": "🔥 取得した1着率", "value": f"素勝率: **{raw_in_rate:.1f}%** ({found_source})\n展示補正: **{ex_bonus:+0.1f}%**\n判定合計: **{final_rate:.1f}%**", "inline": False},
+                        {"name": "📊 相手候補", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
+                        {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
                     ]
 
                     send_discord_embed(
                         webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
-                        title=f"🎯 厳選イン逃げ鉄板アラート！ 【{venue_japanese} {rno_str}R】",
-                        description="イン逃げ確定級レース！気配上位艇に絞り込んだ極小点数フォーメーションです。",
+                        title=f"🎯 【イン逃げ70%超検知】 {venue_japanese} {rno_str}R",
+                        description="1号艇の勝率が基準(70%)を突破したため通知しました。",
                         fields=fields,
                         color=0x00FF88,
                     )
                     notified_races.add(tettan_race_id)
-                    save_notified_races()                    
-
+                    save_notified_races()
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
