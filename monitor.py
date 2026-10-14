@@ -669,7 +669,7 @@ def monitor_shinsum(venue_urls):
                     save_notified_races()
 
             # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（1着率ダイレクト検証モード）
+            # ④ 🎯 厳選イン逃げ鉄板判定（HTMLスクレイピング直結モード）
             # ==========================================
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
@@ -677,61 +677,51 @@ def monitor_shinsum(venue_urls):
                 b1 = boats[0] if len(boats) >= 1 else {}
                 b1_str = json.dumps(b1, ensure_ascii=False)
 
-                # ① 1号艇の登番を取得
-                toban1 = ""
-                for exact_key in ["id", "no", "toban", "register_id", "player_id", "touban"]:
-                    if exact_key in b1 and str(b1[exact_key]).isdigit() and 3000 <= int(b1[exact_key]) <= 6000:
-                        toban1 = str(b1[exact_key])
-                        break
-                if not toban1:
-                    for k, v in b1.items():
-                        if str(v).isdigit() and 3000 <= int(v) <= 6000:
-                            toban1 = str(v)
-                            break
-
-                # ② 画面上部の「素の1着率（87%など）」を全ルートから徹底探索
+                # ① HTMLページ本体から1号艇の「素の1着率（87%など）」を直接抽出
                 raw_in_rate = 0.0
                 found_source = "未取得"
 
-                # ルートA: b1 辞書内の直接キー
-                for k, v in b1.items():
-                    k_lower = str(k).lower()
-                    if any(target in k_lower for target in ["rate", "win", "first", "r1", "p1"]):
-                        try:
-                            v_clean = str(v).replace("%", "").strip()
-                            if v_clean.replace(".", "", 1).isdigit():
-                                v_float = float(v_clean)
-                                if 30.0 <= v_float <= 100.0 and v_float > raw_in_rate:
-                                    raw_in_rate = v_float
-                                    found_source = f"キー[{k}]"
-                        except:
-                            pass
+                # レースのページHTMLを取得して解析
+                try:
+                    # 会場のトップまたは対象レースのHTMLを取得
+                    race_page_url = f"{clean_base_url}/"
+                    page_resp = session.get(race_page_url, auth=AUTH, timeout=5)
+                    if page_resp.status_code == 200:
+                        page_soup = BeautifulSoup(page_resp.text, "html.parser")
+                        
+                        # 該当レース番号（例: 3R）のブロックを探す
+                        # 画面上の「1着率」の列やテーブルの1行目・1号艇のパーセントを取得
+                        text_content = page_soup.get_text()
+                        
+                        # パターン1: 「選手名 1着率」テーブルから1号艇の数値を抽出
+                        # HTML内のテーブル行から1枠のパーセンテージを探す
+                        for tr in page_soup.find_all("tr"):
+                            tr_text = tr.get_text()
+                            if ("1" in tr_text or "白" in tr_text) and "%" in tr_text:
+                                m = re.search(r'(\d{2})%', tr_text)
+                                if m:
+                                    val_cand = float(m.group(1))
+                                    if 30.0 <= val_cand <= 95.0 and val_cand > raw_in_rate:
+                                        raw_in_rate = val_cand
+                                        found_source = "HTMLテーブル"
+                                        break
+                except Exception as e:
+                    pass
 
-                # ルートB: 文字列から直接「○○%」を抽出
+                # ② レースJSON内に埋め込まれているテキストからのバックアップ探索
                 if raw_in_rate == 0.0:
-                    matches = re.findall(r'(?<![+\-＋－−])(\d{2})%', b1_str)
-                    for m in matches:
-                        try:
-                            v_float = float(m)
-                            if 30.0 <= v_float <= 95.0 and v_float > raw_in_rate:
-                                raw_in_rate = v_float
-                                found_source = "正規表現(%)"
-                        except:
-                            pass
+                    for k, v in b1.items():
+                        v_str = str(v)
+                        if "%" in v_str and not v_str.startswith(("+", "-", "＋", "－", "−")):
+                            m = re.search(r'(\d{2})%', v_str)
+                            if m:
+                                val_cand = float(m.group(1))
+                                if 30.0 <= val_cand <= 95.0:
+                                    raw_in_rate = val_cand
+                                    found_source = f"JSON[{k}]"
+                                    break
 
-                # ルートC: checker_data（マスターデータ）から取得
-                if raw_in_rate == 0.0 and checker_data and toban1 and toban1 in checker_data:
-                    w1_checker = next((w for w in checker_data[toban1] if w.get("n") == 1), None)
-                    if w1_checker:
-                        try:
-                            t1_val = float(w1_checker.get("t1", 0.0))
-                            if t1_val > 0:
-                                raw_in_rate = t1_val
-                                found_source = f"チェッカー[{toban1}]"
-                        except:
-                            pass
-
-                # ③ 展示からの増減値（+12%など）
+                # ③ 展示からの増減値（例: +12%）を取得
                 ex_bonus = 0.0
                 try:
                     clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
@@ -743,12 +733,11 @@ def monitor_shinsum(venue_urls):
                 # 最終合算値
                 final_rate = raw_in_rate + ex_bonus
 
-                # 💡 実行ログに出力（GitHub Actions のログで即座に追跡可能）
-                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 登番:{toban1} | 素勝率:{raw_in_rate}%({found_source}) | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
+                # 💡 実行ログ出力
+                print(f"🔍 【イン率確認】 {venue_japanese} {rno_str}R | 素勝率:{raw_in_rate}%({found_source}) | 展示補正:{ex_bonus:+0.1f}% | 合計:{final_rate:.1f}%")
 
-                # 🎯【検証判定】壁や外枠は無視し、1着率が70%以上あれば即通知！
+                # 🎯【判定】イン勝率70%以上で通知
                 if final_rate >= 70.0 or raw_in_rate >= 70.0:
-                    # 相手候補（2〜6号艇）のタイム差順ソート
                     opponents = []
                     for idx, b_other in enumerate(boats[1:], start=2):
                         o_tdiff = 0.0
@@ -788,6 +777,7 @@ def monitor_shinsum(venue_urls):
                     )
                     notified_races.add(tettan_race_id)
                     save_notified_races()
+                    
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
