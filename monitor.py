@@ -474,9 +474,14 @@ def monitor_shinsum(venue_urls):
             for row in rows:
                 v_name = str(row.get("v", "")).strip()
                 r_num = str(row.get("r", "")).strip()
-                inn_rate = float(row.get("inn", 0.0))
-                if v_name and r_num and inn_rate >= 70.0:
-                    joken_high_races[f"{v_name}_{r_num}"] = inn_rate
+                inn_val = row.get("inn")
+                if inn_val is not None:
+                    try:
+                        inn_rate = float(inn_val)
+                        if v_name and r_num and inn_rate >= 70.0:
+                            joken_high_races[f"{v_name}_{r_num}"] = inn_rate
+                    except (ValueError, TypeError):
+                        pass
             print(f"📦 joken.json 解析成功: 鉄板候補 {len(joken_high_races)}件 を取得 (全{len(rows)}件中)")
     except Exception as e:
         print(f"⚠️ jokenアクセス例外: {e}")
