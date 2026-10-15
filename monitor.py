@@ -697,17 +697,16 @@ def monitor_shinsum(venue_urls):
                     save_notified_races()
 
             # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（joken.json inn直結確定モード）
+            # ④ 🎯 厳選イン逃げ鉄板判定（最終期待度70%以上確定モード）
             # ==========================================
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
 
             if tettan_race_id not in notified_races:
-                # 事前に読み込んだ joken.json から本レースの inn (素勝率) を照合
                 pure_v = pure_venue.replace("[女子]", "").strip()
                 race_lookup_key = f"{pure_v}_{rno_str}"
                 raw_in_rate = joken_high_races.get(race_lookup_key, 0.0)
 
-                # 💡 joken一覧に載っている「70%以上」のレースのみ通知処理を行う
+                # 候補リストに載っている場合のみ展示補正をチェック
                 if raw_in_rate >= 70.0:
                     b1 = boats[0] if len(boats) >= 1 else {}
                     
@@ -722,46 +721,49 @@ def monitor_shinsum(venue_urls):
 
                     final_rate = raw_in_rate + ex_bonus
 
-                    # 相手候補（2〜6号艇）のタイム差順ソート
-                    opponents = []
-                    for idx, b_other in enumerate(boats[1:], start=2):
-                        o_tdiff = 0.0
-                        if "diff" in b_other:
-                            try:
-                                o_tdiff = float(str(b_other["diff"]).replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
-                            except:
-                                pass
-                        opponents.append({"waku": idx, "tdiff": o_tdiff})
+                    # 🎯【鉄板判定】展示補正後の「最終期待度」が70%以上の場合のみ通知！
+                    # （展示で大幅マイナスを食らって70%を割った場合はカット）
+                    if final_rate >= 70.0:
+                        opponents = []
+                        for idx, b_other in enumerate(boats[1:], start=2):
+                            o_tdiff = 0.0
+                            if "diff" in b_other:
+                                try:
+                                    o_tdiff = float(str(b_other["diff"]).replace("+", "").replace("＋", "").replace("－", "-").replace("−", "-"))
+                                except:
+                                    pass
+                            opponents.append({"waku": idx, "tdiff": o_tdiff})
 
-                    opponents.sort(key=lambda x: x["tdiff"], reverse=True)
-                    r1_waku = opponents[0]["waku"] if len(opponents) > 0 else 2
-                    r2_waku = opponents[1]["waku"] if len(opponents) > 1 else 3
-                    r3_waku = opponents[2]["waku"] if len(opponents) > 2 else 4
+                        opponents.sort(key=lambda x: x["tdiff"], reverse=True)
+                        r1_waku = opponents[0]["waku"] if len(opponents) > 0 else 2
+                        r2_waku = opponents[1]["waku"] if len(opponents) > 1 else 3
+                        r3_waku = opponents[2]["waku"] if len(opponents) > 2 else 4
 
-                    tettan_picks = [
-                        f"1-{r1_waku}-{r2_waku}",
-                        f"1-{r1_waku}-{r3_waku}",
-                        f"1-{r2_waku}-{r1_waku}",
-                        f"1-{r3_waku}-{r1_waku}"
-                    ]
+                        tettan_picks = [
+                            f"1-{r1_waku}-{r2_waku}",
+                            f"1-{r1_waku}-{r3_waku}",
+                            f"1-{r2_waku}-{r1_waku}",
+                            f"1-{r3_waku}-{r1_waku}"
+                        ]
 
-                    fields = [
-                        {"name": "🔥 AI予測イン逃げ率", "value": f"基準勝率: **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
-                        {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
-                        {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
-                    ]
+                        fields = [
+                            {"name": "🔥 AI予測イン逃げ率", "value": f"基準勝率: **{raw_in_rate:.1f}%**\n展示補正: **{ex_bonus:+0.1f}%**\n最終期待度: **{final_rate:.1f}%**", "inline": False},
+                            {"name": "📊 気配上位相手", "value": f"1番手: `{r1_waku}枠` ｜ 2番手: `{r2_waku}枠` ｜ 3番手: `{r3_waku}枠`", "inline": False},
+                            {"name": f"🎯 買い目候補 ({len(tettan_picks)}点)", "value": "\n".join([f"`{p}`" for p in tettan_picks]), "inline": False},
+                        ]
 
-                    send_discord_embed(
-                        webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
-                        title=f"🎯 【厳選イン逃げ鉄板アラート】 {venue_japanese} {rno_str}R",
-                        description="イン逃げ期待度70%以上に合致した厳選鉄板レースです。",
-                        fields=fields,
-                        color=0x00FF88,
-                    )
-                    
-                    print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (inn: {raw_in_rate}%)")
-                    notified_races.add(tettan_race_id)
-                    save_notified_races()
+                        send_discord_embed(
+                            webhook_url=TETTAN_DISCORD_WEBHOOK_URL,
+                            title=f"🎯 【厳選イン逃げ鉄板アラート】 {venue_japanese} {rno_str}R",
+                            description="展示込みの最終イン逃げ期待度70%以上に合致した厳選鉄板レースです。",
+                            fields=fields,
+                            color=0x00FF88,
+                        )
+                        print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (最終期待度: {final_rate:.1f}%)")
+                        notified_races.add(tettan_race_id)
+                        save_notified_races()
+                    else:
+                        print(f"⏭️ 【鉄板見送り】 {venue_japanese} {rno_str}R: 展示補正後({final_rate:.1f}%)が70%未満のため除外")
                 
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
