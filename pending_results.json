@@ -43,15 +43,15 @@
       "5-142-1423"
     ]
   },
-  "20261015_びわこ_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
+  "20261015_尼崎_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 7,
-    "venue_jp": "びわこ",
+    "venue_jp": "尼崎",
     "date": "20261015",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-561-5612",
-      "5-361-3612"
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
