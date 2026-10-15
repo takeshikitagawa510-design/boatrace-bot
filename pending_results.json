@@ -64,5 +64,27 @@
       "2-136-1364",
       "3-126-1264"
     ]
+  },
+  "20261015_女子競艇_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 7,
+    "venue_jp": "",
+    "date": "20261015",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  },
+  "20261015_若松_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 7,
+    "venue_jp": "若松",
+    "date": "20261015",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
