@@ -43,17 +43,6 @@
       "5-142-1423"
     ]
   },
-  "20261015_三国_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 8,
-    "venue_jp": "三国",
-    "date": "20261015",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-153-1532",
-      "5-143-1432"
-    ]
-  },
   "20261015_鳴門_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto",
     "rno": 9,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "3-165-1652",
       "6-135-1352"
+    ]
+  },
+  "20261015_芦屋_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 9,
+    "venue_jp": "芦屋",
+    "date": "20261015",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
