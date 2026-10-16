@@ -1,15 +1,4 @@
 {
-  "20261016_若松_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 7,
-    "venue_jp": "若松",
-    "date": "20261016",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20261016_女子競艇_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 3,
