@@ -31,5 +31,16 @@
       "2-134-1345",
       "3-124-1245"
     ]
+  },
+  "20261016_下関_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 6,
+    "venue_jp": "下関",
+    "date": "20261016",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "4-521-5213",
+      "5-421-4213"
+    ]
   }
 }
