@@ -32,15 +32,15 @@
       "3-124-1246"
     ]
   },
-  "20261016_芦屋_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 10,
-    "venue_jp": "芦屋",
+  "20261016_鳴門_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 11,
+    "venue_jp": "鳴門",
     "date": "20261016",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-456-4563",
-      "4-256-2563"
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
