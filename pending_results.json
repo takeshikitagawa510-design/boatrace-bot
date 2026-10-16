@@ -32,15 +32,15 @@
       "4-123-1235"
     ]
   },
-  "20261016_若松_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 12,
-    "venue_jp": "若松",
+  "20261016_下関_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 8,
+    "venue_jp": "下関",
     "date": "20261016",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-143-1435",
-      "4-123-1235"
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
