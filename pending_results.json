@@ -43,15 +43,15 @@
       "5-123-1236"
     ]
   },
-  "20261018_三国_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 1,
-    "venue_jp": "三国",
+  "20261018_徳山_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 2,
+    "venue_jp": "徳山",
     "date": "20261018",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
+      "2-136-1365",
+      "3-126-1265"
     ]
   }
 }
