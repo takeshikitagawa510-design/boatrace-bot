@@ -32,15 +32,15 @@
       "4-123-1235"
     ]
   },
-  "20261017_児島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 9,
-    "venue_jp": "児島",
+  "20261017_尼崎_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 11,
+    "venue_jp": "尼崎",
     "date": "20261017",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-146-1463",
-      "4-126-1263"
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
