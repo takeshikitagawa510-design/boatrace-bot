@@ -43,17 +43,6 @@
       "5-123-1236"
     ]
   },
-  "20261018_若松_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 2,
-    "venue_jp": "若松",
-    "date": "20261018",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20261018_女子競艇_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 2,
@@ -74,6 +63,17 @@
     "recommended_combos": [
       "4-156-1563",
       "5-146-1463"
+    ]
+  },
+  "20261018_常滑_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 12,
+    "venue_jp": "常滑",
+    "date": "20261018",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-162-1624",
+      "6-132-1324"
     ]
   }
 }
