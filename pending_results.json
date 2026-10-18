@@ -1,15 +1,4 @@
 {
-  "20261018_若松_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 8,
-    "venue_jp": "若松",
-    "date": "20261018",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-561-5612",
-      "5-361-3612"
-    ]
-  },
   "20261018_若松_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/wakamatsu",
     "rno": 11,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-146-1463",
       "4-126-1263"
+    ]
+  },
+  "20261018_桐生_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 8,
+    "venue_jp": "桐生",
+    "date": "20261018",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
     ]
   }
 }
