@@ -53,5 +53,16 @@
       "3-612-6124",
       "6-312-3124"
     ]
+  },
+  "20261019_常滑_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 7,
+    "venue_jp": "常滑",
+    "date": "20261019",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-165-1653",
+      "6-125-1253"
+    ]
   }
 }
