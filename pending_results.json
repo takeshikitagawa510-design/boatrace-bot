@@ -42,5 +42,16 @@
       "2-146-1463",
       "4-126-1263"
     ]
+  },
+  "20261020_三国_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 4,
+    "venue_jp": "三国",
+    "date": "20261020",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-146-1462",
+      "4-136-1362"
+    ]
   }
 }
