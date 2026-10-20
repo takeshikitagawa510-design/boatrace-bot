@@ -43,26 +43,15 @@
       "4-126-1263"
     ]
   },
-  "20261020_常滑_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 8,
-    "venue_jp": "常滑",
-    "date": "20261020",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-152-1524",
-      "5-132-1324"
-    ]
-  },
-  "20261020_宮島_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 9,
-    "venue_jp": "宮島",
+  "20261020_三国_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 12,
+    "venue_jp": "三国",
     "date": "20261020",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-413-4135",
-      "4-213-2135"
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
