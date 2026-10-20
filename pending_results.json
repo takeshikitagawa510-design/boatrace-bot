@@ -1,57 +1,24 @@
 {
-  "20261020_若松_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 2,
-    "venue_jp": "若松",
-    "date": "20261020",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
-  "20261020_若松_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+  "20261021_女子競艇_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 8,
-    "venue_jp": "若松",
-    "date": "20261020",
+    "venue_jp": "",
+    "date": "20261021",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "2-146-1463",
       "4-126-1263"
     ]
   },
-  "20261020_女子競艇_2_rate": {
+  "20261021_女子競艇_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 2,
     "venue_jp": "",
-    "date": "20261020",
+    "date": "20261021",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "2-134-1346",
       "3-124-1246"
-    ]
-  },
-  "20261020_女子競艇_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
-    "rno": 8,
-    "venue_jp": "",
-    "date": "20261020",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-146-1463",
-      "4-126-1263"
-    ]
-  },
-  "20261020_boatrace_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/boatrace",
-    "rno": 7,
-    "venue_jp": "boatrace",
-    "date": "20261020",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-163-1635",
-      "6-123-1235"
     ]
   }
 }
