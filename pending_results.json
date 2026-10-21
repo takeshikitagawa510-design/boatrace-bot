@@ -32,15 +32,15 @@
       "3-126-1265"
     ]
   },
-  "20261021_桐生_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 7,
-    "venue_jp": "桐生",
+  "20261021_若松_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 2,
+    "venue_jp": "若松",
     "date": "20261021",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-152-1523",
-      "5-142-1423"
+      "2-341-3415",
+      "3-241-2415"
     ]
   }
 }
