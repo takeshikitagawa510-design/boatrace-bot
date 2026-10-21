@@ -20,5 +20,16 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20261021_鳴門_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 4,
+    "venue_jp": "鳴門",
+    "date": "20261021",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
   }
 }
