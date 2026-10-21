@@ -43,15 +43,15 @@
       "3-124-1245"
     ]
   },
-  "20261021_若松_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 5,
-    "venue_jp": "若松",
+  "20261021_桐生_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
     "date": "20261021",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-156-1562",
-      "5-146-1462"
+      "3-145-1452",
+      "4-135-1352"
     ]
   }
 }
