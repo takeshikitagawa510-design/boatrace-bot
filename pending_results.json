@@ -21,15 +21,26 @@
       "3-124-1246"
     ]
   },
-  "20261021_尼崎_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 6,
-    "venue_jp": "尼崎",
+  "20261021_徳山_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 10,
+    "venue_jp": "徳山",
     "date": "20261021",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-451-4513",
-      "4-251-2513"
+      "2-351-3514",
+      "3-251-2514"
+    ]
+  },
+  "20261021_びわこ_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 7,
+    "venue_jp": "びわこ",
+    "date": "20261021",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-164-1643",
+      "6-124-1243"
     ]
   }
 }
