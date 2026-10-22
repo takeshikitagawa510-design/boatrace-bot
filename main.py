@@ -44,38 +44,47 @@ VENUE_NAMES = {
     '24': '大村',
 }
 
+# 💡 辞書読み込み：選手名のスペース（全角・半角）を全消去し、重複は高スコアを優先統合
+scoring_dict = {'manshu_overall': {}, 'in_tobi_overall': {}}
 try:
-  with open(JSON_FILENAME, 'r', encoding='utf-8') as f:
-    scoring_dict = json.load(f)
-except Exception:
-  scoring_dict = {'manshu_overall': {}, 'in_tobi_overall': {}}
+    with open(JSON_FILENAME, 'r', encoding='utf-8') as f:
+        raw_dict = json.load(f)
+        for category in ['manshu_overall', 'in_tobi_overall']:
+            for raw_name, pt in raw_dict.get(category, {}).items():
+                clean_name = re.sub(r'\s+', '', str(raw_name))
+                if clean_name:
+                    current_pt = scoring_dict[category].get(clean_name, 0)
+                    scoring_dict[category][clean_name] = max(current_pt, int(pt))
+    print(f"📦 スコア辞書読み込み完了 (万舟選手: {len(scoring_dict['manshu_overall'])}名 / イン飛び選手: {len(scoring_dict['in_tobi_overall'])}名)")
+except Exception as e:
+    print(f'⚠️ 辞書読み込みエラー: {e}')
 
 
 def send_discord_embed(title, description, fields, color=0xFF4500):
-  """Discordへ高級感あるEmbed（カード型）メッセージを送信"""
-  if not CHANCE_DISCORD_WEBHOOK_URL:
-    print('⚠️ DISCORD_WEBHOOK_URL が未設定です。')
-    return
+    """Discordへ高級感あるEmbed（カード型）メッセージを送信"""
+    if not CHANCE_DISCORD_WEBHOOK_URL:
+        print('⚠️ DISCORD_WEBHOOK_URL が未設定です。')
+        return
 
-  payload = {
-      'embeds': [{
-          'title': title,
-          'description': description,
-          'color': color,
-          'fields': fields,
-          'footer': {'text': 'NEXUS-X VIP AI Analysis Engine'},
-          'timestamp': datetime.now(timezone.utc).isoformat(),
-      }]
-  }
+    payload = {
+        'embeds': [{
+            'title': title,
+            'description': description,
+            'color': color,
+            'fields': fields,
+            'footer': {'text': 'NEXUS-X VIP AI Analysis Engine'},
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+        }]
+    }
 
-  try:
-    res = requests.post(CHANCE_DISCORD_WEBHOOK_URL, json=payload, timeout=10)
-    if res.status_code in [200, 204]:
-      print('✅ Discord Embed送信成功！')
-    else:
-      print(f'⚠️ Discord送信エラー: HTTP {res.status_code}')
-  except Exception as e:
-    print(f'⚠️ Discord通信エラー: {e}')
+    try:
+        res = requests.post(CHANCE_DISCORD_WEBHOOK_URL, json=payload, timeout=10)
+        if res.status_code in [200, 204]:
+            print('✅ Discord Embed送信成功！')
+        else:
+            print(f'⚠️ Discord送信エラー: HTTP {res.status_code}')
+    except Exception as e:
+        print(f'⚠️ Discord通信エラー: {e}')
 
 
 # ==========================================
@@ -117,22 +126,15 @@ def main():
                         break
                     name = re.sub(r'\s+', '', name_a.get_text(strip=True))
 
-                    # 2. 今節成績テーブル（is-table1等）から「今節ST」だけをピンポイント抽出
-                    # ※勝率・体重・モーター率のセルを完全に排除するため、節間成績エリアの文字列にスコープを限定
+                    # 2. 今節成績テーブルから「今節ST」だけをピンポイント抽出
                     t_sts = []
-                    
-                    # 出走表右側の節間成績が入るセル群（または行）を探索
-                    # 公式出走表の今節STは「.12」「F.01」「L.00」形式で節間成績欄に記載
                     for td in tbody.find_all('td'):
                         td_text = td.get_text(strip=True)
-                        # 勝率・連率（%や4点台〜7点台など）を除外、ST専用パターンのみマッチ
-                        # 例: ".14", "F.02", "L.01"（直前に%や数字がない単独のST表記）
                         st_matches = re.findall(r'(?:^|[^0-9%])([FL]?\.[0-9]{2})(?:$|[^0-9%])', td_text)
                         for m in st_matches:
                             clean_st = re.sub(r'[FL]', '', m).replace('.', '')
                             if clean_st.isdigit():
                                 val = float(clean_st) / 100
-                                # 競艇の正常なST範囲（.00〜.40）のみ採用（異常な外れ値・端数を排除）
                                 if 0.00 <= val <= 0.40:
                                     t_sts.append(val)
 
@@ -228,3 +230,7 @@ def main():
             print(f'💾 万舟判定用データ（上位{len(top15_pending_pickups)}件 / 全{len(pending_pickups)}件中）を保存しました。')
         except Exception as e:
             print(f'⚠️ 万舟判定用データの保存エラー: {e}')
+
+
+if __name__ == '__main__':
+    main()
