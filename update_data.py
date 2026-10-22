@@ -18,6 +18,9 @@ print("\n🔄 【データ更新】最新結果の回収と辞書の再生成を
 if os.path.exists(CSV_FILENAME):
     df_old = pd.read_csv(CSV_FILENAME, encoding='utf-8')
     df = df_old[pd.to_numeric(df_old['3連単配当'], errors='coerce') < 1000000].copy()
+    # 既存データのスペースも一括除去
+    df['1着(立役者)'] = df['1着(立役者)'].astype(str).str.replace(r'\s+', '', regex=True)
+    df['1枠(飛んだイン)'] = df['1枠(飛んだイン)'].astype(str).str.replace(r'\s+', '', regex=True)
 else:
     df = pd.DataFrame(columns=HEADER)
 
@@ -81,7 +84,9 @@ if target_dates:
                                         if '1' in cols[0].text or '１' in cols[0].text:
                                             w_nums = re.findall(r'\d', cols[1].text)
                                             if w_nums: w_waku = w_nums[0]
-                                            w_name = re.sub(r'^\d+', '', cols[2].text.strip().replace('\n', '').replace(' ', '').replace(' ', ''))
+                                            # 🎯 全角・半角スペース・改行を確実に全消去
+                                            raw_name = re.sub(r'^\d+', '', cols[2].get_text(strip=True))
+                                            w_name = re.sub(r'\s+', '', raw_name)
                                             break
                                 break
 
@@ -113,9 +118,14 @@ if target_dates:
 # 3. 直近180日分から辞書 (scoring_dictionary.json) を生成
 print("🧠 直近180日間のデータから辞書(JSON)を再構築中...")
 
+# 日付型に変換
 df['日付_dt'] = pd.to_datetime(df['日付'].astype(str), format='%Y%m%d')
 
-# ⭕ 修正ポイント: tz_localize(None) でタイムゾーンを外してpandasと型を統一
+# スペース混入を防止（念押しクリーンアップ）
+df['1着(立役者)'] = df['1着(立役者)'].astype(str).str.replace(r'\s+', '', regex=True)
+df['1枠(飛んだイン)'] = df['1枠(飛んだイン)'].astype(str).str.replace(r'\s+', '', regex=True)
+
+# タイムゾーンを除去して比較
 half_year_ago = (now - timedelta(days=180)).replace(tzinfo=None)
 df_recent = df[df['日付_dt'] >= half_year_ago]
 
@@ -135,4 +145,7 @@ scoring_dict = {
 with open(JSON_FILENAME, 'w', encoding='utf-8') as f:
     json.dump(scoring_dict, f, ensure_ascii=False, indent=4)
 
-print("✨ 辞書(scoring_dictionary.json)の最新化完了！")
+# クリーンアップ後のCSVも保存して次回以降のスペース混入を恒久的に防止
+df.drop(columns=['日付_dt'], errors='ignore').to_csv(CSV_FILENAME, index=False, encoding='utf-8-sig')
+
+print("✨ 辞書(scoring_dictionary.json)およびCSVのクリーンアップ＆最新化完了！")
