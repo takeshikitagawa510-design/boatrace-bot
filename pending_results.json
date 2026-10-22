@@ -32,15 +32,15 @@
       "3-246-2461"
     ]
   },
-  "20261022_若松_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 4,
-    "venue_jp": "若松",
+  "20261022_大村_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 10,
+    "venue_jp": "大村",
     "date": "20261022",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "5-612-6124",
-      "6-512-5124"
+      "3-452-4521",
+      "4-352-3521"
     ]
   }
 }
