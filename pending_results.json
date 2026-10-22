@@ -20,5 +20,27 @@
       "2-134-1346",
       "3-124-1246"
     ]
+  },
+  "20261022_宮島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 5,
+    "venue_jp": "宮島",
+    "date": "20261022",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-456-4561",
+      "4-356-3561"
+    ]
+  },
+  "20261022_徳山_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 8,
+    "venue_jp": "徳山",
+    "date": "20261022",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-164-1645",
+      "6-124-1245"
+    ]
   }
 }
