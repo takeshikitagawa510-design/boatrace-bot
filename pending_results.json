@@ -21,15 +21,26 @@
       "3-124-1246"
     ]
   },
-  "20261022_鳴門_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 7,
-    "venue_jp": "鳴門",
+  "20261022_浜名湖_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 3,
+    "venue_jp": "浜名湖",
     "date": "20261022",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
+      "2-135-1356",
+      "3-125-1256"
+    ]
+  },
+  "20261022_びわこ_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 4,
+    "venue_jp": "びわこ",
+    "date": "20261022",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "データ不足により算出不可",
+      "対象なし"
     ]
   }
 }
