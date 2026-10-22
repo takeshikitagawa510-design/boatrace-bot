@@ -21,17 +21,6 @@
       "3-124-1246"
     ]
   },
-  "20261022_児島_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 5,
-    "venue_jp": "児島",
-    "date": "20261022",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-156-1562",
-      "5-136-1362"
-    ]
-  },
   "20261022_鳴門_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto",
     "rno": 10,
@@ -52,6 +41,28 @@
     "recommended_combos": [
       "2-456-4561",
       "4-256-2561"
+    ]
+  },
+  "20261022_徳山_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 10,
+    "venue_jp": "徳山",
+    "date": "20261022",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-136-1365",
+      "3-126-1265"
+    ]
+  },
+  "20261022_平和島_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 6,
+    "venue_jp": "平和島",
+    "date": "20261022",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-624-6241",
+      "6-324-3241"
     ]
   }
 }
