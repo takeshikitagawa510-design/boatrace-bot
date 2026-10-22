@@ -79,153 +79,152 @@ def send_discord_embed(title, description, fields, color=0xFF4500):
 
 
 # ==========================================
-# 🚀 メイン解析
+# 🚀 メイン解析（安定修正版）
 # ==========================================
 def main():
-  manshu_races = []
-  pending_pickups = {}
-  print(f'⚔️ 【高配当スキャナー】 {TARGET_DATE} 実行中...\n')
+    manshu_races = []
+    pending_pickups = {}
+    print(f'⚔️ 【高配当スキャナー】 {TARGET_DATE} 実行中...\n')
 
-  for jcd in range(1, 25):
-    jcd_str = f'{jcd:02d}'
-    if jcd_str in EXCLUDE_VENUES or jcd_str not in VENUE_NAMES:
-      continue
+    for jcd in range(1, 25):
+        jcd_str = f'{jcd:02d}'
+        if jcd_str in EXCLUDE_VENUES or jcd_str not in VENUE_NAMES:
+            continue
 
-    check_url = f'https://www.boatrace.jp/owpc/pc/race/racelist?rno=1&jcd={jcd_str}&hd={TARGET_DATE}'
-    try:
-      res = cffi_requests.get(check_url, impersonate='chrome110', timeout=5)
-      if 'データがありません' in res.text:
-        continue
-    except:
-      continue
+        check_url = f'https://www.boatrace.jp/owpc/pc/race/racelist?rno=1&jcd={jcd_str}&hd={TARGET_DATE}'
+        try:
+            res = cffi_requests.get(check_url, impersonate='chrome110', timeout=5)
+            if 'データがありません' in res.text:
+                continue
+        except:
+            continue
 
-    for rno in range(1, 13):
-      try:
-        list_url = f'https://www.boatrace.jp/owpc/pc/race/racelist?rno={rno}&jcd={jcd_str}&hd={TARGET_DATE}'
-        response = cffi_requests.get(
-            list_url, impersonate='chrome110', timeout=5
+        for rno in range(1, 13):
+            try:
+                list_url = f'https://www.boatrace.jp/owpc/pc/race/racelist?rno={rno}&jcd={jcd_str}&hd={TARGET_DATE}'
+                response = cffi_requests.get(list_url, impersonate='chrome110', timeout=5)
+                soup = BeautifulSoup(response.text, 'html.parser')
+                tbodys = soup.find_all('tbody', class_='is-fs12')
+                if len(tbodys) < 6:
+                    continue
+
+                racers = {}
+                for w, tbody in enumerate(tbodys[:6], 1):
+                    # 1. 選手名の安全取得
+                    name_div = tbody.find('div', class_='is-fs18 is-fBold')
+                    name_a = name_div.find('a') if name_div else None
+                    if not name_a:
+                        break
+                    name = re.sub(r'\s+', '', name_a.get_text(strip=True))
+
+                    # 2. 今節成績テーブル（is-table1等）から「今節ST」だけをピンポイント抽出
+                    # ※勝率・体重・モーター率のセルを完全に排除するため、節間成績エリアの文字列にスコープを限定
+                    t_sts = []
+                    
+                    # 出走表右側の節間成績が入るセル群（または行）を探索
+                    # 公式出走表の今節STは「.12」「F.01」「L.00」形式で節間成績欄に記載
+                    for td in tbody.find_all('td'):
+                        td_text = td.get_text(strip=True)
+                        # 勝率・連率（%や4点台〜7点台など）を除外、ST専用パターンのみマッチ
+                        # 例: ".14", "F.02", "L.01"（直前に%や数字がない単独のST表記）
+                        st_matches = re.findall(r'(?:^|[^0-9%])([FL]?\.[0-9]{2})(?:$|[^0-9%])', td_text)
+                        for m in st_matches:
+                            clean_st = re.sub(r'[FL]', '', m).replace('.', '')
+                            if clean_st.isdigit():
+                                val = float(clean_st) / 100
+                                # 競艇の正常なST範囲（.00〜.40）のみ採用（異常な外れ値・端数を排除）
+                                if 0.00 <= val <= 0.40:
+                                    t_sts.append(val)
+
+                    sec_st = sum(t_sts) / len(t_sts) if t_sts else 9.99
+
+                    racers[w] = {
+                        'name': name,
+                        'sec_st': sec_st,
+                        'has_sec': len(t_sts) > 0,
+                    }
+
+                # 6艇揃っていない、または初日など節間STが全員揃っていない場合はスキップ
+                if len(racers) < 6 or any(not racers[w]['has_sec'] for w in range(1, 7)):
+                    continue
+
+                r1 = racers[1]
+                is_valid_manshu = False
+                found_assassin_logs = []
+
+                # 刺客（2〜6枠）の判定：節間STが0.15以内 ＆ 内側の艇より0.03以上早い
+                for w in range(2, 7):
+                    r = racers[w]
+                    m_pt = scoring_dict.get('manshu_overall', {}).get(r['name'], 0)
+                    if m_pt > 0 and r['sec_st'] <= 0.15:
+                        inner_st = racers[w - 1]['sec_st']
+                        if inner_st != 9.99 and (inner_st - r['sec_st']) >= 0.03:
+                            is_valid_manshu = True
+                            found_assassin_logs.append(f"🎯 {w}号艇({r['name']})")
+
+                if is_valid_manshu:
+                    it = scoring_dict.get('in_tobi_overall', {}).get(r1['name'], 0)
+                    if it > 0:
+                        m_total = sum(
+                            scoring_dict.get('manshu_overall', {}).get(racers[wk]['name'], 0)
+                            for wk in range(2, 7)
+                        )
+                        final_score = it + m_total + 30
+                        if final_score >= 150:
+                            v_name = VENUE_NAMES[jcd_str]
+                            manshu_races.append({
+                                'v': v_name,
+                                'r': rno,
+                                's': final_score,
+                                'targets': ' / '.join(found_assassin_logs),
+                                'in_name': r1['name'],
+                            })
+
+                            race_key = f'{v_name}_{rno}R'
+                            pending_pickups[race_key] = {
+                                'v': v_name,
+                                'r': rno,
+                                's': final_score,
+                                'jcd': jcd_str,
+                                'date': TARGET_DATE,
+                            }
+            except Exception:
+                continue
+
+    # ==========================================
+    # 📡 Discord Embed送信 & 保存
+    # ==========================================
+    if not manshu_races:
+        print('📢 本日は条件を満たす高期待値レースはありませんでした。')
+    else:
+        manshu_races.sort(key=lambda x: x['s'], reverse=True)
+        fields = []
+        for r in manshu_races[:15]:
+            fields.append({
+                'name': f"🔥 【{r['v']} {r['r']}R】 (期待値スコア: {r['s']}点)",
+                'value': (
+                    f"└ **崩し狙い:** {r['targets']}\n└ **1号艇:** {r['in_name']}"
+                ),
+                'inline': False,
+            })
+
+        send_discord_embed(
+            title=f'💣 本日の高回収率狙いレース ({DISPLAY_DATE})',
+            description='AIスコア判定により抽出された**高波乱期待値レース**の一覧です。',
+            fields=fields,
+            color=0xFF4500,
         )
-        soup = BeautifulSoup(response.text, 'html.parser')
-        tbodys = soup.find_all('tbody', class_='is-fs12')
-        if len(tbodys) < 6:
-          continue
 
-        racers = {}
-        for w, tbody in enumerate(tbodys[:6], 1):
-          name_a = tbody.find('div', class_='is-fs18 is-fBold').find('a')
-          name = re.sub(r'\s+', '', name_a.get_text(strip=True))
-          txt = tbody.get_text(separator=' ')
+        try:
+            sorted_pickups = sorted(
+                pending_pickups.items(),
+                key=lambda x: x[1]['s'],
+                reverse=True
+            )[:15]
+            top15_pending_pickups = dict(sorted_pickups)
 
-          st_m = re.findall(r'(?:^|\s|[FL])\.([0-9]{2})\b', txt)
-          t_sts = [float(x) / 100 for x in st_m if x.isdigit()]
-          sec_st = sum(t_sts) / len(t_sts) if t_sts else 9.99
-
-          racers[w] = {
-              'name': name,
-              'sec_st': sec_st,
-              'has_sec': len(t_sts) > 0,
-          }
-
-        if any(not racers[w]['has_sec'] for w in range(1, 7)):
-          continue
-        r1 = racers[1]
-
-        is_valid_manshu = False
-        found_assassin_logs = []
-
-        for w in range(2, 7):
-          r = racers[w]
-          m_pt = (
-              scoring_dict.get('manshu_overall', {}).get(r['name'], 0)
-          )
-          if m_pt > 0 and r['sec_st'] <= 0.15:
-            inner_st = racers[w - 1]['sec_st']
-            if inner_st != 9.99 and (inner_st - r['sec_st']) >= 0.03:
-              is_valid_manshu = True
-              found_assassin_logs.append(f"🎯 {w}号艇({r['name']})")
-
-        if is_valid_manshu:
-          it = scoring_dict.get('in_tobi_overall', {}).get(r1['name'], 0)
-          if it > 0:
-            m_total = sum(
-                scoring_dict.get('manshu_overall', {}).get(
-                    racers[wk]['name'], 0
-                )
-                for wk in range(2, 7)
-            )
-            final_score = it + m_total + 30
-            if final_score >= 150:
-              v_name = VENUE_NAMES[jcd_str]
-              manshu_races.append({
-                  'v': v_name,
-                  'r': rno,
-                  's': final_score,
-                  'targets': ' / '.join(found_assassin_logs),
-                  'in_name': r1['name'],
-              })
-
-              # 💾 日中の万舟結果判定用に保存データを構築
-              race_key = f'{v_name}_{rno}R'
-              pending_pickups[race_key] = {
-                  'v': v_name,
-                  'r': rno,
-                  's': final_score,
-                  'jcd': jcd_str,
-                  'date': TARGET_DATE,
-              }
-      except Exception:
-        continue
-
-  # ==========================================
-  # 📡 Discord Embed送信 & 保存
-  # ==========================================
-  if not manshu_races:
-    send_discord_embed(
-        title=f'📢 本日のチャンスレース ({DISPLAY_DATE})',
-        description=(
-            '本日は条件を満たす高期待値レースはありませんでした。'
-        ),
-        fields=[],
-        color=0x808080,
-    )
-  else:
-    manshu_races.sort(key=lambda x: x['s'], reverse=True)
-    fields = []
-    for r in manshu_races[:15]:
-      fields.append({
-          'name': f"🔥 【{r['v']} {r['r']}R】 (期待値スコア: {r['s']}点)",
-          'value': (
-              f"└ **崩し狙い:** {r['targets']}\n└ **1号艇:** {r['in_name']}"
-          ),
-          'inline': False,
-      })
-
-    send_discord_embed(
-        title=f'💣 本日の高回収率狙いレース ({DISPLAY_DATE})',
-        description=(
-            'AIスコア判定により抽出された**高波乱期待値レース**の一覧です。'
-        ),
-        fields=fields,
-        color=0xFF4500,
-    )
-
-    # 💾 朝一の判定待ちレース一覧を「スコア上位15件」に絞り込んで自動保存
-    try:
-      sorted_pickups = sorted(
-          pending_pickups.items(),
-          key=lambda x: x[1]['s'],
-          reverse=True
-      )[:15]
-      top15_pending_pickups = dict(sorted_pickups)
-
-      with open(PICKUP_PENDING_FILE, 'w', encoding='utf-8') as f:
-        json.dump(top15_pending_pickups, f, ensure_ascii=False, indent=2)
-      print(
-          f'💾 万舟判定用データ（上位15件 / 全{len(pending_pickups)}件中）を保存しました。'
-      )
-    except Exception as e:
-      print(f'⚠️ 万舟判定用データの保存エラー: {e}')
-
-
-if __name__ == '__main__':
-  main()
+            with open(PICKUP_PENDING_FILE, 'w', encoding='utf-8') as f:
+                json.dump(top15_pending_pickups, f, ensure_ascii=False, indent=2)
+            print(f'💾 万舟判定用データ（上位{len(top15_pending_pickups)}件 / 全{len(pending_pickups)}件中）を保存しました。')
+        except Exception as e:
+            print(f'⚠️ 万舟判定用データの保存エラー: {e}')
