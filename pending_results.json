@@ -32,15 +32,15 @@
       "3-246-2461"
     ]
   },
-  "20261022_大村_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 3,
-    "venue_jp": "大村",
+  "20261022_児島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 12,
+    "venue_jp": "児島",
     "date": "20261022",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-461-4615",
-      "4-361-3615"
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
