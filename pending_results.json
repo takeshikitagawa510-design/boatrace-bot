@@ -42,5 +42,16 @@
       "2-164-1645",
       "6-124-1245"
     ]
+  },
+  "20261022_浜名湖_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 4,
+    "venue_jp": "浜名湖",
+    "date": "20261022",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-345-3456",
+      "3-245-2456"
+    ]
   }
 }
