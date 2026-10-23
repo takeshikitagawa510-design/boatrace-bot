@@ -31,5 +31,16 @@
       "2-356-3561",
       "3-256-2561"
     ]
+  },
+  "20261023_宮島_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 2,
+    "venue_jp": "宮島",
+    "date": "20261023",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
   }
 }
