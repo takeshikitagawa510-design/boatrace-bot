@@ -31,27 +31,5 @@
       "2-546-5461",
       "5-246-2461"
     ]
-  },
-  "20261023_尼崎_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 12,
-    "venue_jp": "尼崎",
-    "date": "20261023",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-136-1364",
-      "3-126-1264"
-    ]
-  },
-  "20261023_大村_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 3,
-    "venue_jp": "大村",
-    "date": "20261023",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-156-1564",
-      "5-136-1364"
-    ]
   }
 }
