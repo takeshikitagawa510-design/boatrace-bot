@@ -21,15 +21,15 @@
       "4-126-1263"
     ]
   },
-  "20261023_徳山_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 4,
-    "venue_jp": "徳山",
+  "20261023_宮島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 1,
+    "venue_jp": "宮島",
     "date": "20261023",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-345-3451",
-      "3-245-2451"
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
