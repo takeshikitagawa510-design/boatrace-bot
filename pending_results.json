@@ -20,27 +20,5 @@
       "2-146-1463",
       "4-126-1263"
     ]
-  },
-  "20261023_徳山_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 11,
-    "venue_jp": "徳山",
-    "date": "20261023",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
-  "20261023_びわこ_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 8,
-    "venue_jp": "びわこ",
-    "date": "20261023",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-143-1435",
-      "4-123-1235"
-    ]
   }
 }
