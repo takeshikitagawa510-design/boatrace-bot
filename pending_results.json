@@ -21,17 +21,6 @@
       "4-126-1263"
     ]
   },
-  "20261023_多摩川_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamagawa",
-    "rno": 4,
-    "venue_jp": "多摩川",
-    "date": "20261023",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-152-1523",
-      "5-142-1423"
-    ]
-  },
   "20261023_芦屋_8_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 8,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-156-1564",
       "5-126-1264"
+    ]
+  },
+  "20261023_びわこ_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 5,
+    "venue_jp": "びわこ",
+    "date": "20261023",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
     ]
   }
 }
