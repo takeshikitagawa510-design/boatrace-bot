@@ -21,17 +21,6 @@
       "4-126-1263"
     ]
   },
-  "20261023_芦屋_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 8,
-    "venue_jp": "芦屋",
-    "date": "20261023",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-156-1564",
-      "5-126-1264"
-    ]
-  },
   "20261023_びわこ_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/biwako",
     "rno": 5,
@@ -74,6 +63,17 @@
     "recommended_combos": [
       "2-354-3546",
       "3-254-2546"
+    ]
+  },
+  "20261023_徳山_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 9,
+    "venue_jp": "徳山",
+    "date": "20261023",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
