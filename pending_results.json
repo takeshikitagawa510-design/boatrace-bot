@@ -42,5 +42,16 @@
       "2-316-3164",
       "3-216-2164"
     ]
+  },
+  "20261023_若松_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 10,
+    "venue_jp": "若松",
+    "date": "20261023",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-465-4653",
+      "4-265-2653"
+    ]
   }
 }
