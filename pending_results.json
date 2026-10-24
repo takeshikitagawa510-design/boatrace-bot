@@ -20,5 +20,16 @@
       "2-146-1463",
       "4-126-1263"
     ]
+  },
+  "20261024_宮島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 1,
+    "venue_jp": "宮島",
+    "date": "20261024",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-164-1643",
+      "6-154-1543"
+    ]
   }
 }
