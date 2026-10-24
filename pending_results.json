@@ -21,17 +21,6 @@
       "4-126-1263"
     ]
   },
-  "20261024_尼崎_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 10,
-    "venue_jp": "尼崎",
-    "date": "20261024",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-154-1546",
-      "5-124-1246"
-    ]
-  },
   "20261024_多摩川_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamagawa",
     "rno": 11,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-345-3451",
       "3-245-2451"
+    ]
+  },
+  "20261024_宮島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 12,
+    "venue_jp": "宮島",
+    "date": "20261024",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
     ]
   }
 }
