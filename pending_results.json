@@ -21,17 +21,6 @@
       "4-126-1263"
     ]
   },
-  "20261024_平和島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 12,
-    "venue_jp": "平和島",
-    "date": "20261024",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-154-1546",
-      "5-124-1246"
-    ]
-  },
   "20261024_大村_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 3,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-514-5143",
       "5-214-2143"
+    ]
+  },
+  "20261024_福岡_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 12,
+    "venue_jp": "福岡",
+    "date": "20261024",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
