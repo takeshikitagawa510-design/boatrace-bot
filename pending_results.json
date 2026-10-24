@@ -31,5 +31,16 @@
       "3-145-1452",
       "4-135-1352"
     ]
+  },
+  "20261024_芦屋_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 11,
+    "venue_jp": "芦屋",
+    "date": "20261024",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5613",
+      "5-461-4613"
+    ]
   }
 }
