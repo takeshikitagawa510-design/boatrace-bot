@@ -20,5 +20,27 @@
       "2-356-3564",
       "3-256-2564"
     ]
+  },
+  "20261025_女子競艇_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 10,
+    "venue_jp": "",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-654-6543",
+      "6-254-2543"
+    ]
+  },
+  "20261025_桐生_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 10,
+    "venue_jp": "桐生",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-654-6543",
+      "6-254-2543"
+    ]
   }
 }
