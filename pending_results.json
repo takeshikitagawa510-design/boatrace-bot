@@ -1,1 +1,35 @@
-{}
+{
+  "20261026_桐生_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
+    "date": "20261026",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-152-1526",
+      "5-132-1326"
+    ]
+  },
+  "20261026_桐生_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 10,
+    "venue_jp": "桐生",
+    "date": "20261026",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-654-6543",
+      "6-254-2543"
+    ]
+  },
+  "20261026_桐生_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 1,
+    "venue_jp": "桐生",
+    "date": "20261026",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-315-3156",
+      "3-215-2156"
+    ]
+  }
+}
