@@ -9,5 +9,16 @@
       "3-654-6541",
       "6-354-3541"
     ]
+  },
+  "20261025_びわこ_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 2,
+    "venue_jp": "びわこ",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
+    ]
   }
 }
