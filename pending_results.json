@@ -1,15 +1,4 @@
 {
-  "20261025_びわこ_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 2,
-    "venue_jp": "びわこ",
-    "date": "20261025",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
-    ]
-  },
   "20261025_芦屋_6_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 6,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "4-136-1365",
       "6-143-1435"
+    ]
+  },
+  "20261025_浜名湖_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 2,
+    "venue_jp": "浜名湖",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
