@@ -9,5 +9,16 @@
       "2-315-3156",
       "3-215-2156"
     ]
+  },
+  "20261025_福岡_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 12,
+    "venue_jp": "福岡",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-163-1635",
+      "6-123-1235"
+    ]
   }
 }
