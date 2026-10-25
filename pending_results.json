@@ -1,26 +1,4 @@
 {
-  "20261025_多摩川_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamagawa",
-    "rno": 11,
-    "venue_jp": "多摩川",
-    "date": "20261025",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-154-1546",
-      "5-124-1246"
-    ]
-  },
-  "20261025_桐生_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 1,
-    "venue_jp": "桐生",
-    "date": "20261025",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-315-3156",
-      "3-215-2156"
-    ]
-  },
   "20261025_女子競艇_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 1,
@@ -30,6 +8,17 @@
     "recommended_combos": [
       "2-315-3156",
       "3-215-2156"
+    ]
+  },
+  "20261025_浜名湖_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
+    "rno": 11,
+    "venue_jp": "浜名湖",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
