@@ -1,13 +1,35 @@
 {
-  "20261025_芦屋_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 8,
-    "venue_jp": "芦屋",
+  "20261025_びわこ_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 5,
+    "venue_jp": "びわこ",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-456-4561",
+      "4-356-3561"
+    ]
+  },
+  "20261025_常滑_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 5,
+    "venue_jp": "常滑",
     "date": "20261025",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
+      "3-142-1426",
+      "4-132-1326"
+    ]
+  },
+  "20261025_鳴門_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 9,
+    "venue_jp": "鳴門",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
     ]
   }
 }
