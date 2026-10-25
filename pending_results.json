@@ -1,1 +1,24 @@
-{}
+{
+  "20261025_平和島_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 3,
+    "venue_jp": "平和島",
+    "date": "20261025",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-542-5421",
+      "5-342-3421"
+    ]
+  },
+  "20261025_びわこ_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 4,
+    "venue_jp": "びわこ",
+    "date": "20261025",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "6-152-1524",
+      "対象なし"
+    ]
+  }
+}
