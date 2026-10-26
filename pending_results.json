@@ -31,5 +31,16 @@
       "2-315-3156",
       "3-215-2156"
     ]
+  },
+  "20261026_常滑_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 3,
+    "venue_jp": "常滑",
+    "date": "20261026",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-652-6524",
+      "6-352-3524"
+    ]
   }
 }
