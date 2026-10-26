@@ -42,5 +42,27 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20261026_三国_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 11,
+    "venue_jp": "三国",
+    "date": "20261026",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
+  },
+  "20261026_多摩川_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 7,
+    "venue_jp": "多摩川",
+    "date": "20261026",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-431-4316",
+      "4-231-2316"
+    ]
   }
 }
