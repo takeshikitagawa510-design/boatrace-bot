@@ -32,17 +32,6 @@
       "3-215-2156"
     ]
   },
-  "20261026_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20261026",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-561-5613",
-      "5-461-4613"
-    ]
-  },
   "20261026_福岡_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 4,
@@ -52,6 +41,17 @@
     "recommended_combos": [
       "2-134-1346",
       "3-124-1246"
+    ]
+  },
+  "20261026_多摩川_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 5,
+    "venue_jp": "多摩川",
+    "date": "20261026",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
