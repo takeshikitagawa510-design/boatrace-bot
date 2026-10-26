@@ -32,15 +32,15 @@
       "3-215-2156"
     ]
   },
-  "20261026_三国_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 11,
-    "venue_jp": "三国",
+  "20261026_多摩川_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 8,
+    "venue_jp": "多摩川",
     "date": "20261026",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
