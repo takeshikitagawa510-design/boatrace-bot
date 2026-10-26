@@ -53,5 +53,27 @@
       "2-164-1645",
       "6-124-1245"
     ]
+  },
+  "20261026_女子競艇_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 6,
+    "venue_jp": "",
+    "date": "20261026",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-152-1526",
+      "5-132-1326"
+    ]
+  },
+  "20261026_桐生_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 6,
+    "venue_jp": "桐生",
+    "date": "20261026",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-152-1526",
+      "5-132-1326"
+    ]
   }
 }
