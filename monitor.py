@@ -18,12 +18,8 @@ CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
 PASSWORD = os.environ.get("SHINSUM_PASS") or "sao"
 
-# ⚡ リアルタイム監視用 Webhook（カードのみ送信）
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
-# 🎯 イン逃げ鉄板用 Webhook（専用チャンネル用。未設定ならリアルタイム監視用にフォールバック）
 TETTAN_DISCORD_WEBHOOK_URL = os.environ.get("TETTAN_DISCORD_WEBHOOK_URL") or DISCORD_WEBHOOK_URL
-
-# 🎯 的中・回収実績用 Webhook（テキストのみ送信）
 RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
     "RESULT_DISCORD_WEBHOOK_URL",
     "https://discord.com/api/webhooks/1531249075117096990/URp3Tock98zsni_jSoH2qCvepmsRoYo2sWLyV7_XcuaPYyQxGvwIKcKUeWTUWfsjOkLZ"
@@ -32,17 +28,44 @@ RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
 CACHE_FILE = "notified_races.json"
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUP_FILE = "pending_pickup_races.json"
+LOCK_FILE = "monitor.lock"
 
 JST = timezone(timedelta(hours=+9), "JST")
 NOW = datetime.now(JST)
 TODAY_STR = NOW.strftime("%Y%m%d")
+
+# 🔒 二重起動防止ロック処理
+def acquire_lock():
+    if os.path.exists(LOCK_FILE):
+        try:
+            mtime = os.path.getmtime(LOCK_FILE)
+            # 10分以上前の古いロックはプロセス異常終了とみなして解除
+            if time.time() - mtime > 600:
+                os.remove(LOCK_FILE)
+            else:
+                print("⏳ 前回の処理が現在も実行中のため、今回の実行をスキップします（多重起動防止）。")
+                sys.exit(0)
+        except Exception:
+            pass
+    try:
+        with open(LOCK_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception:
+        pass
+
+def release_lock():
+    if os.path.exists(LOCK_FILE):
+        try:
+            os.remove(LOCK_FILE)
+        except Exception:
+            pass
 
 # 🌙 深夜帯（23:00 〜 06:59）は通知連投防止のため実行を停止
 if 23 <= NOW.hour or NOW.hour < 7:
     print(f"🌙 現在時刻({NOW.strftime('%H:%M')})は深夜・早朝帯のため、処理を一時停止します。")
     sys.exit(0)
 
-# 💡 会場変換マッピング
+# 会場変換マッピング
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -51,20 +74,37 @@ VENUE_NO_MAP = {
     "芦屋": 21,  "福岡": 22,  "唐津": 23, "大村": 24,
 }
 
-notified_races = set()
-if os.path.exists(CACHE_FILE):
-    try:
-        with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            raw_notified = json.load(f)
-            notified_races = {k for k in raw_notified if k.startswith(TODAY_STR)}
-        print(f"📦 本日 ({TODAY_STR}) の通知済みキャッシュ ({len(notified_races)}件) を読み込みました。")
-    except Exception as e:
-        print(f"⚠️ キャッシュ読み込みエラー: {e}")
+def load_notified_races_set():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                raw_notified = json.load(f)
+                return {k for k in raw_notified if k.startswith(TODAY_STR)}
+        except Exception as e:
+            print(f"⚠️ キャッシュ読み込みエラー: {e}")
+    return set()
 
-def save_notified_races():
+notified_races = load_notified_races_set()
+print(f"📦 本日 ({TODAY_STR}) の通知済みキャッシュ ({len(notified_races)}件) を読み込みました。")
+
+def is_already_notified(race_id):
+    """ファイルとメモリの両面で最新の通知状況を二重チェック"""
+    global notified_races
+    if race_id in notified_races:
+        return True
+    latest = load_notified_races_set()
+    notified_races.update(latest)
+    return race_id in notified_races
+
+def mark_as_notified(race_id):
+    """通知済みに追加して即時ファイルへ同期"""
+    global notified_races
+    notified_races.add(race_id)
     try:
+        latest = load_notified_races_set()
+        latest.add(race_id)
         with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(list(notified_races), f, ensure_ascii=False, indent=2)
+            json.dump(list(latest), f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"⚠️ キャッシュ保存エラー: {e}")
 
@@ -72,7 +112,6 @@ today_venues = set()
 checker_data = {}
 
 AUTH = HTTPBasicAuth(USER_ID, PASSWORD)
-
 session = requests.Session()
 session.auth = AUTH
 session.headers.update({
@@ -82,7 +121,6 @@ session.headers.update({
     )
 })
 
-# 💡 リアルタイム監視用：カード（Embed）送信
 def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFFF):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
@@ -104,7 +142,6 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
-# 💡 的中・回収実績用：テキスト送信
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
         print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
@@ -117,16 +154,8 @@ def send_discord_text(webhook_url, title, description, fields=[]):
         formatted_fields.append(f"{name}\n{val}")
     
     fields_block = "\n".join(formatted_fields)
-
-    plain_content = (
-        f"{title}\n"
-        f"{description}\n"
-        f"{fields_block}"
-    )
-
-    payload = {
-        "content": plain_content
-    }
+    plain_content = f"{title}\n{description}\n{fields_block}"
+    payload = {"content": plain_content}
     
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
@@ -148,33 +177,26 @@ def update_venues():
     global today_venues
     try:
         target_pages = [DATA_URL, "https://boatrace-shinsum.com/joshi/"]
-        
         for p_url in target_pages:
             resp = session.get(p_url, auth=AUTH, timeout=10)
             if resp.status_code != 200:
                 continue
-
             resp.encoding = "utf-8"
             soup = BeautifulSoup(resp.text, "html.parser")
             base_clean_url = DATA_URL.rstrip("/")
-
             for a in soup.find_all("a"):
                 href = a.get("href")
                 if not href or any(
                     skip in href for skip in ["login", "logout", "wp-", "/checker/", "#", "javascript:"]
                 ):
                     continue
-
                 full_url = urljoin(DATA_URL, href)
                 if "boatrace-shinsum.com" in full_url:
                     clean_url = full_url.split("?")[0].rstrip("/")
                     if clean_url and clean_url != base_clean_url:
                         today_venues.add(clean_url + "/")
 
-        # 女子戦ポータルと全会場フォールバックを追加
         today_venues.add("https://boatrace-shinsum.com/joshi/")
-
-        # 💡 江戸川と津を除く全国22場をすべて巡回対象にする
         target_venue_codes = [
             "kiryu", "toda", "heiwajima", "tamagawa",
             "hamanako", "gamagori", "tokoname", "mikuni",
@@ -187,7 +209,6 @@ def update_venues():
             today_venues.add(f"https://boatrace-shinsum.com/joshi/{v_code}/")
 
         print(f"✅ 巡回対象の会場URL ({len(today_venues)}件)")
-
     except Exception as e:
         print(f"⚠️ 会場更新エラー: {e}")
 
@@ -205,7 +226,7 @@ def load_checker_data():
 
         if resp.status_code == 200:
             checker_data = resp.json()
-            print(f"✅ チェッカーデータ読み込み完了")
+            print("✅ チェッカーデータ読み込み完了")
     except Exception as e:
         print(f"⚠️ データロードエラー: {e}")
 
@@ -246,7 +267,6 @@ def generate_probability_eye(boats):
     for i, b in enumerate(boats):
         waku = i + 1
         b_str = json.dumps(b, ensure_ascii=False)
-
         toban = None
         for exact_key in ["id", "no", "toban", "register_id", "player_id", "touban"]:
             if exact_key in b and str(b[exact_key]).isdigit() and 3000 <= int(b[exact_key]) <= 6000:
@@ -275,7 +295,6 @@ def generate_probability_eye(boats):
                     pass
 
         is_alert_target = ("Imperial" in b_str or "覚醒" in b_str) and ("+" in b_str or "＋" in b_str)
-
         probs = get_real_probabilities(toban, waku, time_diff_val)
         if probs:
             has_valid_checker = True
@@ -292,7 +311,6 @@ def generate_probability_eye(boats):
     if has_valid_checker:
         pool_2to6 = analyzed_boats[1:]
         main_head = max(pool_2to6, key=lambda x: x["r1"])
-
         other_boats = [b for b in analyzed_boats if b["waku"] != main_head["waku"]]
         top_r2_boats = sorted(other_boats, key=lambda x: x["r2"], reverse=True)[:3]
         top_r3_boats = sorted(other_boats, key=lambda x: x["r3"], reverse=True)[:3]
@@ -311,7 +329,6 @@ def generate_probability_eye(boats):
             sub_r2_str = "".join(str(b["waku"]) for b in sub_r2_boats)
             sub_r3_str = "".join(str(b["waku"]) for b in sub_r3_boats)
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
-
         return main_eye, sub_eye
     else:
         pool_2to6 = [b for b in analyzed_boats[1:] if b["is_alert"]]
@@ -338,7 +355,6 @@ def generate_probability_eye(boats):
             sub_r2_str = "".join(str(b["waku"]) for b in sub_others[:3])
             sub_r3_str = "".join(str(b["waku"]) for b in sub_others[:4])
             sub_eye = f"{sub_head['waku']}-{sub_r2_str}-{sub_r3_str}"
-
         return main_eye, sub_eye
 
 # ==========================================
@@ -352,14 +368,13 @@ def fetch_official_result_simple(venue_jp, rno, date_str):
 
     raw_date = re.sub(r"\D", "", str(date_str))[:8]
     url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
-
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Referer": "https://www.boatrace.jp/"
     }
 
     try:
-        res = requests.get(url, headers=headers, timeout=10)
+        res = requests.get(url, headers=headers, timeout=8)
         if res.status_code != 200:
             return None, 0
 
@@ -384,19 +399,16 @@ def fetch_official_result_simple(venue_jp, rno, date_str):
                         return combo, val
     except Exception:
         pass
-
     return None, 0
 
 def check_pickup_manshu_results():
     if not os.path.exists(PENDING_PICKUP_FILE):
         return
-
     try:
         with open(PENDING_PICKUP_FILE, "r", encoding="utf-8") as f:
             pickups = json.load(f)
     except Exception:
         return
-
     if not pickups:
         return
 
@@ -408,12 +420,10 @@ def check_pickup_manshu_results():
         rno = info.get("r", 0)
         score = info.get("s", 0)
         date_str = info.get("date", TODAY_STR)
-
         winning_combo, payout = fetch_official_result_simple(v_name, rno, date_str)
 
         if winning_combo:
             print(f"    📊 ピックアップ結果: {v_name} {rno}R (Score: {score}) -> 3連単 {winning_combo} ({payout:,}円)")
-            
             if payout >= 10000:
                 print(f"    🎆 【万舟発生】 🎯｜ai的中・回収実績 へ送信: {v_name} {rno}R ({payout:,}円)")
                 fields = [
@@ -427,10 +437,7 @@ def check_pickup_manshu_results():
                     description=f"🔥 AI期待値スコア {score}点 の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
                     fields=fields,
                 )
-
             del updated_pickups[race_key]
-        else:
-            print(f"    ⏳ ピックアップ未確定: {v_name} {rno}R")
 
     try:
         with open(PENDING_PICKUP_FILE, "w", encoding="utf-8") as f:
@@ -442,7 +449,6 @@ def check_pickup_manshu_results():
 # 🚀 3. リアルタイムAI監視ロジック
 # ==========================================
 def monitor_shinsum(venue_urls):
-    global notified_races
     venue_name_map = {
         "kiryu": "桐生", "toda": "戸田", "edogawa": "江戸川", "tokoname": "常滑",
         "mikuni": "三国", "marugame": "丸亀", "miyajima": "宮島", "tokuyama": "徳山",
@@ -461,13 +467,11 @@ def monitor_shinsum(venue_urls):
         except Exception:
             pending_results = {}
 
-    # 🎯 各会場を回る前に joken.json を読み込んで高勝率マップを作成
     joken_high_races = {}
     timestamp = int(time.time() * 1000)
     try:
         j_url = f"https://boatrace-shinsum.com/static/joken.json?t={timestamp}"
         j_resp = session.get(j_url, auth=AUTH, timeout=8)
-        print(f"📡 jokenアクセス: {j_url} -> HTTP {j_resp.status_code}")
         if j_resp.status_code == 200:
             j_data = j_resp.json()
             rows = j_data.get("rows", [])
@@ -482,23 +486,16 @@ def monitor_shinsum(venue_urls):
                             joken_high_races[f"{v_name}_{r_num}"] = inn_rate
                     except (ValueError, TypeError):
                         pass
-            print(f"📦 joken.json 解析成功: 鉄板候補 {len(joken_high_races)}件 を取得 (全{len(rows)}件中)")
     except Exception as e:
         print(f"⚠️ jokenアクセス例外: {e}")
-        
-    if not joken_high_races:
-        print("⚠️ 警告: joken_high_races が空です。")
 
     for venue_url in venue_urls:
         parsed = urlparse(venue_url)
         base_path = parsed.path.split('?')[0].rstrip("/")
         clean_base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}"
-
         path_parts = [p for p in base_path.split("/") if p]
-        
         is_joshi = "joshi" in path_parts
         path_parts_no_joshi = [p for p in path_parts if p != "joshi"]
-        
         venue_id_name = path_parts_no_joshi[-1] if path_parts_no_joshi else ""
 
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
@@ -508,26 +505,24 @@ def monitor_shinsum(venue_urls):
         shinsum_data, arare_data = {}, {}
 
         try:
-            s_resp = session.get(f"{clean_base_url}/shinsum.json?t={timestamp}", auth=AUTH, timeout=8)
+            s_resp = session.get(f"{clean_base_url}/shinsum.json?t={timestamp}", auth=AUTH, timeout=6)
             if s_resp.status_code == 200:
                 shinsum_data = s_resp.json()
             elif s_resp.status_code == 401:
                 perform_login()
-        except Exception as e:
-            print(f"⚠️ {venue_japanese} shinsum.json 取得エラー: {e}")
+        except Exception:
+            pass
 
         try:
-            a_resp = session.get(f"{clean_base_url}/arare.json?t={timestamp}", auth=AUTH, timeout=8)
+            a_resp = session.get(f"{clean_base_url}/arare.json?t={timestamp}", auth=AUTH, timeout=6)
             if a_resp.status_code == 200:
                 arare_data = a_resp.json()
-        except Exception as e:
-            print(f"⚠️ {venue_japanese} arare.json 取得エラー: {e}")
+        except Exception:
+            pass
 
-        # 💡 データ内の日付が存在し、かつ今日と明確に異なる場合のみスキップ
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
-                # トップまたは1R目の中の日付キーを探す
                 date_val = check_d.get("date") or check_d.get("created_at") or ""
                 if not date_val and "1R" in check_d and isinstance(check_d["1R"], dict):
                     date_val = check_d["1R"].get("date") or ""
@@ -536,11 +531,9 @@ def monitor_shinsum(venue_urls):
                     data_date = clean_d
                     break
 
-        # 日付データが明確に存在して、かつ今日でない場合のみ除外（未設定時は当日の生データとして処理）
         if data_date and data_date != TODAY_STR:
-            print(f"⏭️ 【過去データ除外】{venue_japanese} (データ日: {data_date} != 今日: {TODAY_STR})")
             continue
-            
+
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
 
         for rno_key in all_race_keys:
@@ -561,7 +554,7 @@ def monitor_shinsum(venue_urls):
                 continue
 
             # ① 覚醒タイム
-            if kakusei_race_id not in notified_races:
+            if not is_already_notified(kakusei_race_id):
                 kakusei_alerts = []
                 is_triggered = False
                 if isinstance(boats, list):
@@ -586,8 +579,7 @@ def monitor_shinsum(venue_urls):
                         fields=fields,
                         color=0xFF0055,
                     )
-                    notified_races.add(kakusei_race_id)
-                    save_notified_races()
+                    mark_as_notified(kakusei_race_id)
 
                     pending_results[kakusei_race_id] = {
                         "clean_url": clean_base_url,
@@ -599,7 +591,7 @@ def monitor_shinsum(venue_urls):
                     }
 
             # ② 勝率判定
-            if rate_race_id not in notified_races:
+            if not is_already_notified(rate_race_id):
                 w1_rate = None
                 other_rates = []
                 for i, b in enumerate(boats):
@@ -629,7 +621,6 @@ def monitor_shinsum(venue_urls):
                         title = "🌟 超抜シグナル到来！" if is_chobatsu else "🔥 イン波乱警戒シグナル！"
                         w1_str = f"+{w1_rate}" if (w1_rate is not None and w1_rate > 0) else f"{w1_rate}" if w1_rate is not None else "不明"
                         other_str = f"+{other_max_val}" if other_max_val > 0 else f"{other_max_val}"
-
                         main_eye, sub_eye = generate_probability_eye(boats)
 
                         fields = [
@@ -648,8 +639,7 @@ def monitor_shinsum(venue_urls):
                             fields=fields,
                             color=0xFFD700 if is_chobatsu else 0xFF4500,
                         )
-                        notified_races.add(rate_race_id)
-                        save_notified_races()
+                        mark_as_notified(rate_race_id)
 
                         pending_results[rate_race_id] = {
                             "clean_url": clean_base_url,
@@ -661,7 +651,7 @@ def monitor_shinsum(venue_urls):
                         }
 
             # ③ スリットアラート
-            if slit_race_id not in notified_races:
+            if not is_already_notified(slit_race_id):
                 race_shinsum_str = json.dumps(shinsum_data.get(rno_key, {}), ensure_ascii=False)
                 race_arare_str = json.dumps(arare_data.get(rno_key, {}), ensure_ascii=False)
                 combined_race_text = race_shinsum_str + race_arare_str
@@ -693,24 +683,17 @@ def monitor_shinsum(venue_urls):
                         fields=fields,
                         color=0x00E5FF,
                     )
-                    notified_races.add(slit_race_id)
-                    save_notified_races()
+                    mark_as_notified(slit_race_id)
 
-            # ==========================================
-            # ④ 🎯 厳選イン逃げ鉄板判定（最終期待度70%以上確定モード）
-            # ==========================================
+            # ④ 🎯 厳選イン逃げ鉄板判定
             tettan_race_id = f"{TODAY_STR}_{venue_japanese}_{rno_str}_tettan"
-
-            if tettan_race_id not in notified_races:
+            if not is_already_notified(tettan_race_id):
                 pure_v = pure_venue.replace("[女子]", "").strip()
                 race_lookup_key = f"{pure_v}_{rno_str}"
                 raw_in_rate = joken_high_races.get(race_lookup_key, 0.0)
 
-                # 候補リストに載っている場合のみ展示補正をチェック
                 if raw_in_rate >= 70.0:
                     b1 = boats[0] if len(boats) >= 1 else {}
-                    
-                    # 1号艇の展示補正値（rate_1）
                     ex_bonus = 0.0
                     try:
                         clean_b1_rate = str(b1.get("rate_1", "")).replace("%", "").strip()
@@ -721,8 +704,6 @@ def monitor_shinsum(venue_urls):
 
                     final_rate = raw_in_rate + ex_bonus
 
-                    # 🎯【鉄板判定】展示補正後の「最終期待度」が70%以上の場合のみ通知！
-                    # （展示で大幅マイナスを食らって70%を割った場合はカット）
                     if final_rate >= 70.0:
                         opponents = []
                         for idx, b_other in enumerate(boats[1:], start=2):
@@ -760,11 +741,8 @@ def monitor_shinsum(venue_urls):
                             color=0x00FF88,
                         )
                         print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (最終期待度: {final_rate:.1f}%)")
-                        notified_races.add(tettan_race_id)
-                        save_notified_races()
-                    else:
-                        print(f"⏭️ 【鉄板見送り】 {venue_japanese} {rno_str}R: 展示補正後({final_rate:.1f}%)が70%未満のため除外")
-                
+                        mark_as_notified(tettan_race_id)
+
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
@@ -774,7 +752,6 @@ def monitor_shinsum(venue_urls):
             existing_pending = {}
 
     existing_pending.update(pending_results)
-
     try:
         with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
             json.dump(existing_pending, f, ensure_ascii=False, indent=2)
@@ -785,14 +762,15 @@ def monitor_shinsum(venue_urls):
 # ⏱️ 実行エントリポイント
 # ==========================================
 if __name__ == "__main__":
-    perform_login()
-    load_checker_data()
-    update_venues()
+    acquire_lock()
+    try:
+        perform_login()
+        load_checker_data()
+        update_venues()
 
-    for i in range(2):
         if today_venues:
             monitor_shinsum(list(today_venues))
-        if i == 0:
-            time.sleep(30)
 
-    check_pickup_manshu_results()
+        check_pickup_manshu_results()
+    finally:
+        release_lock()
