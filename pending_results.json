@@ -54,26 +54,15 @@
       "5-132-1326"
     ]
   },
-  "20261027_唐津_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/karatsu",
+  "20261027_三国_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 7,
-    "venue_jp": "唐津",
+    "venue_jp": "三国",
     "date": "20261027",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-156-1564",
-      "5-126-1264"
-    ]
-  },
-  "20261027_平和島_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 2,
-    "venue_jp": "平和島",
-    "date": "20261027",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-516-5164",
-      "5-316-3164"
+      "4-612-6123",
+      "6-412-4123"
     ]
   }
 }
