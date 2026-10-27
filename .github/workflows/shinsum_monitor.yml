@@ -1,11 +1,12 @@
 name: 3. Realtime Shinsum Monitor
 
 on:
-  schedule:
-    # JST 8:00 〜 22:55 (UTC 23:00 〜 13:55) の間、5分おきに自動起動
-    - cron: '*/5 23-23 * * *'
-    - cron: '*/5 0-13 * * *'
   workflow_dispatch:
+
+# ★ 多重実行を完全に防止（前の処理が終わるまで重複起動させない）
+concurrency:
+  group: shinsum-monitor-group
+  cancel-in-progress: false
 
 # ★ リポジトリへコミット＆プッシュするための権限
 permissions:
@@ -18,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # git pull の競合回避のために全履歴を取得
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -43,7 +44,6 @@ jobs:
           RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
         run: python result_checker.py
 
-      # ★ コンフリクトを100%回避するコミット＆プッシュ処理
       - name: Save notification cache and pending results
         run: |
           git config --global user.name "github-actions[bot]"
