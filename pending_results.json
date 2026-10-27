@@ -54,17 +54,6 @@
       "5-132-1326"
     ]
   },
-  "20261027_平和島_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 8,
-    "venue_jp": "平和島",
-    "date": "20261027",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-514-5146",
-      "5-314-3146"
-    ]
-  },
   "20261027_三国_12_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 12,
@@ -74,6 +63,28 @@
     "recommended_combos": [
       "4-153-1532",
       "5-143-1432"
+    ]
+  },
+  "20261027_amagasaki_sg_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
+    "rno": 9,
+    "venue_jp": "amagasaki_sg",
+    "date": "20261027",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20261027_尼崎_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 9,
+    "venue_jp": "尼崎",
+    "date": "20261027",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
