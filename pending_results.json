@@ -54,17 +54,6 @@
       "5-132-1326"
     ]
   },
-  "20261027_amagasaki_sg_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 7,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261027",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261027_唐津_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/karatsu",
     "rno": 11,
@@ -76,17 +65,6 @@
       "4-125-1256"
     ]
   },
-  "20261027_尼崎_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 7,
-    "venue_jp": "尼崎",
-    "date": "20261027",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261027_多摩川_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/tamagawa",
     "rno": 7,
@@ -96,6 +74,17 @@
     "recommended_combos": [
       "4-162-1625",
       "6-142-1425"
+    ]
+  },
+  "20261027_三国_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 11,
+    "venue_jp": "三国",
+    "date": "20261027",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-461-4615",
+      "4-261-2615"
     ]
   }
 }
