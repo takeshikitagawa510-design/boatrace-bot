@@ -42,5 +42,16 @@
       "2-145-1453",
       "4-125-1253"
     ]
+  },
+  "20261027_女子競艇_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 5,
+    "venue_jp": "",
+    "date": "20261027",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3416",
+      "3-241-2416"
+    ]
   }
 }
