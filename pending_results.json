@@ -32,26 +32,15 @@
       "4-125-1253"
     ]
   },
-  "20261028_児島_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
+  "20261028_福岡_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 1,
-    "venue_jp": "児島",
+    "venue_jp": "福岡",
     "date": "20261028",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-315-3156",
-      "3-215-2156"
-    ]
-  },
-  "20261028_常滑_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 2,
-    "venue_jp": "常滑",
-    "date": "20261028",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "4-521-5213",
-      "5-421-4213"
+      "2-146-1463",
+      "4-126-1263"
     ]
   }
 }
