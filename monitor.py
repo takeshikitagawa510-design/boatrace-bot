@@ -20,10 +20,7 @@ PASSWORD = os.environ.get("SHINSUM_PASS") or "sao"
 
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 TETTAN_DISCORD_WEBHOOK_URL = os.environ.get("TETTAN_DISCORD_WEBHOOK_URL") or DISCORD_WEBHOOK_URL
-RESULT_DISCORD_WEBHOOK_URL = os.environ.get(
-    "RESULT_DISCORD_WEBHOOK_URL",
-    "https://discord.com/api/webhooks/1531249075117096990/URp3Tock98zsni_jSoH2qCvepmsRoYo2sWLyV7_XcuaPYyQxGvwIKcKUeWTUWfsjOkLZ"
-)
+RESULT_DISCORD_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
 
 CACHE_FILE = "notified_races.json"
 PENDING_RESULTS_FILE = "pending_results.json"
