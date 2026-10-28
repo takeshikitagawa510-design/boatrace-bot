@@ -30,23 +30,25 @@ SLUG_VENUE_MAP = {
 }
 
 def resolve_venue_name(raw_venue, clean_url="", race_key=""):
-    cleaned = re.sub(r"\[.*?\]|joshi|[a-zA-Z\s]", "", str(raw_venue)).strip()
-    if cleaned and cleaned in VENUE_NO_MAP:
-        return cleaned
-
-    if clean_url:
-        for slug, jp_name in SLUG_VENUE_MAP.items():
-            if slug in clean_url and slug != "joshi":
+    # 1. 24場名が文字列内に含まれているかを最優先で抽出
+    for jp_name in VENUE_NO_MAP.keys():
+        if len(jp_name) >= 2:
+            if jp_name in str(raw_venue) or jp_name in str(race_key):
                 return jp_name
 
-    if race_key:
-        for v in VENUE_NO_MAP.keys():
-            if v in race_key:
-                return v
+    # 2. URLのスラッグから判定
+    if clean_url:
+        for slug, jp_name in SLUG_VENUE_MAP.items():
+            if f"/{slug}/" in clean_url or clean_url.rstrip("/").endswith(slug):
+                return jp_name
+
+    # 3. 余分な文字を削って再判定
+    cleaned = re.sub(r"\[.*?\]|joshi|女子競艇|[a-zA-Z\s]", "", str(raw_venue)).strip()
+    if cleaned in VENUE_NO_MAP:
+        return cleaned
 
     return ""
 
-# 💡 的中・回収実績用：カード枠なし・テキストのみ送信関数（IFTTT/X転送対応）
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
         print(f"⚠️ RESULT_WEBHOOK_URL未設定のためスキップ: {title}")
@@ -59,28 +61,21 @@ def send_discord_text(webhook_url, title, description, fields=[]):
         formatted_fields.append(f"{name}\n{val}")
     
     fields_block = "\n".join(formatted_fields)
-
-    # カード装飾（embeds）を含めず、純粋なテキストのみを組み立てる
     plain_content = (
         f"{title}\n"
         f"{description}\n"
         f"{fields_block}"
     ).replace("**", "").replace("`", "")
 
-    payload = {
-        "content": plain_content
-    }
-
+    payload = {"content": plain_content}
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
-        print(f"📡 Discord実績送信結果 (テキストのみ): HTTP {res.status_code}")
+        print(f"📡 Discord実績送信結果: HTTP {res.status_code}")
     except Exception as e:
         print(f"⚠️ Discord通信エラー: {e}")
 
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
-    
-    # 会場が特定できない（[女子]等）場合は無駄な通信を避けるため即スキップ
     if not resolved_v:
         return None, 0, ""
 
@@ -94,8 +89,8 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
         raw_date = re.sub(r"\D", "", str(date_str))[:8]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Referer": "https://www.boatrace.jp/"
     }
 
@@ -105,7 +100,7 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     res = None
     for attempt in range(2):
         try:
-            res = session.get(url, headers=headers, timeout=12)
+            res = session.get(url, headers=headers, timeout=10)
             if res.status_code == 200:
                 break
         except Exception:
@@ -117,14 +112,12 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     soup = BeautifulSoup(res.text, "html.parser")
     text_all = soup.get_text(separator=" ", strip=True)
 
-    # 1. テキスト全体からの高速マッチング
     match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
     if match:
         combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
         payout_val = int(match.group(4).replace(",", ""))
         return combo, payout_val, resolved_v
 
-    # 2. テーブル（tr）ごとの精査
     for tr in soup.find_all("tr"):
         tr_text = tr.get_text(separator=" ", strip=True)
         if "3連単" in tr_text:
@@ -146,8 +139,12 @@ def check_all_results():
     today_str = datetime.now(JST).strftime("%Y%m%d")
 
     if os.path.exists(PENDING_RESULTS_FILE):
-        with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
-            pending_results = json.load(f)
+        try:
+            with open(PENDING_RESULTS_FILE, "r", encoding="utf-8") as f:
+                pending_results = json.load(f)
+        except Exception as e:
+            print(f"⚠️ {PENDING_RESULTS_FILE} 読み込みエラー: {e}")
+            pending_results = {}
 
         if pending_results:
             updated_pending = {}
@@ -165,14 +162,12 @@ def check_all_results():
                 raw_venue_jp = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
                 clean_url = info.get("clean_url", "")
                 date_str = info.get("date") or info.get("d")
-                alert_type = info.get("alert_type")
+                alert_type = info.get("alert_type", "AIアラート")
                 recommended_combos = info.get("recommended_combos", [])
 
                 resolved_v = resolve_venue_name(raw_venue_jp, clean_url, race_key)
-
-                # 会場特定不能なデータはスキップ
                 if not resolved_v:
-                    print(f"    ⚠️ 会場不明のためスキップ: {raw_venue_jp} {rno}R")
+                    print(f"    ⚠️ 会場不明のためスキップ: {raw_venue_jp} {rno}R (key: {race_key})")
                     continue
 
                 winning_combo, payout, display_venue = fetch_official_result(
@@ -194,12 +189,13 @@ def check_all_results():
                                 break
 
                     if is_hit:
-                        print(f"    🎯 【的中】 Discord通知送信 (テキストのみ): {display_venue} {rno}R")
+                        is_manshu = payout >= 10000
+                        title_prefix = "🎆【万舟的中！】" if is_manshu else "🎯【AIアラート的中報告】"
+                        print(f"    🎯 【的中 ({'万舟' if is_manshu else '通常'})】 Discord通知送信: {display_venue} {rno}R ({payout:,}円)")
                         
-                        # 💡 修正箇所：カード(send_discord_embed)をやめ、テキストのみ(send_discord_text)で送信
                         send_discord_text(
                             webhook_url=RESULT_WEBHOOK_URL,
-                            title=f"🎯【AIアラート的中報告】 {display_venue} {rno}R",
+                            title=f"{title_prefix} {display_venue} {rno}R",
                             description=f"⚡ {alert_type} アラート配信のレースで見事的中しました！",
                             fields=[
                                 {"name": "📍 対象レース", "value": f"{display_venue} {rno}R"},
@@ -214,8 +210,11 @@ def check_all_results():
                 else:
                     print(f"    ⏳ 未確定/取得待ち: {display_venue} {rno}R")
 
-            with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
-                json.dump(updated_pending, f, ensure_ascii=False, indent=2)
+            try:
+                with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
+                    json.dump(updated_pending, f, ensure_ascii=False, indent=2)
+            except Exception as e:
+                print(f"⚠️ 保存エラー: {e}")
 
 if __name__ == "__main__":
     check_all_results()
