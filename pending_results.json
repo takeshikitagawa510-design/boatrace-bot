@@ -53,5 +53,27 @@
       "2-456-4563",
       "4-256-2563"
     ]
+  },
+  "20261028_女子競艇_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 1,
+    "venue_jp": "",
+    "date": "20261028",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20261028_蒲郡_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 1,
+    "venue_jp": "蒲郡",
+    "date": "20261028",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-163-1634",
+      "6-153-1534"
+    ]
   }
 }
