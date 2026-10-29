@@ -1,1 +1,101 @@
-{}
+{
+  "20261029_amagasaki_sg_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
+    "rno": 1,
+    "venue_jp": "amagasaki_sg",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-164-1642",
+      "6-134-1342"
+    ]
+  },
+  "20261029_桐生_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 1,
+    "venue_jp": "桐生",
+    "date": "20261029",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20261029_桐生_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 10,
+    "venue_jp": "桐生",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-345-3456",
+      "3-245-2456"
+    ]
+  },
+  "20261029_桐生_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 5,
+    "venue_jp": "桐生",
+    "date": "20261029",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1456",
+      "4-125-1256"
+    ]
+  },
+  "20261029_桐生_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 2,
+    "venue_jp": "桐生",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-352-3526",
+      "5-432-4326"
+    ]
+  },
+  "20261029_鳴門_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 10,
+    "venue_jp": "鳴門",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-562-5621",
+      "5-462-4621"
+    ]
+  },
+  "20261029_鳴門_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 2,
+    "venue_jp": "鳴門",
+    "date": "20261029",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
+    ]
+  },
+  "20261029_児島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 1,
+    "venue_jp": "児島",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-152-1523",
+      "5-142-1423"
+    ]
+  },
+  "20261029_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 5,
+    "venue_jp": "児島",
+    "date": "20261029",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  }
+}
