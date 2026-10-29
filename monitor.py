@@ -27,8 +27,9 @@ PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUP_FILE = "pending_pickup_races.json"
 LOCK_FILE = "monitor.lock"
 
+# 日本時間の生成
 JST = timezone(timedelta(hours=+9), "JST")
-NOW = datetime.now(JST)
+NOW = datetime.now(timezone.utc).astimezone(JST)
 TODAY_STR = NOW.strftime("%Y%m%d")
 
 # 🔒 二重起動防止ロック処理
@@ -57,9 +58,9 @@ def release_lock():
         except Exception:
             pass
 
-# 🌙 深夜帯（23:00 〜 06:59）は通知連投防止のため実行を停止
+# 🌙 深夜帯（23:00 〜 06:59 JST）のみ実行を停止
 if 23 <= NOW.hour or NOW.hour < 7:
-    print(f"🌙 現在時刻({NOW.strftime('%H:%M')})は深夜・早朝帯のため、処理を一時停止します。")
+    print(f"🌙 現在時刻({NOW.strftime('%H:%M')} JST)は深夜・早朝帯のため、処理を一時停止します。")
     sys.exit(0)
 
 # 会場変換マッピング
@@ -498,13 +499,6 @@ def monitor_shinsum(venue_urls):
         pure_venue = venue_name_map.get(venue_id_name, venue_id_name)
         venue_japanese = f"[女子]{pure_venue}" if (is_joshi and pure_venue) else (pure_venue or "女子競艇")
 
-        # -------------------------------------------------------------
-        # 🕒 フィルター①：朝イチ（10:00前）のナイター場・前日データ排除
-        # -------------------------------------------------------------
-        nighter_venues = ["桐生", "蒲郡", "住之江", "丸亀", "若松", "下関", "大村"]
-        if NOW.hour < 10 and any(nv in venue_japanese for nv in nighter_venues):
-            continue
-
         timestamp = int(time.time() * 1000)
         shinsum_data, arare_data = {}, {}
 
@@ -524,26 +518,19 @@ def monitor_shinsum(venue_urls):
         except Exception:
             pass
 
-        # -------------------------------------------------------------
-        # 📅 フィルター②：前日の残骸データを完全に排除する厳格日付チェック
-        # -------------------------------------------------------------
+        # 💡 安全な日付判定：データ内に日付が明記されており、かつ「今日でない」と明確に分かる場合のみスキップ
         data_date = None
         for check_d in [shinsum_data, arare_data]:
             if isinstance(check_d, dict):
-                date_val = check_d.get("date") or check_d.get("created_at") or check_d.get("day") or ""
-                if not date_val:
-                    for r_k in ["1R", "2R", "1", "2"]:
-                        if r_k in check_d and isinstance(check_d[r_k], dict):
-                            date_val = check_d[r_k].get("date") or check_d[r_k].get("created_at") or ""
-                            if date_val:
-                                break
+                date_val = check_d.get("date") or check_d.get("created_at") or ""
+                if not date_val and "1R" in check_d and isinstance(check_d["1R"], dict):
+                    date_val = check_d["1R"].get("date") or ""
                 clean_d = re.sub(r"\D", "", str(date_val))[:8]
                 if len(clean_d) == 8:
                     data_date = clean_d
                     break
 
-        # 日付が「今日」と完全一致しない場合、または取得できない場合は破棄
-        if not data_date or data_date != TODAY_STR:
+        if data_date and data_date != TODAY_STR:
             continue
 
         all_race_keys = set(shinsum_data.keys()) | set(arare_data.keys())
