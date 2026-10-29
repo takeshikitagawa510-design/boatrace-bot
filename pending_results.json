@@ -42,27 +42,5 @@
       "3-164-1642",
       "6-134-1342"
     ]
-  },
-  "20261029_児島_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 11,
-    "venue_jp": "児島",
-    "date": "20261029",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
-  "20261029_丸亀_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 3,
-    "venue_jp": "丸亀",
-    "date": "20261029",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-463-4631",
-      "4-263-2631"
-    ]
   }
 }
