@@ -1,57 +1,24 @@
 {
-  "20261030_amagasaki_sg_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 1,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261030",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
-  "20261030_amagasaki_sg_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 4,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261030",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-451-4513",
-      "4-251-2513"
-    ]
-  },
-  "20261030_amagasaki_sg_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 9,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261030",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-124-1245",
-      "4-132-1325"
-    ]
-  },
-  "20261030_女子競艇_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
-    "rno": 9,
-    "venue_jp": "",
-    "date": "20261030",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
-    ]
-  },
-  "20261030_女子競艇_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/joshi",
+  "20261031_桐生_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 10,
-    "venue_jp": "",
-    "date": "20261030",
+    "venue_jp": "桐生",
+    "date": "20261031",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "4-562-5621",
       "5-462-4621"
+    ]
+  },
+  "20261031_桐生_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 9,
+    "venue_jp": "桐生",
+    "date": "20261031",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
