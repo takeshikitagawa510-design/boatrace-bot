@@ -43,17 +43,6 @@
       "4-251-2513"
     ]
   },
-  "20261030_尼崎_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 9,
-    "venue_jp": "尼崎",
-    "date": "20261030",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-124-1245",
-      "4-132-1325"
-    ]
-  },
   "20261030_amagasaki_sg_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
     "rno": 9,
@@ -74,6 +63,17 @@
     "recommended_combos": [
       "2-154-1543",
       "5-124-1243"
+    ]
+  },
+  "20261030_常滑_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 10,
+    "venue_jp": "常滑",
+    "date": "20261030",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-643-6431",
+      "6-243-2431"
     ]
   }
 }
