@@ -43,17 +43,6 @@
       "3-125-1254"
     ]
   },
-  "20261030_桐生_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 10,
-    "venue_jp": "桐生",
-    "date": "20261030",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-562-5621",
-      "5-462-4621"
-    ]
-  },
   "20261030_女子競艇_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 10,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "4-562-5621",
       "5-462-4621"
+    ]
+  },
+  "20261030_大村_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 11,
+    "venue_jp": "大村",
+    "date": "20261030",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
