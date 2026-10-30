@@ -54,15 +54,15 @@
       "4-132-1325"
     ]
   },
-  "20261030_大村_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 5,
-    "venue_jp": "大村",
+  "20261030_丸亀_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 6,
+    "venue_jp": "丸亀",
     "date": "20261030",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-451-4513",
-      "4-251-2513"
+      "2-163-1635",
+      "6-123-1235"
     ]
   }
 }
