@@ -8,7 +8,11 @@ from bs4 import BeautifulSoup
 
 JST = timezone(timedelta(hours=+9), "JST")
 
+# 既存のWebhook（IFTTTが監視しているチャンネル：万舟のみ送信）
 RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
+# 新設のWebhook（全的中を記録するチャンネル）
+ALL_RESULT_WEBHOOK_URL = os.environ.get("ALL_RESULT_DISCORD_WEBHOOK_URL")
+
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
 
@@ -51,7 +55,6 @@ def resolve_venue_name(raw_venue, clean_url="", race_key=""):
 
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
-        print(f"⚠️ RESULT_WEBHOOK_URL未設定のためスキップ: {title}")
         return
 
     formatted_fields = []
@@ -190,19 +193,30 @@ def check_all_results():
 
                     if is_hit:
                         is_manshu = payout >= 10000
-                        title_prefix = "🎆【万舟的中！】" if is_manshu else "🎯【AIアラート的中報告】"
-                        print(f"    🎯 【的中 ({'万舟' if is_manshu else '通常'})】 Discord通知送信: {display_venue} {rno}R ({payout:,}円)")
+                        print(f"    🎯 【的中 ({'万舟' if is_manshu else '通常'})】: {display_venue} {rno}R ({payout:,}円)")
                         
+                        fields = [
+                            {"name": "📍 対象レース", "value": f"{display_venue} {rno}R"},
+                            {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
+                            {"name": "💰 払戻金", "value": f"{payout:,}円"},
+                        ]
+
+                        # ① 金額に関わらず全的中ログチャンネルへ送信
                         send_discord_text(
-                            webhook_url=RESULT_WEBHOOK_URL,
-                            title=f"{title_prefix} {display_venue} {rno}R",
+                            webhook_url=ALL_RESULT_WEBHOOK_URL,
+                            title=f"🎯【AIアラート的中報告】 {display_venue} {rno}R",
                             description=f"⚡ {alert_type} アラート配信のレースで見事的中しました！",
-                            fields=[
-                                {"name": "📍 対象レース", "value": f"{display_venue} {rno}R"},
-                                {"name": "🎲 確定出目", "value": f"3連単 {winning_combo}"},
-                                {"name": "💰 払戻金", "value": f"{payout:,}円"},
-                            ],
+                            fields=fields,
                         )
+
+                        # ② 万舟（10,000円以上）の場合のみ、既存チャンネルへ送信（IFTTTが拾ってXへ投稿）
+                        if is_manshu:
+                            send_discord_text(
+                                webhook_url=RESULT_WEBHOOK_URL,
+                                title=f"🎆【万舟的中！】 {display_venue} {rno}R",
+                                description=f"⚡ {alert_type} アラート配信のレースで見事万舟的中しました！",
+                                fields=fields,
+                            )
                     else:
                         print(f"    💀 【不的中】 推奨: {recommended_combos} / 結果: {winning_combo}")
 
