@@ -42,6 +42,7 @@ jobs:
       - name: Run Result Checker
         env:
           RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.RESULT_DISCORD_WEBHOOK_URL }}
+          ALL_RESULT_DISCORD_WEBHOOK_URL: ${{ secrets.ALL_RESULT_DISCORD_WEBHOOK_URL }}
         run: python result_checker.py
 
       - name: Save notification cache and pending results
