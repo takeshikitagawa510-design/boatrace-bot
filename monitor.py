@@ -37,7 +37,6 @@ def acquire_lock():
     if os.path.exists(LOCK_FILE):
         try:
             mtime = os.path.getmtime(LOCK_FILE)
-            # 10分以上前の古いロックはプロセス異常終了とみなして解除
             if time.time() - mtime > 600:
                 os.remove(LOCK_FILE)
             else:
@@ -63,7 +62,6 @@ if 23 <= NOW.hour or NOW.hour < 7:
     print(f"🌙 現在時刻({NOW.strftime('%H:%M')} JST)は深夜・早朝帯のため、処理を一時停止します。")
     sys.exit(0)
 
-# 会場変換マッピング
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
     "浜名湖": 6, "蒲郡": 7,   "常滑": 8,   "津": 9,     "三国": 10,
@@ -86,7 +84,6 @@ notified_races = load_notified_races_set()
 print(f"📦 本日 ({TODAY_STR}) の通知済みキャッシュ ({len(notified_races)}件) を読み込みました。")
 
 def is_already_notified(race_id):
-    """ファイルとメモリの両面で最新の通知状況を二重チェック"""
     global notified_races
     if race_id in notified_races:
         return True
@@ -95,7 +92,6 @@ def is_already_notified(race_id):
     return race_id in notified_races
 
 def mark_as_notified(race_id):
-    """通知済みに追加して即時ファイルへ同期"""
     global notified_races
     notified_races.add(race_id)
     try:
@@ -142,7 +138,6 @@ def send_discord_embed(webhook_url, title, description, fields=[], color=0x00FFF
 
 def send_discord_text(webhook_url, title, description, fields=[]):
     if not webhook_url:
-        print(f"⚠️ Webhook URL未設定のためスキップ: {title}")
         return
 
     formatted_fields = []
@@ -431,7 +426,7 @@ def check_pickup_manshu_results():
                 ]
                 send_discord_text(
                     webhook_url=RESULT_DISCORD_WEBHOOK_URL,
-                    title=f"🎆【万舟的中・回収実績】ピックアップレース {v_name} {rno}R",
+                    title=f"🎆【万舟的中！】ピックアップレース {v_name} {rno}R",
                     description=f"🔥 AI期待値スコア {score}点 の注目レースで見事万舟（{payout:,}円）が飛び出しました！",
                     fields=fields,
                 )
@@ -741,6 +736,16 @@ def monitor_shinsum(venue_urls):
                         )
                         print(f"🚀 【鉄板通知送信】 {venue_japanese} {rno_str}R (最終期待度: {final_rate:.1f}%)")
                         mark_as_notified(tettan_race_id)
+
+                        # ★ 鉄板の買い目（4点）も結果照会リストに登録
+                        pending_results[tettan_race_id] = {
+                            "clean_url": clean_base_url,
+                            "rno": int(rno_str),
+                            "venue_jp": pure_venue,
+                            "date": TODAY_STR,
+                            "alert_type": "厳選イン逃げ鉄板",
+                            "recommended_combos": tettan_picks,
+                        }
 
     existing_pending = {}
     if os.path.exists(PENDING_RESULTS_FILE):
