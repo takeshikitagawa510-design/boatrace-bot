@@ -34,19 +34,16 @@ SLUG_VENUE_MAP = {
 }
 
 def resolve_venue_name(raw_venue, clean_url="", race_key=""):
-    # 1. 24場名が文字列内に含まれているかを最優先で抽出
     for jp_name in VENUE_NO_MAP.keys():
         if len(jp_name) >= 2:
             if jp_name in str(raw_venue) or jp_name in str(race_key):
                 return jp_name
 
-    # 2. URLのスラッグから判定
     if clean_url:
         for slug, jp_name in SLUG_VENUE_MAP.items():
             if f"/{slug}/" in clean_url or clean_url.rstrip("/").endswith(slug):
                 return jp_name
 
-    # 3. 余分な文字を削って再判定
     cleaned = re.sub(r"\[.*?\]|joshi|女子競艇|[a-zA-Z\s]", "", str(raw_venue)).strip()
     if cleaned in VENUE_NO_MAP:
         return cleaned
@@ -181,8 +178,15 @@ def check_all_results():
                     print(f"    🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
                     is_hit = False
                     for combo in recommended_combos:
-                        if not combo or combo == "対象なし" or len(combo) < 5:
+                        if not combo or combo == "対象なし":
                             continue
+
+                        # ① 単体出目（鉄板などの買い目 "1-5-6"）との完全一致判定
+                        if combo.strip() == winning_combo.strip():
+                            is_hit = True
+                            break
+
+                        # ② フォーメーション出目（例: "3-142-1425"）の展開判定
                         parts = combo.replace("=", "-").split("-")
                         if len(parts) == 3:
                             head, r2_list, r3_list = parts[0], list(parts[1]), list(parts[2])
@@ -201,10 +205,10 @@ def check_all_results():
                             {"name": "💰 払戻金", "value": f"{payout:,}円"},
                         ]
 
-                        # ① 金額に関わらず全的中ログチャンネルへ送信
+                        # ① 全的中ログチャンネルへ送信（通常・鉄板すべての的中）
                         send_discord_text(
                             webhook_url=ALL_RESULT_WEBHOOK_URL,
-                            title=f"🎯【AIアラート的中報告】 {display_venue} {rno}R",
+                            title=f"🎯【的中報告】 {display_venue} {rno}R",
                             description=f"⚡ {alert_type} アラート配信のレースで見事的中しました！",
                             fields=fields,
                         )
