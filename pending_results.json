@@ -42,5 +42,27 @@
       "3-564-5642",
       "5-364-3642"
     ]
+  },
+  "20261030_尼崎_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 4,
+    "venue_jp": "尼崎",
+    "date": "20261030",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-451-4513",
+      "4-251-2513"
+    ]
+  },
+  "20261030_amagasaki_sg_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
+    "rno": 4,
+    "venue_jp": "amagasaki_sg",
+    "date": "20261030",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-451-4513",
+      "4-251-2513"
+    ]
   }
 }
