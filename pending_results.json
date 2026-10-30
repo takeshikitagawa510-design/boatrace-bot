@@ -43,15 +43,15 @@
       "4-132-1325"
     ]
   },
-  "20261030_蒲郡_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
+  "20261030_女子競艇_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 9,
-    "venue_jp": "蒲郡",
+    "venue_jp": "",
     "date": "20261030",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-561-5613",
-      "5-461-4613"
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
