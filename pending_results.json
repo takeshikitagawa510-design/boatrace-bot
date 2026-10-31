@@ -20,29 +20,5 @@
       "2-135-1354",
       "3-125-1254"
     ]
-  },
-  "20261031_浜名湖_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 3,
-    "venue_jp": "浜名湖",
-    "date": "20261031",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-162-1623",
-      "6-142-1423"
-    ]
-  },
-  "20261031_児島_3_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 3,
-    "venue_jp": "児島",
-    "date": "20261031",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-3",
-      "1-2-6",
-      "1-3-2",
-      "1-6-2"
-    ]
   }
 }
