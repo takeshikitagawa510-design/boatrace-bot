@@ -21,19 +21,6 @@
       "3-125-1254"
     ]
   },
-  "20261031_蒲郡_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 10,
-    "venue_jp": "蒲郡",
-    "date": "20261031",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-3-6",
-      "1-3-2",
-      "1-6-3",
-      "1-2-3"
-    ]
-  },
   "20261031_大村_10_tettan": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 10,
@@ -45,6 +32,17 @@
       "1-2-3",
       "1-4-2",
       "1-3-2"
+    ]
+  },
+  "20261031_丸亀_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 11,
+    "venue_jp": "丸亀",
+    "date": "20261031",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
     ]
   }
 }
