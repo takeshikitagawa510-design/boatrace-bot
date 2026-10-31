@@ -21,17 +21,6 @@
       "3-125-1254"
     ]
   },
-  "20261031_大村_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 3,
-    "venue_jp": "大村",
-    "date": "20261031",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20261031_丸亀_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/marugame",
     "rno": 4,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-361-3615",
       "3-261-2615"
+    ]
+  },
+  "20261031_蒲郡_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 4,
+    "venue_jp": "蒲郡",
+    "date": "20261031",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
