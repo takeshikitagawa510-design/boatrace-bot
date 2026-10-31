@@ -21,15 +21,17 @@
       "3-125-1254"
     ]
   },
-  "20261031_丸亀_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
+  "20261031_大村_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 11,
-    "venue_jp": "丸亀",
+    "venue_jp": "大村",
     "date": "20261031",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "2-165-1654",
-      "6-125-1254"
+      "1-3-5",
+      "1-3-4",
+      "1-5-3",
+      "1-4-3"
     ]
   }
 }
