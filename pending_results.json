@@ -34,17 +34,6 @@
       "1-2-4"
     ]
   },
-  "20261031_平和島_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 11,
-    "venue_jp": "平和島",
-    "date": "20261031",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261031_蒲郡_2_tettan": {
     "clean_url": "https://boatrace-shinsum.com/gamagori",
     "rno": 2,
@@ -56,6 +45,19 @@
       "1-4-5",
       "1-6-4",
       "1-5-4"
+    ]
+  },
+  "20261031_戸田_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 12,
+    "venue_jp": "戸田",
+    "date": "20261031",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-4",
+      "1-6-2",
+      "1-4-2"
     ]
   }
 }
