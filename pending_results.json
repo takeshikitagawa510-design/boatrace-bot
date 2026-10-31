@@ -21,15 +21,15 @@
       "3-125-1254"
     ]
   },
-  "20261031_蒲郡_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 4,
-    "venue_jp": "蒲郡",
+  "20261031_丸亀_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 5,
+    "venue_jp": "丸亀",
     "date": "20261031",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
+      "2-145-1453",
+      "4-125-1253"
     ]
   }
 }
