@@ -21,15 +21,17 @@
       "3-125-1254"
     ]
   },
-  "20261031_鳴門_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 12,
-    "venue_jp": "鳴門",
+  "20261031_尼崎_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 9,
+    "venue_jp": "尼崎",
     "date": "20261031",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "4-561-5613",
-      "5-461-4613"
+      "1-5-4",
+      "1-5-2",
+      "1-4-5",
+      "1-2-5"
     ]
   }
 }
