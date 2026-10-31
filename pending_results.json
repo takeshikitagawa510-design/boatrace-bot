@@ -44,5 +44,16 @@
       "4-635-6352",
       "6-435-4352"
     ]
+  },
+  "20261031_平和島_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 7,
+    "venue_jp": "平和島",
+    "date": "20261031",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
+    ]
   }
 }
