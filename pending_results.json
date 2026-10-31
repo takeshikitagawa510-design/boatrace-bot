@@ -44,5 +44,18 @@
       "1-3-4",
       "1-2-4"
     ]
+  },
+  "20261031_尼崎_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 10,
+    "venue_jp": "尼崎",
+    "date": "20261031",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-3",
+      "1-6-4",
+      "1-3-6",
+      "1-4-6"
+    ]
   }
 }
