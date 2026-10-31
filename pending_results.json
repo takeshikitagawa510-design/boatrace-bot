@@ -20,5 +20,18 @@
       "2-135-1354",
       "3-125-1254"
     ]
+  },
+  "20261031_鳴門_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 3,
+    "venue_jp": "鳴門",
+    "date": "20261031",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-5",
+      "1-2-6",
+      "1-5-2",
+      "1-6-2"
+    ]
   }
 }
