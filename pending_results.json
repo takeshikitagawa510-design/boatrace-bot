@@ -21,15 +21,28 @@
       "3-125-1254"
     ]
   },
-  "20261031_戸田_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
+  "20261031_児島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 5,
-    "venue_jp": "戸田",
+    "venue_jp": "児島",
     "date": "20261031",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-562-5621",
-      "5-462-4621"
+      "3-142-1425",
+      "4-132-1325"
+    ]
+  },
+  "20261031_児島_5_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 5,
+    "venue_jp": "児島",
+    "date": "20261031",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-3-4",
+      "1-3-2",
+      "1-4-3",
+      "1-2-3"
     ]
   }
 }
