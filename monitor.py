@@ -16,7 +16,7 @@ DATA_URL = "https://boatrace-shinsum.com/"
 CHECKER_URL = "https://boatrace-shinsum.com/checker/shinsum_checker.json"
 
 USER_ID = os.environ.get("SHINSUM_USER") or "sum"
-PASSWORD = os.environ.get("SHINSUM_PASS") or "sao"
+PASSWORD = os.environ.get("SHINSUM_PASS") or "231"
 
 DISCORD_WEBHOOK_URL = os.environ.get("MONITOR_DISCORD_WEBHOOK_URL")
 TETTAN_DISCORD_WEBHOOK_URL = os.environ.get("TETTAN_DISCORD_WEBHOOK_URL") or DISCORD_WEBHOOK_URL
