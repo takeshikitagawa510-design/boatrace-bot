@@ -56,17 +56,6 @@
       "1-4-2"
     ]
   },
-  "20261101_蒲郡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 2,
-    "venue_jp": "蒲郡",
-    "date": "20261101",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-162-1623",
-      "6-142-1423"
-    ]
-  },
   "20261101_大村_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 2,
@@ -76,6 +65,17 @@
     "recommended_combos": [
       "3-561-5614",
       "5-361-3614"
+    ]
+  },
+  "20261101_戸田_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 12,
+    "venue_jp": "戸田",
+    "date": "20261101",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-136-1365",
+      "6-143-1435"
     ]
   }
 }
