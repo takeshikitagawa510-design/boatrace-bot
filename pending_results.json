@@ -32,19 +32,6 @@
       "5-146-1463"
     ]
   },
-  "20261101_尼崎_5_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 5,
-    "venue_jp": "尼崎",
-    "date": "20261101",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-4",
-      "1-2-5",
-      "1-4-2",
-      "1-5-2"
-    ]
-  },
   "20261101_芦屋_9_tettan": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 9,
@@ -78,6 +65,17 @@
     "recommended_combos": [
       "2-135-1356",
       "3-125-1256"
+    ]
+  },
+  "20261101_平和島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 5,
+    "venue_jp": "平和島",
+    "date": "20261101",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "5-162-1623",
+      "6-152-1523"
     ]
   }
 }
