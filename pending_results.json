@@ -43,17 +43,6 @@
       "4-123-1236"
     ]
   },
-  "20261101_浜名湖_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 10,
-    "venue_jp": "浜名湖",
-    "date": "20261101",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
-    ]
-  },
   "20261101_福岡_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 10,
@@ -74,6 +63,17 @@
     "recommended_combos": [
       "3-156-1562",
       "5-136-1362"
+    ]
+  },
+  "20261101_戸田_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 11,
+    "venue_jp": "戸田",
+    "date": "20261101",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-351-3516",
+      "3-251-2516"
     ]
   }
 }
