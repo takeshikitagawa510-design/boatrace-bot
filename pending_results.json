@@ -55,5 +55,29 @@
       "2-341-3416",
       "3-241-2416"
     ]
+  },
+  "20261101_芦屋_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 9,
+    "venue_jp": "芦屋",
+    "date": "20261101",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-2",
+      "1-5-3",
+      "1-2-5",
+      "1-3-5"
+    ]
+  },
+  "20261101_戸田_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20261101",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-156-1563",
+      "5-146-1463"
+    ]
   }
 }
