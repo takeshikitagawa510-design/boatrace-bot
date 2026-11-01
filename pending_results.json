@@ -32,26 +32,26 @@
       "5-146-1463"
     ]
   },
-  "20261101_福岡_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 5,
-    "venue_jp": "福岡",
+  "20261101_徳山_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 10,
+    "venue_jp": "徳山",
     "date": "20261101",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
+      "2-165-1653",
+      "6-125-1253"
     ]
   },
-  "20261101_宮島_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 7,
-    "venue_jp": "宮島",
+  "20261101_芦屋_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 10,
+    "venue_jp": "芦屋",
     "date": "20261101",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-154-1546",
-      "5-124-1246"
+      "3-462-4621",
+      "4-362-3621"
     ]
   }
 }
