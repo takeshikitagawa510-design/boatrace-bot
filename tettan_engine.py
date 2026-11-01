@@ -8,7 +8,7 @@ JOKEN_URL = f"{BASE_URL}/joken/"
 
 # 認証情報
 USER_ID = "sum"
-USER_PASS = "sao"
+USER_PASS = "231"
 
 # Discord Webhook（通知先チャンネルのURLをセット）
 DISCORD_WEBHOOK_URL = ""
