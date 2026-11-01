@@ -32,15 +32,15 @@
       "5-146-1463"
     ]
   },
-  "20261101_鳴門_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 8,
-    "venue_jp": "鳴門",
+  "20261101_平和島_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 4,
+    "venue_jp": "平和島",
     "date": "20261101",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-536-5364",
-      "5-236-2364"
+      "2-346-3461",
+      "3-246-2461"
     ]
   }
 }
