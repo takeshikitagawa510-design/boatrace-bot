@@ -1,46 +1,24 @@
 {
-  "20261101_桐生_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 9,
-    "venue_jp": "桐生",
-    "date": "20261101",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1354",
-      "3-125-1254"
-    ]
-  },
-  "20261101_桐生_10_rate": {
+  "20261102_桐生_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 10,
     "venue_jp": "桐生",
-    "date": "20261101",
+    "date": "20261102",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
       "4-562-5621",
       "5-462-4621"
     ]
   },
-  "20261101_amagasaki_sg_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 3,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261101",
+  "20261102_桐生_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 9,
+    "venue_jp": "桐生",
+    "date": "20261102",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
-    ]
-  },
-  "20261101_amagasaki_sg_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki_sg",
-    "rno": 8,
-    "venue_jp": "amagasaki_sg",
-    "date": "20261101",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-143-1436",
-      "4-123-1236"
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
