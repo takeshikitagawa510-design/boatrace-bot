@@ -43,28 +43,6 @@
       "4-123-1236"
     ]
   },
-  "20261101_浜名湖_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/hamanako_sg",
-    "rno": 12,
-    "venue_jp": "浜名湖",
-    "date": "20261101",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
-    ]
-  },
-  "20261101_蒲郡_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 3,
-    "venue_jp": "蒲郡",
-    "date": "20261101",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-156-1564",
-      "5-126-1264"
-    ]
-  },
   "20261101_尼崎_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 12,
