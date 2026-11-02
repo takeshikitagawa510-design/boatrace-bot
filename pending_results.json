@@ -21,19 +21,6 @@
       "3-125-1254"
     ]
   },
-  "20261102_丸亀_9_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 9,
-    "venue_jp": "丸亀",
-    "date": "20261102",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-4",
-      "1-2-3",
-      "1-4-2",
-      "1-3-2"
-    ]
-  },
   "20261102_下関_4_tettan": {
     "clean_url": "https://boatrace-shinsum.com/shimonoseki",
     "rno": 4,
@@ -45,6 +32,19 @@
       "1-6-2",
       "1-4-6",
       "1-2-6"
+    ]
+  },
+  "20261102_大村_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 9,
+    "venue_jp": "大村",
+    "date": "20261102",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-3-6",
+      "1-3-4",
+      "1-6-3",
+      "1-4-3"
     ]
   }
 }
