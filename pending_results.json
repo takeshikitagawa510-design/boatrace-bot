@@ -20,5 +20,16 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20261103_平和島_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 2,
+    "venue_jp": "平和島",
+    "date": "20261103",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
+    ]
   }
 }
