@@ -1,15 +1,4 @@
 {
-  "20261103_芦屋_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 6,
-    "venue_jp": "芦屋",
-    "date": "20261103",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-563-5632",
-      "5-463-4632"
-    ]
-  },
   "20261103_三国_6_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 6,
@@ -19,6 +8,17 @@
     "recommended_combos": [
       "3-145-1456",
       "4-135-1356"
+    ]
+  },
+  "20261103_福岡_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 2,
+    "venue_jp": "福岡",
+    "date": "20261103",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "データ不足により算出不可",
+      "対象なし"
     ]
   }
 }
