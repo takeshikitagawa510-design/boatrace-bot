@@ -1,15 +1,4 @@
 {
-  "20261103_下関_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 1,
-    "venue_jp": "下関",
-    "date": "20261103",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261103_大村_6_tettan": {
     "clean_url": "https://boatrace-shinsum.com/omura",
     "rno": 6,
