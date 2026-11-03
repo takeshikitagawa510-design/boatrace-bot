@@ -1,15 +1,4 @@
 {
-  "20261103_福岡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 2,
-    "venue_jp": "福岡",
-    "date": "20261103",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "データ不足により算出不可",
-      "対象なし"
-    ]
-  },
   "20261103_平和島_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/heiwajima",
     "rno": 2,
