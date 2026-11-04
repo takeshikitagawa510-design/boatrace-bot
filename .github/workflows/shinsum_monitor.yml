@@ -50,7 +50,22 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add notified_races.json pending_results.json pending_pickup_races.json || true
+          if git diff --staged --quiet; then
+            echo "変更がないためコミットをスキップします"
+            exit 0
+          fi
           git commit -m "Auto-update cache and pending results [skip ci]" || exit 0
-          git fetch origin main
-          git rebase -X ours origin/main || git rebase --skip || true
-          git push origin main
+
+          # GitHub側の一時障害（500エラー等）に備えて最大3回リトライ
+          for i in {1..3}; do
+            git fetch origin main
+            git rebase -X ours origin/main || git rebase --skip || true
+            if git push origin main; then
+              echo "Push succeeded"
+              exit 0
+            fi
+            echo "Push failed, retrying in 5 seconds... (attempt $i)"
+            sleep 5
+          done
+          echo "Warning: Push failed after 3 attempts due to GitHub remote error, continuing workflow."
+          exit 0
