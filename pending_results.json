@@ -1,1 +1,15 @@
-{}
+{
+  "20261104_常滑_5_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 5,
+    "venue_jp": "常滑",
+    "date": "20261104",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-4",
+      "1-6-2",
+      "1-4-2"
+    ]
+  }
+}
