@@ -1,13 +1,13 @@
 {
-  "20261104_桐生_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
+  "20261104_丸亀_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
     "rno": 6,
-    "venue_jp": "桐生",
+    "venue_jp": "丸亀",
     "date": "20261104",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-162-1624",
-      "6-132-1324"
+      "4-156-1563",
+      "5-146-1463"
     ]
   }
 }
