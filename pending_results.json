@@ -9,5 +9,18 @@
       "2-143-1436",
       "4-123-1236"
     ]
+  },
+  "20261104_大村_8_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 8,
+    "venue_jp": "大村",
+    "date": "20261104",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-4",
+      "1-6-5",
+      "1-4-6",
+      "1-5-6"
+    ]
   }
 }
