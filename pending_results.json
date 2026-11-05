@@ -1,15 +1,4 @@
 {
-  "20261105_びわこ_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 9,
-    "venue_jp": "びわこ",
-    "date": "20261105",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-156-1564",
-      "5-126-1264"
-    ]
-  },
   "20261105_平和島_8_rate": {
     "clean_url": "https://boatrace-shinsum.com/heiwajima",
     "rno": 8,
@@ -45,6 +34,17 @@
       "1-5-6",
       "1-2-5",
       "1-6-5"
+    ]
+  },
+  "20261105_宮島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 10,
+    "venue_jp": "宮島",
+    "date": "20261105",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
