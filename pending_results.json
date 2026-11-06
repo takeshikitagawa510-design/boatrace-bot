@@ -75,5 +75,16 @@
       "2-136-1365",
       "3-126-1265"
     ]
+  },
+  "20261106_suminoe_sg_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/suminoe_sg",
+    "rno": 10,
+    "venue_jp": "suminoe_sg",
+    "date": "20261106",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
