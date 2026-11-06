@@ -21,17 +21,6 @@
       "3-124-1245"
     ]
   },
-  "20261106_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20261106",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-412-4125",
-      "4-312-3125"
-    ]
-  },
   "20261106_三国_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 9,
@@ -41,6 +30,17 @@
     "recommended_combos": [
       "2-341-3416",
       "3-241-2416"
+    ]
+  },
+  "20261106_戸田_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20261106",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
