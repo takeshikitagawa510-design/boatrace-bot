@@ -43,17 +43,26 @@
       "4-231-2315"
     ]
   },
-  "20261106_多摩川_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/tamagawa",
-    "rno": 10,
-    "venue_jp": "多摩川",
+  "20261106_宮島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 12,
+    "venue_jp": "宮島",
     "date": "20261106",
-    "alert_type": "厳選イン逃げ鉄板",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "1-6-3",
-      "1-6-2",
-      "1-3-6",
-      "1-2-6"
+      "2-356-3564",
+      "3-256-2564"
+    ]
+  },
+  "20261106_福岡_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 10,
+    "venue_jp": "福岡",
+    "date": "20261106",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
