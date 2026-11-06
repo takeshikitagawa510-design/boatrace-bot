@@ -54,30 +54,6 @@
       "6-123-1235"
     ]
   },
-  "20261106_戸田_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 12,
-    "venue_jp": "戸田",
-    "date": "20261106",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
-    ]
-  },
-  "20261106_多摩川_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/tamagawa",
-    "rno": 12,
-    "venue_jp": "多摩川",
-    "date": "20261106",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-5-6",
-      "1-5-4",
-      "1-6-5",
-      "1-4-5"
-    ]
-  },
   "20261106_桐生_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 3,
