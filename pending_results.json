@@ -54,17 +54,6 @@
       "6-123-1235"
     ]
   },
-  "20261106_桐生_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 3,
-    "venue_jp": "桐生",
-    "date": "20261106",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
-    ]
-  },
   "20261106_鳴門_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/naruto",
     "rno": 12,
@@ -76,17 +65,6 @@
       "1-4-2",
       "1-5-4",
       "1-2-4"
-    ]
-  },
-  "20261106_丸亀_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/marugame",
-    "rno": 3,
-    "venue_jp": "丸亀",
-    "date": "20261106",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-315-3154",
-      "3-215-2154"
     ]
   }
 }
