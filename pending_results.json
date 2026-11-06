@@ -75,5 +75,18 @@
       "2-156-1563",
       "5-126-1263"
     ]
+  },
+  "20261106_丸亀_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 6,
+    "venue_jp": "丸亀",
+    "date": "20261106",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-2",
+      "1-6-5",
+      "1-2-6",
+      "1-5-6"
+    ]
   }
 }
