@@ -64,5 +64,27 @@
       "2-361-3615",
       "3-261-2615"
     ]
+  },
+  "20261107_女子競艇_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 4,
+    "venue_jp": "",
+    "date": "20261107",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
+    ]
+  },
+  "20261107_多摩川_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 4,
+    "venue_jp": "多摩川",
+    "date": "20261107",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-341-3415",
+      "3-241-2415"
+    ]
   }
 }
