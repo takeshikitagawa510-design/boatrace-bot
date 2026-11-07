@@ -99,5 +99,27 @@
       "データ不足により算出不可",
       "対象なし"
     ]
+  },
+  "20261107_鳴門_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 11,
+    "venue_jp": "鳴門",
+    "date": "20261107",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-641-6412",
+      "6-341-3412"
+    ]
+  },
+  "20261107_naruto_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto_sg",
+    "rno": 11,
+    "venue_jp": "naruto_sg",
+    "date": "20261107",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-641-6412",
+      "6-341-3412"
+    ]
   }
 }
