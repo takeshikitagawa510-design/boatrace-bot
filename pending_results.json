@@ -132,5 +132,18 @@
       "3-425-4256",
       "4-325-3256"
     ]
+  },
+  "20261107_桐生_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 11,
+    "venue_jp": "桐生",
+    "date": "20261107",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-2",
+      "1-5-4",
+      "1-2-5",
+      "1-4-5"
+    ]
   }
 }
