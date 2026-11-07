@@ -133,17 +133,28 @@
       "4-325-3256"
     ]
   },
-  "20261107_下関_9_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 9,
-    "venue_jp": "下関",
+  "20261107_桐生_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 10,
+    "venue_jp": "桐生",
+    "date": "20261107",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-164-1642",
+      "6-134-1342"
+    ]
+  },
+  "20261107_桐生_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 10,
+    "venue_jp": "桐生",
     "date": "20261107",
     "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "1-2-5",
-      "1-2-3",
-      "1-5-2",
-      "1-3-2"
+      "1-3-6",
+      "1-3-4",
+      "1-6-3",
+      "1-4-3"
     ]
   }
 }
