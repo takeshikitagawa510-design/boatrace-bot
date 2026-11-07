@@ -99,5 +99,18 @@
       "2-134-1345",
       "3-124-1245"
     ]
+  },
+  "20261107_多摩川_8_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 8,
+    "venue_jp": "多摩川",
+    "date": "20261107",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-5",
+      "1-6-2",
+      "1-5-6",
+      "1-2-6"
+    ]
   }
 }
