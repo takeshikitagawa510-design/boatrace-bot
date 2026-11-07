@@ -89,17 +89,6 @@
       "1-3-5"
     ]
   },
-  "20261107_鳴門_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 9,
-    "venue_jp": "鳴門",
-    "date": "20261107",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "データ不足により算出不可",
-      "対象なし"
-    ]
-  },
   "20261107_naruto_sg_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto_sg",
     "rno": 9,
@@ -109,6 +98,19 @@
     "recommended_combos": [
       "データ不足により算出不可",
       "対象なし"
+    ]
+  },
+  "20261107_びわこ_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 10,
+    "venue_jp": "びわこ",
+    "date": "20261107",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-3",
+      "1-2-4",
+      "1-3-4"
     ]
   }
 }
