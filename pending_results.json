@@ -10,17 +10,6 @@
       "4-325-3256"
     ]
   },
-  "20261108_びわこ_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 2,
-    "venue_jp": "びわこ",
-    "date": "20261108",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261108_芦屋_6_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 6,
@@ -30,6 +19,17 @@
     "recommended_combos": [
       "2-361-3614",
       "3-261-2614"
+    ]
+  },
+  "20261108_常滑_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 3,
+    "venue_jp": "常滑",
+    "date": "20261108",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-154-1546",
+      "5-124-1246"
     ]
   }
 }
