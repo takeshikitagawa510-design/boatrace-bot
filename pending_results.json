@@ -20,5 +20,16 @@
       "2-143-1435",
       "4-123-1235"
     ]
+  },
+  "20261108_びわこ_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 4,
+    "venue_jp": "びわこ",
+    "date": "20261108",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-364-3645",
+      "3-264-2645"
+    ]
   }
 }
