@@ -21,15 +21,15 @@
       "4-123-1235"
     ]
   },
-  "20261108_びわこ_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
+  "20261108_戸田_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 4,
-    "venue_jp": "びわこ",
+    "venue_jp": "戸田",
     "date": "20261108",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-364-3645",
-      "3-264-2645"
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
