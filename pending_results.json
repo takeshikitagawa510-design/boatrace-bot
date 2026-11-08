@@ -9,5 +9,18 @@
       "3-425-4256",
       "4-325-3256"
     ]
+  },
+  "20261108_芦屋_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 3,
+    "venue_jp": "芦屋",
+    "date": "20261108",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-4",
+      "1-5-2",
+      "1-4-5",
+      "1-2-5"
+    ]
   }
 }
