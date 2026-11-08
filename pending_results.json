@@ -75,5 +75,31 @@
       "5-362-3621",
       "6-532-5321"
     ]
+  },
+  "20261108_常滑_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 12,
+    "venue_jp": "常滑",
+    "date": "20261108",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-3",
+      "1-2-6",
+      "1-3-2",
+      "1-6-2"
+    ]
+  },
+  "20261108_多摩川_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 12,
+    "venue_jp": "多摩川",
+    "date": "20261108",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-4",
+      "1-2-6",
+      "1-4-2",
+      "1-6-2"
+    ]
   }
 }
