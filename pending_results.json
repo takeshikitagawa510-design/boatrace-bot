@@ -54,15 +54,17 @@
       "6-135-1352"
     ]
   },
-  "20261108_下関_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 5,
-    "venue_jp": "下関",
+  "20261108_桐生_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 6,
+    "venue_jp": "桐生",
     "date": "20261108",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
+      "1-6-2",
+      "1-6-4",
+      "1-2-6",
+      "1-4-6"
     ]
   }
 }
