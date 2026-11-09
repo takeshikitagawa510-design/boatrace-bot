@@ -42,5 +42,42 @@
       "4-612-6123",
       "6-412-4123"
     ]
+  },
+  "20261109_芦屋_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 9,
+    "venue_jp": "芦屋",
+    "date": "20261109",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
+  },
+  "20261109_宮島_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 6,
+    "venue_jp": "宮島",
+    "date": "20261109",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-3-6",
+      "1-3-5",
+      "1-6-3",
+      "1-5-3"
+    ]
+  },
+  "20261109_戸田_5_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 5,
+    "venue_jp": "戸田",
+    "date": "20261109",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-6",
+      "1-2-4",
+      "1-6-4"
+    ]
   }
 }
