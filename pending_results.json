@@ -86,5 +86,18 @@
       "2-563-5634",
       "5-263-2634"
     ]
+  },
+  "20261109_下関_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 6,
+    "venue_jp": "下関",
+    "date": "20261109",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-2",
+      "1-6-3",
+      "1-2-6",
+      "1-3-6"
+    ]
   }
 }
