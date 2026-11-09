@@ -10,30 +10,6 @@
       "6-135-1352"
     ]
   },
-  "20261109_鳴門_1_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 1,
-    "venue_jp": "鳴門",
-    "date": "20261109",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-5-2",
-      "1-5-6",
-      "1-2-5",
-      "1-6-5"
-    ]
-  },
-  "20261109_びわこ_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 2,
-    "venue_jp": "びわこ",
-    "date": "20261109",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20261109_女子競艇_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 2,
@@ -45,15 +21,15 @@
       "6-132-1325"
     ]
   },
-  "20261109_多摩川_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tamagawa",
-    "rno": 2,
-    "venue_jp": "多摩川",
+  "20261109_宮島_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 3,
+    "venue_jp": "宮島",
     "date": "20261109",
     "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "3-126-1265",
-      "6-132-1325"
+      "2-136-1365",
+      "3-126-1265"
     ]
   }
 }
