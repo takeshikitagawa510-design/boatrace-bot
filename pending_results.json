@@ -64,5 +64,16 @@
       "4-153-1532",
       "5-143-1432"
     ]
+  },
+  "20261109_宮島_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 5,
+    "venue_jp": "宮島",
+    "date": "20261109",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-462-4625",
+      "4-362-3625"
+    ]
   }
 }
