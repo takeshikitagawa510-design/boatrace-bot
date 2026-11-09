@@ -53,5 +53,27 @@
       "2-135-1354",
       "3-125-1254"
     ]
+  },
+  "20261109_naruto_sg_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto_sg",
+    "rno": 2,
+    "venue_jp": "naruto_sg",
+    "date": "20261109",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5613",
+      "5-461-4613"
+    ]
+  },
+  "20261109_鳴門_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 2,
+    "venue_jp": "鳴門",
+    "date": "20261109",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5613",
+      "5-461-4613"
+    ]
   }
 }
