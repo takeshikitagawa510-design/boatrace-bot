@@ -21,17 +21,6 @@
       "6-132-1325"
     ]
   },
-  "20261109_宮島_3_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 3,
-    "venue_jp": "宮島",
-    "date": "20261109",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
-    ]
-  },
   "20261109_唐津_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/karatsu",
     "rno": 7,
@@ -63,6 +52,17 @@
     "recommended_combos": [
       "4-561-5613",
       "5-461-4613"
+    ]
+  },
+  "20261109_芦屋_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 7,
+    "venue_jp": "芦屋",
+    "date": "20261109",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
