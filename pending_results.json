@@ -64,29 +64,5 @@
       "3-516-5164",
       "5-316-3164"
     ]
-  },
-  "20261110_鳴門_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 10,
-    "venue_jp": "鳴門",
-    "date": "20261110",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-516-5164",
-      "5-316-3164"
-    ]
-  },
-  "20261110_常滑_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 10,
-    "venue_jp": "常滑",
-    "date": "20261110",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-3-2",
-      "1-3-4",
-      "1-2-3",
-      "1-4-3"
-    ]
   }
 }
