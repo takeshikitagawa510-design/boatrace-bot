@@ -1,13 +1,13 @@
 {
-  "20261111_三国_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 1,
-    "venue_jp": "三国",
+  "20261111_芦屋_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 2,
+    "venue_jp": "芦屋",
     "date": "20261111",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
