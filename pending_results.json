@@ -21,19 +21,6 @@
       "4-126-1263"
     ]
   },
-  "20261110_芦屋_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 10,
-    "venue_jp": "芦屋",
-    "date": "20261110",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-4-6",
-      "1-4-5",
-      "1-6-4",
-      "1-5-4"
-    ]
-  },
   "20261110_常滑_6_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 6,
@@ -54,6 +41,17 @@
     "recommended_combos": [
       "2-345-3451",
       "3-245-2451"
+    ]
+  },
+  "20261110_平和島_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 6,
+    "venue_jp": "平和島",
+    "date": "20261110",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-634-6345",
+      "6-234-2345"
     ]
   }
 }
