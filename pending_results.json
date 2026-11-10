@@ -65,17 +65,6 @@
       "5-316-3164"
     ]
   },
-  "20261110_平和島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 12,
-    "venue_jp": "平和島",
-    "date": "20261110",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-154-1546",
-      "5-134-1346"
-    ]
-  },
   "20261110_常滑_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 12,
@@ -100,6 +89,17 @@
       "1-5-6",
       "1-2-5",
       "1-6-5"
+    ]
+  },
+  "20261110_suminoe_sg_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/suminoe_sg",
+    "rno": 3,
+    "venue_jp": "suminoe_sg",
+    "date": "20261110",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-346-3465",
+      "3-246-2465"
     ]
   }
 }
