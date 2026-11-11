@@ -88,5 +88,18 @@
       "1-3-6",
       "1-2-6"
     ]
+  },
+  "20261111_下関_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 12,
+    "venue_jp": "下関",
+    "date": "20261111",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-5",
+      "1-2-4",
+      "1-5-2",
+      "1-4-2"
+    ]
   }
 }
