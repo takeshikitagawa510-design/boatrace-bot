@@ -54,30 +54,6 @@
       "6-125-1253"
     ]
   },
-  "20261111_宮島_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 12,
-    "venue_jp": "宮島",
-    "date": "20261111",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-156-1563",
-      "5-126-1263"
-    ]
-  },
-  "20261111_宮島_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 12,
-    "venue_jp": "宮島",
-    "date": "20261111",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-5",
-      "1-2-6",
-      "1-5-2",
-      "1-6-2"
-    ]
-  },
   "20261111_naruto_sg_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto_sg",
     "rno": 11,
