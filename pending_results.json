@@ -90,5 +90,27 @@
       "1-5-2",
       "1-6-2"
     ]
+  },
+  "20261111_naruto_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto_sg",
+    "rno": 11,
+    "venue_jp": "naruto_sg",
+    "date": "20261111",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
+    ]
+  },
+  "20261111_鳴門_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 11,
+    "venue_jp": "鳴門",
+    "date": "20261111",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1356",
+      "3-125-1256"
+    ]
   }
 }
