@@ -20,5 +20,40 @@
       "3-465-4651",
       "4-365-3651"
     ]
+  },
+  "20261111_naruto_sg_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto_sg",
+    "rno": 3,
+    "venue_jp": "naruto_sg",
+    "date": "20261111",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-125-1254",
+      "5-132-1324"
+    ]
+  },
+  "20261111_鳴門_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 3,
+    "venue_jp": "鳴門",
+    "date": "20261111",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-125-1254",
+      "5-132-1324"
+    ]
+  },
+  "20261111_鳴門_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 3,
+    "venue_jp": "鳴門",
+    "date": "20261111",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-3-2",
+      "1-3-5",
+      "1-2-3",
+      "1-5-3"
+    ]
   }
 }
