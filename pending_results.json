@@ -21,19 +21,6 @@
       "5-132-1324"
     ]
   },
-  "20261111_芦屋_11_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 11,
-    "venue_jp": "芦屋",
-    "date": "20261111",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-4",
-      "1-2-5",
-      "1-4-2",
-      "1-5-2"
-    ]
-  },
   "20261111_女子競艇_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/joshi",
     "rno": 7,
@@ -54,6 +41,28 @@
     "recommended_combos": [
       "2-134-1345",
       "3-124-1245"
+    ]
+  },
+  "20261111_女子競艇_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 8,
+    "venue_jp": "",
+    "date": "20261111",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
+    ]
+  },
+  "20261111_多摩川_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 8,
+    "venue_jp": "多摩川",
+    "date": "20261111",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1465",
+      "4-126-1265"
     ]
   }
 }
