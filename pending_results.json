@@ -43,30 +43,6 @@
       "4-126-1265"
     ]
   },
-  "20261111_芦屋_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 12,
-    "venue_jp": "芦屋",
-    "date": "20261111",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
-    ]
-  },
-  "20261111_芦屋_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 12,
-    "venue_jp": "芦屋",
-    "date": "20261111",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-5",
-      "1-2-4",
-      "1-5-2",
-      "1-4-2"
-    ]
-  },
   "20261111_福岡_8_tettan": {
     "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 8,
