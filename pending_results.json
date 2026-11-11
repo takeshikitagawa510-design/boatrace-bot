@@ -1,1 +1,15 @@
-{}
+{
+  "20261111_宮島_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 1,
+    "venue_jp": "宮島",
+    "date": "20261111",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-6",
+      "1-2-4",
+      "1-6-4"
+    ]
+  }
+}
