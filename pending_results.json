@@ -53,5 +53,18 @@
       "2-165-1653",
       "6-125-1253"
     ]
+  },
+  "20261111_平和島_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 10,
+    "venue_jp": "平和島",
+    "date": "20261111",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-4",
+      "1-6-2",
+      "1-4-2"
+    ]
   }
 }
