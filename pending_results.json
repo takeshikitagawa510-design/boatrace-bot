@@ -65,30 +65,6 @@
       "3-125-1256"
     ]
   },
-  "20261111_鳴門_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 12,
-    "venue_jp": "鳴門",
-    "date": "20261111",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-156-1562",
-      "5-146-1462"
-    ]
-  },
-  "20261111_鳴門_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 12,
-    "venue_jp": "鳴門",
-    "date": "20261111",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-5-6",
-      "1-5-4",
-      "1-6-5",
-      "1-4-5"
-    ]
-  },
   "20261111_naruto_sg_12_rate": {
     "clean_url": "https://boatrace-shinsum.com/naruto_sg",
     "rno": 12,
