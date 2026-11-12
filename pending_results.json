@@ -53,5 +53,18 @@
       "4-526-5263",
       "5-426-4263"
     ]
+  },
+  "20261112_児島_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 9,
+    "venue_jp": "児島",
+    "date": "20261112",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-4",
+      "1-6-5",
+      "1-4-5"
+    ]
   }
 }
