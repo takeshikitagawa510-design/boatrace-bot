@@ -55,5 +55,18 @@
       "1-5-3",
       "1-2-3"
     ]
+  },
+  "20261112_蒲郡_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 12,
+    "venue_jp": "蒲郡",
+    "date": "20261112",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-6",
+      "1-4-5",
+      "1-6-4",
+      "1-5-4"
+    ]
   }
 }
