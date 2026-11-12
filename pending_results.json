@@ -54,17 +54,6 @@
       "5-143-1432"
     ]
   },
-  "20261112_戸田_6_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 6,
-    "venue_jp": "戸田",
-    "date": "20261112",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-143-1436",
-      "4-123-1236"
-    ]
-  },
   "20261112_三国_10_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 10,
@@ -85,6 +74,17 @@
     "recommended_combos": [
       "2-146-1463",
       "4-126-1263"
+    ]
+  },
+  "20261112_児島_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 6,
+    "venue_jp": "児島",
+    "date": "20261112",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-451-4513",
+      "4-251-2513"
     ]
   }
 }
