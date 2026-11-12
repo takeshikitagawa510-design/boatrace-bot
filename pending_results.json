@@ -42,5 +42,18 @@
       "3-456-4561",
       "4-356-3561"
     ]
+  },
+  "20261112_蒲郡_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 6,
+    "venue_jp": "蒲郡",
+    "date": "20261112",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-2",
+      "1-6-5",
+      "1-2-5"
+    ]
   }
 }
