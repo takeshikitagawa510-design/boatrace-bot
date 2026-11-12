@@ -64,5 +64,18 @@
       "3-561-5612",
       "5-361-3612"
     ]
+  },
+  "20261112_三国_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 12,
+    "venue_jp": "三国",
+    "date": "20261112",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-2",
+      "1-6-5",
+      "1-2-5"
+    ]
   }
 }
