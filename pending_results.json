@@ -32,19 +32,6 @@
       "6-124-1243"
     ]
   },
-  "20261112_芦屋_7_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 7,
-    "venue_jp": "芦屋",
-    "date": "20261112",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-5-2",
-      "1-5-3",
-      "1-2-5",
-      "1-3-5"
-    ]
-  },
   "20261112_宮島_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/miyajima",
     "rno": 4,
@@ -54,6 +41,17 @@
     "recommended_combos": [
       "2-613-6135",
       "6-213-2135"
+    ]
+  },
+  "20261112_戸田_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 3,
+    "venue_jp": "戸田",
+    "date": "20261112",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-612-6124",
+      "6-312-3124"
     ]
   }
 }
