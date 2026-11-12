@@ -43,28 +43,6 @@
       "4-356-3561"
     ]
   },
-  "20261112_芦屋_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 12,
-    "venue_jp": "芦屋",
-    "date": "20261112",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
-    ]
-  },
-  "20261112_児島_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kojima",
-    "rno": 8,
-    "venue_jp": "児島",
-    "date": "20261112",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-561-5612",
-      "5-361-3612"
-    ]
-  },
   "20261112_三国_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 12,
