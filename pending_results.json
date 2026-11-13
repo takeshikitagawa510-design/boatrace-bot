@@ -32,28 +32,6 @@
       "6-542-5423"
     ]
   },
-  "20261113_尼崎_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 11,
-    "venue_jp": "尼崎",
-    "date": "20261113",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-125-1256",
-      "5-132-1326"
-    ]
-  },
-  "20261113_大村_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 2,
-    "venue_jp": "大村",
-    "date": "20261113",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-145-1456",
-      "4-125-1256"
-    ]
-  },
   "20261113_児島_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 11,
@@ -76,6 +54,17 @@
       "1-6-3",
       "1-4-6",
       "1-3-6"
+    ]
+  },
+  "20261113_蒲郡_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 2,
+    "venue_jp": "蒲郡",
+    "date": "20261113",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-165-1654",
+      "6-135-1354"
     ]
   }
 }
