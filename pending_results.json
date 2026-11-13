@@ -44,5 +44,18 @@
       "1-5-2",
       "1-4-2"
     ]
+  },
+  "20261113_児島_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kojima",
+    "rno": 9,
+    "venue_jp": "児島",
+    "date": "20261113",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-6",
+      "1-2-4",
+      "1-6-4"
+    ]
   }
 }
