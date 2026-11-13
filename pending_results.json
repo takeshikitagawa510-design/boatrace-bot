@@ -44,5 +44,29 @@
       "1-4-3",
       "1-2-3"
     ]
+  },
+  "20261113_若松_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 12,
+    "venue_jp": "若松",
+    "date": "20261113",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
+  },
+  "20261113_若松_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 12,
+    "venue_jp": "若松",
+    "date": "20261113",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-6",
+      "1-2-4",
+      "1-6-4"
+    ]
   }
 }
