@@ -42,29 +42,5 @@
       "2-134-1345",
       "3-124-1245"
     ]
-  },
-  "20261113_尼崎_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 12,
-    "venue_jp": "尼崎",
-    "date": "20261113",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
-    ]
-  },
-  "20261113_尼崎_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 12,
-    "venue_jp": "尼崎",
-    "date": "20261113",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-6",
-      "1-2-5",
-      "1-6-2",
-      "1-5-2"
-    ]
   }
 }
