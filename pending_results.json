@@ -42,5 +42,31 @@
       "2-143-1435",
       "4-123-1235"
     ]
+  },
+  "20261113_常滑_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 11,
+    "venue_jp": "常滑",
+    "date": "20261113",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-5",
+      "1-4-3",
+      "1-5-4",
+      "1-3-4"
+    ]
+  },
+  "20261113_福岡_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 10,
+    "venue_jp": "福岡",
+    "date": "20261113",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-3",
+      "1-5-6",
+      "1-3-5",
+      "1-6-5"
+    ]
   }
 }
