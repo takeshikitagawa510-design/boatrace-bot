@@ -32,17 +32,6 @@
       "6-542-5423"
     ]
   },
-  "20261113_常滑_8_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 8,
-    "venue_jp": "常滑",
-    "date": "20261113",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-146-1463",
-      "4-126-1263"
-    ]
-  },
   "20261113_児島_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/kojima",
     "rno": 7,
@@ -52,6 +41,28 @@
     "recommended_combos": [
       "2-365-3651",
       "3-265-2651"
+    ]
+  },
+  "20261113_尼崎_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 8,
+    "venue_jp": "尼崎",
+    "date": "20261113",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-165-1654",
+      "6-125-1254"
+    ]
+  },
+  "20261113_平和島_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 8,
+    "venue_jp": "平和島",
+    "date": "20261113",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-124-1245",
+      "4-132-1325"
     ]
   }
 }
