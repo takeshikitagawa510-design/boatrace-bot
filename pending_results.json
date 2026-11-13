@@ -32,15 +32,37 @@
       "4-136-1365"
     ]
   },
-  "20261113_平和島_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 4,
-    "venue_jp": "平和島",
+  "20261113_唐津_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 9,
+    "venue_jp": "唐津",
     "date": "20261113",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "4-156-1562",
-      "5-146-1462"
+      "5-642-6423",
+      "6-542-5423"
+    ]
+  },
+  "20261113_女子競艇_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 9,
+    "venue_jp": "",
+    "date": "20261113",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "5-642-6423",
+      "6-542-5423"
+    ]
+  },
+  "20261113_尼崎_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 5,
+    "venue_jp": "尼崎",
+    "date": "20261113",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-561-5613",
+      "5-261-2613"
     ]
   }
 }
