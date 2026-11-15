@@ -87,15 +87,26 @@
       "4-135-1356"
     ]
   },
-  "20261115_徳山_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 11,
-    "venue_jp": "徳山",
+  "20261115_びわこ_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 8,
+    "venue_jp": "びわこ",
     "date": "20261115",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-641-6415",
-      "6-241-2415"
+      "2-135-1354",
+      "3-125-1254"
+    ]
+  },
+  "20261115_biwako_sg_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako_sg",
+    "rno": 8,
+    "venue_jp": "biwako_sg",
+    "date": "20261115",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
     ]
   }
 }
