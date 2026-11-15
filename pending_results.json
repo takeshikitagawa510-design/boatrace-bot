@@ -53,5 +53,27 @@
       "3-452-4526",
       "4-352-3526"
     ]
+  },
+  "20261115_唐津_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 8,
+    "venue_jp": "唐津",
+    "date": "20261115",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
+    ]
+  },
+  "20261115_女子競艇_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/joshi",
+    "rno": 8,
+    "venue_jp": "",
+    "date": "20261115",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
+    ]
   }
 }
