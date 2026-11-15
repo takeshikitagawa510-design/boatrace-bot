@@ -42,5 +42,16 @@
       "3-452-4526",
       "4-352-3526"
     ]
+  },
+  "20261115_biwako_sg_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako_sg",
+    "rno": 4,
+    "venue_jp": "biwako_sg",
+    "date": "20261115",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-452-4526",
+      "4-352-3526"
+    ]
   }
 }
