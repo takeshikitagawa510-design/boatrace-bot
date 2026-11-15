@@ -54,17 +54,6 @@
       "5-126-1264"
     ]
   },
-  "20261115_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20261115",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-162-1625",
-      "6-132-1325"
-    ]
-  },
   "20261115_biwako_sg_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/biwako_sg",
     "rno": 5,
@@ -85,6 +74,19 @@
     "recommended_combos": [
       "2-135-1354",
       "3-125-1254"
+    ]
+  },
+  "20261115_びわこ_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 6,
+    "venue_jp": "びわこ",
+    "date": "20261115",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-3",
+      "1-2-6",
+      "1-3-2",
+      "1-6-2"
     ]
   }
 }
