@@ -1,1 +1,15 @@
-{}
+{
+  "20261116_徳山_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 1,
+    "venue_jp": "徳山",
+    "date": "20261116",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-5",
+      "1-2-6",
+      "1-5-2",
+      "1-6-2"
+    ]
+  }
+}
