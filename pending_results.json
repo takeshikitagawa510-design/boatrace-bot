@@ -109,17 +109,15 @@
       "6-125-1254"
     ]
   },
-  "20261116_大村_8_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 8,
-    "venue_jp": "大村",
+  "20261116_若松_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+    "rno": 9,
+    "venue_jp": "若松",
     "date": "20261116",
-    "alert_type": "厳選イン逃げ鉄板",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "1-4-2",
-      "1-4-6",
-      "1-2-4",
-      "1-6-4"
+      "2-134-1346",
+      "3-124-1246"
     ]
   }
 }
