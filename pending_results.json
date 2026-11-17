@@ -75,5 +75,16 @@
       "3-561-5612",
       "5-361-3612"
     ]
+  },
+  "20261117_桐生_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 4,
+    "venue_jp": "桐生",
+    "date": "20261117",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-426-4261",
+      "4-326-3261"
+    ]
   }
 }
