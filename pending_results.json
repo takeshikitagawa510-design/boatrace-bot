@@ -75,5 +75,18 @@
       "3-426-4261",
       "4-326-3261"
     ]
+  },
+  "20261117_丸亀_4_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 4,
+    "venue_jp": "丸亀",
+    "date": "20261117",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-5",
+      "1-4-3",
+      "1-5-4",
+      "1-3-4"
+    ]
   }
 }
