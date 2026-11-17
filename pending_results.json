@@ -20,5 +20,18 @@
       "2-146-1463",
       "4-126-1263"
     ]
+  },
+  "20261117_宮島_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 1,
+    "venue_jp": "宮島",
+    "date": "20261117",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-2",
+      "1-6-5",
+      "1-2-5"
+    ]
   }
 }
