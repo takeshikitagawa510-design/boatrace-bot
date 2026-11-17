@@ -11,5 +11,16 @@
       "1-6-2",
       "1-5-2"
     ]
+  },
+  "20261117_唐津_4_rate": {
+    "clean_url": "https://boatrace-shinsum.com/karatsu",
+    "rno": 4,
+    "venue_jp": "唐津",
+    "date": "20261117",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
   }
 }
