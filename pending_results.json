@@ -20,5 +20,16 @@
       "3-452-4521",
       "4-352-3521"
     ]
+  },
+  "20261117_常滑_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 2,
+    "venue_jp": "常滑",
+    "date": "20261117",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-135-1354",
+      "3-125-1254"
+    ]
   }
 }
