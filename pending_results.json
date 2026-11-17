@@ -54,17 +54,15 @@
       "3-125-1256"
     ]
   },
-  "20261117_びわこ_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 10,
-    "venue_jp": "びわこ",
+  "20261117_宮島_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 12,
+    "venue_jp": "宮島",
     "date": "20261117",
-    "alert_type": "厳選イン逃げ鉄板",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "1-2-5",
-      "1-2-6",
-      "1-5-2",
-      "1-6-2"
+      "2-345-3451",
+      "3-245-2451"
     ]
   }
 }
