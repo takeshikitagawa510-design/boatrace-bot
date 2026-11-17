@@ -54,28 +54,6 @@
       "3-125-1256"
     ]
   },
-  "20261117_常滑_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 10,
-    "venue_jp": "常滑",
-    "date": "20261117",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-143-1435",
-      "4-123-1235"
-    ]
-  },
-  "20261117_宮島_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 11,
-    "venue_jp": "宮島",
-    "date": "20261117",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-452-4526",
-      "4-352-3526"
-    ]
-  },
   "20261117_びわこ_10_tettan": {
     "clean_url": "https://boatrace-shinsum.com/biwako",
     "rno": 10,
