@@ -20,5 +20,18 @@
       "2-136-1365",
       "3-126-1265"
     ]
+  },
+  "20261117_びわこ_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 3,
+    "venue_jp": "びわこ",
+    "date": "20261117",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-5",
+      "1-2-4",
+      "1-5-4"
+    ]
   }
 }
