@@ -92,5 +92,16 @@
       "2-164-1645",
       "6-124-1245"
     ]
+  },
+  "20261118_鳴門_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 6,
+    "venue_jp": "鳴門",
+    "date": "20261118",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-345-3456",
+      "3-245-2456"
+    ]
   }
 }
