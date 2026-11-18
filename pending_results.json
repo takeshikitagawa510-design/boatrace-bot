@@ -448,5 +448,27 @@
       "1-5-3",
       "1-4-3"
     ]
+  },
+  "20261118_marugame_sg_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame_sg",
+    "rno": 6,
+    "venue_jp": "marugame_sg",
+    "date": "20261118",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-456-4562",
+      "4-356-3562"
+    ]
+  },
+  "20261118_丸亀_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 6,
+    "venue_jp": "丸亀",
+    "date": "20261118",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-456-4562",
+      "4-356-3562"
+    ]
   }
 }
