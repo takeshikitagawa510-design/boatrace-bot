@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import requests
 from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
@@ -12,10 +13,11 @@ RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL", "").strip()
 # 新設のWebhook（全的中を記録するチャンネル）
 ALL_RESULT_WEBHOOK_URL = os.environ.get("ALL_RESULT_DISCORD_WEBHOOK_URL", "").strip()
 
+# Cloudflare Workers 中継URL
+BOATRACE_PROXY_BASE = "https://boatrace-proxy.takeshi-kitagawa510.workers.dev"
+
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
-
-KEKKA_ALL_URL = "https://kyotei.sakura.ne.jp/kekka_all.php?mode=pc"
 
 VENUE_NO_MAP = {
     "桐生": 1,   "戸田": 2,   "江戸川": 3, "平和島": 4, "多摩川": 5, "tamagawa": 5, "tamakawa": 5,
@@ -76,63 +78,62 @@ def send_discord_text(webhook_url, label, title, description, fields=[]):
     except Exception as e:
         print(f"⚠️ [{label}] Discord通信エラー: {e}")
 
-def fetch_all_venue_results():
-    results_map = {}
+def fetch_race_result_via_proxy(place_no, rno, raw_date):
+    """
+    Cloudflare Workers 中継経由で公式サイト(boatrace.jp)から3連単確定出目と払戻金を取得する
+    """
+    url = f"{BOATRACE_PROXY_BASE}/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
     try:
-        r = requests.get(KEKKA_ALL_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-        if r.status_code != 200:
-            print(f"⚠️ 結果一覧ページ取得エラー: HTTP {r.status_code}")
-            return results_map
-        # kyotei.sakura.ne.jp は Shift_JIS (cp932) 固定のため明示デコード
-        html_str = r.content.decode("cp932", errors="ignore")
-        soup = BeautifulSoup(html_str, "html.parser")
-        txt = soup.get_text(" ", strip=True)
+        res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        if res.status_code != 200:
+            return None, None
+        soup = BeautifulSoup(res.text, "html.parser")
     except Exception as e:
-        print(f"⚠️ 結果一覧ページ通信エラー: {e}")
-        return results_map
+        print(f"    ⚠️ 通信エラー (jcd={place_no:02d}, rno={rno}): {e}")
+        return None, None
 
-    cutoff = txt.find("レース集計")
-    if cutoff != -1:
-        txt = txt[:cutoff]
+    page_text = soup.get_text(" ", strip=True)
+    if "レース中止" in page_text or "不成立" in page_text:
+        return "中止", 0
 
-    venues = ["桐生", "戸田", "江戸川", "平和島", "多摩川", "浜名湖", "蒲郡", "常滑", "津", "三国", "びわこ", "住之江", "尼崎", "鳴門", "丸亀", "児島", "宮島", "徳山", "下関", "若松", "芦屋", "福岡", "唐津", "大村"]
-
-    for venue in venues:
-        m_head = re.search(rf"{venue}\s*\[", txt)
-        if not m_head:
+    for table in soup.find_all("table"):
+        t_text = table.get_text(" ", strip=True)
+        if "3連単" not in t_text and "３連単" not in t_text:
             continue
 
-        start_idx = m_head.end()
-        end_idx = txt.find("出走表", start_idx)
-        if end_idx == -1:
-            end_idx = txt.find("合計：", start_idx)
-        body = txt[start_idx:end_idx] if end_idx != -1 else txt[start_idx:start_idx + 1200]
-
-        bracket_end = body.find("]")
-        if bracket_end != -1:
-            body = body[bracket_end + 1:]
-
-        # 中止レースを検出
-        for cancel_m in re.finditer(r"(?<!\d)(1[0-2]|[1-9])\s+中止", body):
-            rno = int(cancel_m.group(1))
-            results_map[(venue, rno)] = ("中止", 0)
-
-        # 確定レースを検出: {R番号} {1着} {2着} {3着} {払戻金}
-        for res_m in re.finditer(
-            r"(?<!\d)(1[0-2]|[1-9])\s+([1-6])\s+([1-6])\s+([1-6])\s+([0-9,]{3,8})\b",
-            body
-        ):
-            rno = int(res_m.group(1))
-            if (venue, rno) in results_map:
+        for row in table.find_all("tr"):
+            r_text = row.get_text(" ", strip=True)
+            if "3連単" not in r_text and "３連単" not in r_text:
                 continue
-            combo = f"{res_m.group(2)}-{res_m.group(3)}-{res_m.group(4)}"
-            payout_str = res_m.group(5).replace(",", "")
-            if payout_str.isdigit():
-                payout = int(payout_str)
-                if payout >= 100:
-                    results_map[(venue, rno)] = (combo, payout)
 
-    return results_map
+            # パターンA: "1 - 4 - 2" 表記
+            m_combo = re.search(r"([1-6])\s*[-－–—]\s*([1-6])\s*[-－–—]\s*([1-6])", r_text)
+            if m_combo:
+                combo = f"{m_combo.group(1)}-{m_combo.group(2)}-{m_combo.group(3)}"
+            else:
+                # パターンB: <span class="numberSet1_number"> などで1桁ずつ並んでいる場合
+                nums = [
+                    sp.get_text(strip=True)
+                    for sp in row.find_all(["span", "div", "td"])
+                    if sp.get_text(strip=True) in ["1", "2", "3", "4", "5", "6"]
+                ]
+                # 重複ネスト除去のため直近の3数字を抽出
+                dedup_nums = []
+                for n in nums:
+                    if not dedup_nums or dedup_nums[-1] != n:
+                        dedup_nums.append(n)
+                if len(dedup_nums) >= 3:
+                    combo = f"{dedup_nums[0]}-{dedup_nums[1]}-{dedup_nums[2]}"
+                else:
+                    continue
+
+            m_pay = re.search(r"[¥￥]?\s*([1-9][0-9]{0,2}(?:,[0-9]{3})+|[1-9][0-9]{2,5})\s*円?", r_text)
+            if m_pay:
+                payout = int(m_pay.group(1).replace(",", ""))
+                if payout >= 100:
+                    return combo, payout
+
+    return None, None
 
 def check_all_results():
     if not os.path.exists(PENDING_RESULTS_FILE) and not os.path.exists(PENDING_PICKUPS_FILE):
@@ -158,33 +159,29 @@ def check_all_results():
                 else:
                     print(f"🗑️ 古いアラートデータを削除: {k} (日付: {d})")
 
-            print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始...")
-            all_results_map = fetch_all_venue_results()
-            print(f"📥 本日の確定結果取得数: {len(all_results_map)}レース")
+            print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始（Cloudflare中継）...")
 
             for race_key, info in list(updated_pending.items()):
                 rno = int(info.get("rno", 0))
+                raw_date = str(info.get("date") or info.get("d") or today_str).replace("-", "").replace("/", "")[:8]
                 raw_venue_jp = info.get("venue_jp") or info.get("venue") or info.get("v") or ""
                 clean_url = info.get("clean_url", "")
                 alert_type = info.get("alert_type", "AIアラート")
                 recommended_combos = info.get("recommended_combos", [])
 
                 resolved_v = resolve_venue_name(raw_venue_jp, clean_url, race_key)
-                if not resolved_v:
+                place_no = VENUE_NO_MAP.get(resolved_v)
+                if not resolved_v or not place_no:
                     print(f"    ⚠️ 会場不明のためスキップ削除: {raw_venue_jp} {rno}R (key: {race_key})")
                     del updated_pending[race_key]
                     continue
 
-                result_entry = all_results_map.get((resolved_v, rno))
+                winning_combo, payout = fetch_race_result_via_proxy(place_no, rno, raw_date)
 
-                if result_entry:
-                    winning_combo, payout = result_entry
-
-                    if winning_combo == "中止":
-                        print(f"    🚫 レース中止のため追跡終了: {resolved_v} {rno}R")
-                        del updated_pending[race_key]
-                        continue
-
+                if winning_combo == "中止":
+                    print(f"    🚫 レース中止のため追跡終了: {resolved_v} {rno}R")
+                    del updated_pending[race_key]
+                elif winning_combo and payout:
                     print(f"    🏁 結果取得成功: {resolved_v} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
                     is_hit = False
                     for combo in recommended_combos:
@@ -238,6 +235,8 @@ def check_all_results():
                     del updated_pending[race_key]
                 else:
                     print(f"    ⏳ 未確定/取得待ち: {resolved_v} {rno}R")
+
+                time.sleep(0.2)
 
             try:
                 with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
