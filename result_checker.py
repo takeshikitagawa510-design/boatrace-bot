@@ -79,7 +79,6 @@ def send_discord_text(webhook_url, label, title, description, fields=[]):
 def fetch_all_venue_results():
     """
     kyotei.sakura.ne.jp の全場結果一覧ページから本日の全レース確定結果を辞書形式で一括取得する
-    戻り値: { ("徳山", 4): ("1-4-2", 700), ("徳山", 1): ("5-1-3", 20110), ("若松", 1): ("中止", 0), ... }
     """
     results_map = {}
     try:
@@ -87,8 +86,8 @@ def fetch_all_venue_results():
         if r.status_code != 200:
             print(f"⚠️ 結果一覧ページ取得エラー: HTTP {r.status_code}")
             return results_map
-        r.encoding = r.apparent_encoding
-        soup = BeautifulSoup(r.text, "html.parser")
+        html_str = r.content.decode("utf-8", errors="ignore")
+        soup = BeautifulSoup(html_str, "html.parser")
         txt = soup.get_text(" ", strip=True)
     except Exception as e:
         print(f"⚠️ 結果一覧ページ通信エラー: {e}")
@@ -99,16 +98,17 @@ def fetch_all_venue_results():
     if cutoff != -1:
         txt = txt[:cutoff]
 
-    # 各会場ブロック（例: "徳山 [ 第4日 ■ ] ... 出走表"）を抽出
-    venue_names_pattern = "桐生|戸田|江戸川|平和島|多摩川|浜名湖|蒲郡|常滑|津|三国|びわこ|住之江|尼崎|鳴門|丸亀|児島|宮島|徳山|下関|若松|芦屋|福岡|唐津|大村"
-    venue_blocks = re.finditer(
-        rf"({venue_names_pattern})\s*\[\s*第\d+日[^\]]*\](.*?)(?=出走表|$)",
-        txt
-    )
+    venues = ["桐生", "戸田", "江戸川", "平和島", "多摩川", "浜名湖", "蒲郡", "常滑", "津", "三国", "びわこ", "住之江", "尼崎", "鳴門", "丸亀", "児島", "宮島", "徳山", "下関", "若松", "芦屋", "福岡", "唐津", "大村"]
 
-    for vb in venue_blocks:
-        venue = vb.group(1)
-        body = vb.group(2)
+    for venue in venues:
+        # 「徳山 [ 第4日 ■ ]」や「桐生 [ 初日 ■ ]」などの見出し位置を探す
+        m_head = re.search(rf"{venue}\s*\[[^\]]+\]", txt)
+        if not m_head:
+            continue
+
+        start_idx = m_head.end()
+        end_idx = txt.find("出走表", start_idx)
+        body = txt[start_idx:end_idx] if end_idx != -1 else txt[start_idx:start_idx + 800]
 
         # 中止レースを検出（例: "1 中止"）
         for cancel_m in re.finditer(r"(?<!\d)(1[0-2]|[1-9])\s+中止", body):
@@ -116,7 +116,6 @@ def fetch_all_venue_results():
             results_map[(venue, rno)] = ("中止", 0)
 
         # 確定レースを検出（例: "4 1 4 2 700 4" または "11 2 3 1 10,930 43"）
-        # パターン: {R番号(1-12)} {1着(1-6)} {2着(1-6)} {3着(1-6)} {払戻金(100〜999,999)} {人気(1〜120)}
         for res_m in re.finditer(
             r"(?<!\d)(1[0-2]|[1-9])\s+([1-6])\s+([1-6])\s+([1-6])\s+([1-9][0-9]{2,3}|[1-9][0-9]{0,2},[0-9]{3})\s+(?:1[01][0-9]|120|[1-9][0-9]?)(?!\d)",
             body
