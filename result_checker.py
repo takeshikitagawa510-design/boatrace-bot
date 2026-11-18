@@ -77,23 +77,20 @@ def send_discord_text(webhook_url, label, title, description, fields=[]):
         print(f"⚠️ [{label}] Discord通信エラー: {e}")
 
 def fetch_all_venue_results():
-    """
-    kyotei.sakura.ne.jp の全場結果一覧ページから本日の全レース確定結果を辞書形式で一括取得する
-    """
     results_map = {}
     try:
         r = requests.get(KEKKA_ALL_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
         if r.status_code != 200:
             print(f"⚠️ 結果一覧ページ取得エラー: HTTP {r.status_code}")
             return results_map
-        r.encoding = r.apparent_encoding
-        soup = BeautifulSoup(r.text, "html.parser")
+        # kyotei.sakura.ne.jp は Shift_JIS (cp932) 固定のため明示デコード
+        html_str = r.content.decode("cp932", errors="ignore")
+        soup = BeautifulSoup(html_str, "html.parser")
         txt = soup.get_text(" ", strip=True)
     except Exception as e:
         print(f"⚠️ 結果一覧ページ通信エラー: {e}")
         return results_map
 
-    # 集計セクション以降（高額配当金ランキングなど）のノイズを除外
     cutoff = txt.find("レース集計")
     if cutoff != -1:
         txt = txt[:cutoff]
@@ -101,32 +98,39 @@ def fetch_all_venue_results():
     venues = ["桐生", "戸田", "江戸川", "平和島", "多摩川", "浜名湖", "蒲郡", "常滑", "津", "三国", "びわこ", "住之江", "尼崎", "鳴門", "丸亀", "児島", "宮島", "徳山", "下関", "若松", "芦屋", "福岡", "唐津", "大村"]
 
     for venue in venues:
-        # 「徳山 [ 第4日 ■ ]」や「桐生 [ 初日 ■ ]」などの見出し位置を探す
-        m_head = re.search(rf"{venue}\s*\[[^\]]+\]", txt)
+        m_head = re.search(rf"{venue}\s*\[", txt)
         if not m_head:
             continue
 
         start_idx = m_head.end()
         end_idx = txt.find("出走表", start_idx)
-        body = txt[start_idx:end_idx] if end_idx != -1 else txt[start_idx:start_idx + 800]
+        if end_idx == -1:
+            end_idx = txt.find("合計：", start_idx)
+        body = txt[start_idx:end_idx] if end_idx != -1 else txt[start_idx:start_idx + 1200]
 
-        # 中止レースを検出（例: "1 中止"）
+        bracket_end = body.find("]")
+        if bracket_end != -1:
+            body = body[bracket_end + 1:]
+
+        # 中止レースを検出
         for cancel_m in re.finditer(r"(?<!\d)(1[0-2]|[1-9])\s+中止", body):
             rno = int(cancel_m.group(1))
             results_map[(venue, rno)] = ("中止", 0)
 
-        # 確定レースを検出（例: "4 1 4 2 700 4" または "11 2 3 1 10,930 43"）
+        # 確定レースを検出: {R番号} {1着} {2着} {3着} {払戻金}
         for res_m in re.finditer(
-            r"(?<!\d)(1[0-2]|[1-9])\s+([1-6])\s+([1-6])\s+([1-6])\s+([1-9][0-9]{2,3}|[1-9][0-9]{0,2},[0-9]{3})\s+(?:1[01][0-9]|120|[1-9][0-9]?)(?!\d)",
+            r"(?<!\d)(1[0-2]|[1-9])\s+([1-6])\s+([1-6])\s+([1-6])\s+([0-9,]{3,8})\b",
             body
         ):
             rno = int(res_m.group(1))
             if (venue, rno) in results_map:
                 continue
             combo = f"{res_m.group(2)}-{res_m.group(3)}-{res_m.group(4)}"
-            payout = int(res_m.group(5).replace(",", ""))
-            if payout >= 100:
-                results_map[(venue, rno)] = (combo, payout)
+            payout_str = res_m.group(5).replace(",", "")
+            if payout_str.isdigit():
+                payout = int(payout_str)
+                if payout >= 100:
+                    results_map[(venue, rno)] = (combo, payout)
 
     return results_map
 
