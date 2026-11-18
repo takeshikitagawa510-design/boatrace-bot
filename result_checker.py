@@ -80,16 +80,24 @@ def send_discord_text(webhook_url, label, title, description, fields=[]):
 
 def fetch_race_result_via_proxy(place_no, rno, raw_date):
     """
-    Cloudflare Workers 中継経由で公式サイト(boatrace.jp)から3連単確定出目と払戻金を取得する
+    Cloudflare Workers 中継経由で公式サイト(boatrace.jp)から3連単確定出目と払戻金を取得する（リトライ付き）
     """
     url = f"{BOATRACE_PROXY_BASE}/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
-    try:
-        res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-        if res.status_code != 200:
-            return None, None
-        soup = BeautifulSoup(res.text, "html.parser")
-    except Exception as e:
-        print(f"    ⚠️ 通信エラー (jcd={place_no:02d}, rno={rno}): {e}")
+    soup = None
+
+    for attempt in range(2):
+        try:
+            res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+            if res.status_code == 200:
+                soup = BeautifulSoup(res.text, "html.parser")
+                break
+        except Exception as e:
+            if attempt == 1:
+                print(f"    ⚠️ 通信エラー (jcd={place_no:02d}, rno={rno}): {e}")
+            else:
+                time.sleep(0.5)
+
+    if soup is None:
         return None, None
 
     page_text = soup.get_text(" ", strip=True)
@@ -106,18 +114,15 @@ def fetch_race_result_via_proxy(place_no, rno, raw_date):
             if "3連単" not in r_text and "３連単" not in r_text:
                 continue
 
-            # パターンA: "1 - 4 - 2" 表記
             m_combo = re.search(r"([1-6])\s*[-－–—]\s*([1-6])\s*[-－–—]\s*([1-6])", r_text)
             if m_combo:
                 combo = f"{m_combo.group(1)}-{m_combo.group(2)}-{m_combo.group(3)}"
             else:
-                # パターンB: <span class="numberSet1_number"> などで1桁ずつ並んでいる場合
                 nums = [
                     sp.get_text(strip=True)
                     for sp in row.find_all(["span", "div", "td"])
                     if sp.get_text(strip=True) in ["1", "2", "3", "4", "5", "6"]
                 ]
-                # 重複ネスト除去のため直近の3数字を抽出
                 dedup_nums = []
                 for n in nums:
                     if not dedup_nums or dedup_nums[-1] != n:
@@ -140,7 +145,9 @@ def check_all_results():
         print("☕ 追跡対象のデータが存在しません。")
         return
 
-    today_str = datetime.now(JST).strftime("%Y%m%d")
+    now_jst = datetime.now(JST)
+    today_str = now_jst.strftime("%Y%m%d")
+    yesterday_str = (now_jst - timedelta(days=1)).strftime("%Y%m%d")
 
     if os.path.exists(PENDING_RESULTS_FILE):
         try:
@@ -154,12 +161,14 @@ def check_all_results():
             updated_pending = {}
             for k, v in pending_results.items():
                 d = str(v.get("date") or v.get("d") or "").replace("-", "").replace("/", "")[:8]
-                if not d or d == today_str:
+                # 日付跨ぎ直後でも取りこぼさないよう、当日と前日分を保持
+                if not d or d in (today_str, yesterday_str):
                     updated_pending[k] = v
                 else:
                     print(f"🗑️ 古いアラートデータを削除: {k} (日付: {d})")
 
             print(f"🔍 追跡中アラート ({len(updated_pending)}件) の結果照会を開始（Cloudflare中継）...")
+            result_cache = {}
 
             for race_key, info in list(updated_pending.items()):
                 rno = int(info.get("rno", 0))
@@ -176,7 +185,14 @@ def check_all_results():
                     del updated_pending[race_key]
                     continue
 
-                winning_combo, payout = fetch_race_result_via_proxy(place_no, rno, raw_date)
+                cache_key = (place_no, rno, raw_date)
+                if cache_key in result_cache:
+                    winning_combo, payout = result_cache[cache_key]
+                else:
+                    winning_combo, payout = fetch_race_result_via_proxy(place_no, rno, raw_date)
+                    if winning_combo:
+                        result_cache[cache_key] = (winning_combo, payout)
+                    time.sleep(0.2)
 
                 if winning_combo == "中止":
                     print(f"    🚫 レース中止のため追跡終了: {resolved_v} {rno}R")
@@ -235,8 +251,6 @@ def check_all_results():
                     del updated_pending[race_key]
                 else:
                     print(f"    ⏳ 未確定/取得待ち: {resolved_v} {rno}R")
-
-                time.sleep(0.2)
 
             try:
                 with open(PENDING_RESULTS_FILE, "w", encoding="utf-8") as f:
