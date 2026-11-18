@@ -125,6 +125,19 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     return None, 0, resolved_v
 
 def check_all_results():
+    for test_url in [
+        "https://kyotei24.jp/sp/kekka_all.php",
+        "https://kyotei.sakura.ne.jp/kekka_all.php?mode=pc",
+    ]:
+        try:
+            r = requests.get(test_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+            r.encoding = r.apparent_encoding
+            soup_t = BeautifulSoup(r.text, "html.parser")
+            txt = soup_t.get_text(" ", strip=True)
+            print(f"✅ [{r.status_code}] {test_url} (len={len(r.text)}) -> {txt[:200]}")
+        except Exception as e:
+            print(f"❌ [ERR] {test_url} -> {e}")
+
     if not os.path.exists(PENDING_RESULTS_FILE) and not os.path.exists(PENDING_PICKUPS_FILE):
         print("☕ 追跡対象のデータが存在しません。")
         return
