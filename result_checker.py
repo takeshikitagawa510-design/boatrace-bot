@@ -1,8 +1,12 @@
 import json
 import os
 import re
+import ssl
 import time
 import requests
+from requests.adapters import HTTPAdapter
+from requests.auth import HTTPBasicAuth
+from urllib3.poolmanager import PoolManager
 from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
 
@@ -12,6 +16,9 @@ JST = timezone(timedelta(hours=+9), "JST")
 RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL", "").strip()
 # 新設のWebhook（全的中を記録するチャンネル）
 ALL_RESULT_WEBHOOK_URL = os.environ.get("ALL_RESULT_DISCORD_WEBHOOK_URL", "").strip()
+
+SHINSUM_USER = os.environ.get("SHINSUM_USER") or "sum"
+SHINSUM_PASS = os.environ.get("SHINSUM_PASS") or "sao"
 
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
@@ -33,13 +40,38 @@ SLUG_VENUE_MAP = {
     "ashiya": "芦屋", "fukuoka": "福岡", "karatsu": "唐津", "omura": "大村"
 }
 
+# ==========================================
+# 🔒 TLSフィンガープリント対策用アダプター
+# ==========================================
+class BrowserTLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        ctx = ssl.create_default_context()
+        ctx.set_ciphers("ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:!aNULL:!MD5:!DSS")
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=ctx,
+        )
+
+def get_browser_session():
+    s = requests.Session()
+    s.mount("https://", BrowserTLSAdapter())
+    s.headers.update({
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        "Connection": "keep-alive",
+    })
+    return s
+
 def resolve_venue_name(raw_venue, clean_url="", race_key=""):
     for jp_name in VENUE_NO_MAP.keys():
         if len(jp_name) >= 2:
             if jp_name in str(raw_venue) or jp_name in str(race_key):
                 return jp_name
 
-    # biwako_sg や omura_sg などのスラッグも含めて判定
     target_str = f"{raw_venue} {clean_url} {race_key}".lower()
     for slug, jp_name in SLUG_VENUE_MAP.items():
         if slug in target_str:
@@ -76,6 +108,46 @@ def send_discord_text(webhook_url, label, title, description, fields=[]):
     except Exception as e:
         print(f"⚠️ [{label}] Discord通信エラー: {e}")
 
+def parse_trifecta_from_html(html_text):
+    soup = BeautifulSoup(html_text, "html.parser")
+
+    # ① テーブル行（tr）から「3連単」行を抽出
+    for tr in soup.find_all("tr"):
+        tr_text = tr.get_text(separator=" ", strip=True)
+        if "3連単" in tr_text:
+            combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
+            yen_m = re.search(r"[¥￥]\s*([0-9,]{3,8})", tr_text)
+            if combo_m and yen_m:
+                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                val = int(yen_m.group(1).replace(",", ""))
+                if val >= 100:
+                    return combo, val
+
+            payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,7})", tr_text)
+            if combo_m and payout_m:
+                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                valid_vals = [int(x.replace(",", "")) for x in payout_m if int(x.replace(",", "")) >= 100]
+                if valid_vals:
+                    return combo, valid_vals[0]
+
+    # ② 全体テキストからのフォールバック検索
+    text_all = soup.get_text(separator=" ", strip=True)
+    match = re.search(
+        r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6]).{0,40}?(?:[¥￥]\s*([0-9,]{3,8})|([0-9,]{3,8})\s*円)",
+        text_all
+    )
+    if match:
+        combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+        raw_val = match.group(4) or match.group(5)
+        payout_val = int(raw_val.replace(",", ""))
+        if payout_val >= 100:
+            return combo, payout_val
+
+    return None, 0
+
+# ==========================================
+# 🌐 3段階マルチソース結果取得エンジン
+# ==========================================
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
     if not resolved_v:
@@ -90,63 +162,53 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
     else:
         raw_date = re.sub(r"\D", "", str(date_str))[:8]
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Referer": "https://www.boatrace.jp/"
-    }
+    session = get_browser_session()
 
-    url = f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}"
-
-    session = requests.Session()
-    res = None
-    for attempt in range(2):
+    # --------------------------------------------------
+    # ルート1: boatrace.jp（TLSカスタム＋モバイル版エンドポイント）
+    # --------------------------------------------------
+    candidate_urls = [
+        f"https://www.boatrace.jp/owsp/sp/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}",
+        f"https://www.boatrace.jp/owpc/pc/race/raceresult?rno={rno}&jcd={place_no:02d}&hd={raw_date}",
+    ]
+    for url in candidate_urls:
         try:
-            res = session.get(url, headers=headers, timeout=10)
-            if res.status_code == 200:
-                break
-        except Exception:
-            time.sleep(1)
-
-    if not res or res.status_code != 200:
-        print(f"    ⚠️ HTTPエラー: status={res.status_code if res else 'None'} url={url}")
-        return None, 0, resolved_v
-
-    soup = BeautifulSoup(res.text, "html.parser")
-
-    # ① テーブル行（tr）から「3連単」行をピンポイントで抽出（間に人気順などの数字が挟まっても対応）
-    for tr in soup.find_all("tr"):
-        tr_text = tr.get_text(separator=" ", strip=True)
-        if "3連単" in tr_text:
-            combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
-            yen_m = re.search(r"[¥￥]\s*([0-9,]{3,8})", tr_text)
-            if combo_m and yen_m:
-                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                val = int(yen_m.group(1).replace(",", ""))
-                if val >= 100:
+            res = session.get(url, timeout=8)
+            if res.status_code == 200 and len(res.text) > 1000:
+                res.encoding = "utf-8"
+                combo, val = parse_trifecta_from_html(res.text)
+                if combo:
                     return combo, val, resolved_v
+        except Exception:
+            pass
 
-            payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,7})", tr_text)
-            if combo_m and payout_m:
-                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                valid_vals = [int(x.replace(",", "")) for x in payout_m if int(x.replace(",", "")) >= 100]
-                if valid_vals:
-                    return combo, valid_vals[0], resolved_v
+    # --------------------------------------------------
+    # ルート2: 競艇日和（kyoteibiyori.com）当日結果ページ
+    # --------------------------------------------------
+    try:
+        biyori_url = f"https://kyoteibiyori.com/race_shusso.php?place_no={place_no}&race_no={rno}&hiduke={raw_date}&slider=4"
+        res_b = session.get(biyori_url, timeout=8)
+        if res_b.status_code == 200 and len(res_b.text) > 1000:
+            res_b.encoding = "utf-8"
+            combo, val = parse_trifecta_from_html(res_b.text)
+            if combo:
+                return combo, val, resolved_v
+    except Exception:
+        pass
 
-    # ② 全体テキストからのフォールバック検索（出目と金額の間に人気順などが最大40文字入っても許容）
-    text_all = soup.get_text(separator=" ", strip=True)
-    match = re.search(
-        r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6]).{0,40}?[¥￥]\s*([0-9,]{3,8})",
-        text_all
-    )
-    if match:
-        combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
-        payout_val = int(match.group(4).replace(",", ""))
-        return combo, payout_val, resolved_v
-
-    if rno == 4 and resolved_v == "徳山":
-        page_title = soup.title.string.strip() if soup.title and soup.title.string else "タイトルなし"
-        print(f"    🔎 [DEBUG 徳山4R] title='{page_title}' len={len(res.text)} sample='{text_all[:200]}'")
+    # --------------------------------------------------
+    # ルート3: 艇国データバンク（boatrace-db.net）当日結果ページ
+    # --------------------------------------------------
+    try:
+        db_url = f"https://boatrace-db.net/race/result/pid/{place_no:02d}/date/{raw_date}/rno/{rno}/"
+        res_db = session.get(db_url, timeout=8)
+        if res_db.status_code == 200 and len(res_db.text) > 1000:
+            res_db.encoding = "utf-8"
+            combo, val = parse_trifecta_from_html(res_db.text)
+            if combo:
+                return combo, val, resolved_v
+    except Exception:
+        pass
 
     return None, 0, resolved_v
 
