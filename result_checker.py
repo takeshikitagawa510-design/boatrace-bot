@@ -86,8 +86,8 @@ def fetch_all_venue_results():
         if r.status_code != 200:
             print(f"⚠️ 結果一覧ページ取得エラー: HTTP {r.status_code}")
             return results_map
-        html_str = r.content.decode("utf-8", errors="ignore")
-        soup = BeautifulSoup(html_str, "html.parser")
+        r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, "html.parser")
         txt = soup.get_text(" ", strip=True)
     except Exception as e:
         print(f"⚠️ 結果一覧ページ通信エラー: {e}")
