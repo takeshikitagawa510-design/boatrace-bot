@@ -100,7 +100,7 @@ def fetch_all_venue_results():
         txt = txt[:cutoff]
 
     # 各会場ブロック（例: "徳山 [ 第4日 ■ ] ... 出走表"）を抽出
-    venue_names_pattern = "|".join(k for k in VENUE_NO_MAP.keys() if len(k) >= 2 and k.isascii() is False)
+    venue_names_pattern = "桐生|戸田|江戸川|平和島|多摩川|浜名湖|蒲郡|常滑|津|三国|びわこ|住之江|尼崎|鳴門|丸亀|児島|宮島|徳山|下関|若松|芦屋|福岡|唐津|大村"
     venue_blocks = re.finditer(
         rf"({venue_names_pattern})\s*\[\s*第\d+日[^\]]*\](.*?)(?=出走表|$)",
         txt
