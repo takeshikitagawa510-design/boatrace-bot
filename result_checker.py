@@ -109,6 +109,7 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
             time.sleep(1)
 
     if not res or res.status_code != 200:
+        print(f"    ⚠️ HTTPエラー: status={res.status_code if res else 'None'} url={url}")
         return None, 0, resolved_v
 
     soup = BeautifulSoup(res.text, "html.parser")
@@ -142,6 +143,10 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
         combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
         payout_val = int(match.group(4).replace(",", ""))
         return combo, payout_val, resolved_v
+
+    if rno == 4 and resolved_v == "徳山":
+        page_title = soup.title.string.strip() if soup.title and soup.title.string else "タイトルなし"
+        print(f"    🔎 [DEBUG 徳山4R] title='{page_title}' len={len(res.text)} sample='{text_all[:200]}'")
 
     return None, 0, resolved_v
 
