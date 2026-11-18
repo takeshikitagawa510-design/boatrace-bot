@@ -387,5 +387,18 @@
       "2-463-4635",
       "4-263-2635"
     ]
+  },
+  "20261118_常滑_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 12,
+    "venue_jp": "常滑",
+    "date": "20261118",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-4",
+      "1-6-2",
+      "1-4-2"
+    ]
   }
 }
