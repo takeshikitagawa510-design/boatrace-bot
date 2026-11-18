@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 JST = timezone(timedelta(hours=+9), "JST")
 
 # 既存のWebhook（IFTTTが監視しているチャンネル：万舟のみ送信）
-RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL")
+RESULT_WEBHOOK_URL = os.environ.get("RESULT_DISCORD_WEBHOOK_URL", "").strip()
 # 新設のWebhook（全的中を記録するチャンネル）
-ALL_RESULT_WEBHOOK_URL = os.environ.get("ALL_RESULT_DISCORD_WEBHOOK_URL")
+ALL_RESULT_WEBHOOK_URL = os.environ.get("ALL_RESULT_DISCORD_WEBHOOK_URL", "").strip()
 
 PENDING_RESULTS_FILE = "pending_results.json"
 PENDING_PICKUPS_FILE = "pending_pickup_races.json"
@@ -39,19 +39,21 @@ def resolve_venue_name(raw_venue, clean_url="", race_key=""):
             if jp_name in str(raw_venue) or jp_name in str(race_key):
                 return jp_name
 
-    if clean_url:
-        for slug, jp_name in SLUG_VENUE_MAP.items():
-            if f"/{slug}/" in clean_url or clean_url.rstrip("/").endswith(slug):
-                return jp_name
+    # biwako_sg や omura_sg などのスラッグも含めて判定
+    target_str = f"{raw_venue} {clean_url} {race_key}".lower()
+    for slug, jp_name in SLUG_VENUE_MAP.items():
+        if slug in target_str:
+            return jp_name
 
-    cleaned = re.sub(r"\[.*?\]|joshi|女子競艇|[a-zA-Z\s]", "", str(raw_venue)).strip()
+    cleaned = re.sub(r"\[.*?\]|joshi|女子競艇|[a-zA-Z0-9_\s]", "", str(raw_venue)).strip()
     if cleaned in VENUE_NO_MAP:
         return cleaned
 
     return ""
 
-def send_discord_text(webhook_url, title, description, fields=[]):
+def send_discord_text(webhook_url, label, title, description, fields=[]):
     if not webhook_url:
+        print(f"⚠️ [{label}] Webhook URLが未設定のため送信スキップ: {title}")
         return
 
     formatted_fields = []
@@ -70,9 +72,9 @@ def send_discord_text(webhook_url, title, description, fields=[]):
     payload = {"content": plain_content}
     try:
         res = requests.post(webhook_url, json=payload, timeout=10)
-        print(f"📡 Discord実績送信結果: HTTP {res.status_code}")
+        print(f"📡 [{label}] Discord送信結果: HTTP {res.status_code}")
     except Exception as e:
-        print(f"⚠️ Discord通信エラー: {e}")
+        print(f"⚠️ [{label}] Discord通信エラー: {e}")
 
 def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key=""):
     resolved_v = resolve_venue_name(venue_jp, clean_url, race_key)
@@ -110,28 +112,42 @@ def fetch_official_result(venue_jp, rno, date_str=None, clean_url="", race_key="
         return None, 0, resolved_v
 
     soup = BeautifulSoup(res.text, "html.parser")
-    text_all = soup.get_text(separator=" ", strip=True)
 
-    match = re.search(r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*(?:¥|￥)?\s*([0-9,]{3,7})", text_all)
+    # ① テーブル行（tr）から「3連単」行をピンポイントで抽出（間に人気順などの数字が挟まっても対応）
+    for tr in soup.find_all("tr"):
+        tr_text = tr.get_text(separator=" ", strip=True)
+        if "3連単" in tr_text:
+            combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
+            yen_m = re.search(r"[¥￥]\s*([0-9,]{3,8})", tr_text)
+            if combo_m and yen_m:
+                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                val = int(yen_m.group(1).replace(",", ""))
+                if val >= 100:
+                    return combo, val, resolved_v
+
+            payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,7})", tr_text)
+            if combo_m and payout_m:
+                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
+                valid_vals = [int(x.replace(",", "")) for x in payout_m if int(x.replace(",", "")) >= 100]
+                if valid_vals:
+                    return combo, valid_vals[0], resolved_v
+
+    # ② 全体テキストからのフォールバック検索（出目と金額の間に人気順などが最大40文字入っても許容）
+    text_all = soup.get_text(separator=" ", strip=True)
+    match = re.search(
+        r"3連単\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6]).{0,40}?[¥￥]\s*([0-9,]{3,8})",
+        text_all
+    )
     if match:
         combo = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
         payout_val = int(match.group(4).replace(",", ""))
         return combo, payout_val, resolved_v
 
-    for tr in soup.find_all("tr"):
-        tr_text = tr.get_text(separator=" ", strip=True)
-        if "3連単" in tr_text:
-            combo_m = re.search(r"([1-6])\s*[-–—─=⇒>→]\s*([1-6])\s*[-–—─=⇒>→]\s*([1-6])", tr_text)
-            payout_m = re.findall(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})", tr_text)
-            if combo_m and payout_m:
-                combo = f"{combo_m.group(1)}-{combo_m.group(2)}-{combo_m.group(3)}"
-                val = int(payout_m[-1].replace(",", ""))
-                if val >= 100:
-                    return combo, val, resolved_v
-
     return None, 0, resolved_v
 
 def check_all_results():
+    print(f"🔧 Webhook確認 -> ALL_RESULT: {'設定済' if ALL_RESULT_WEBHOOK_URL else '未設定'} / MANSHU(RESULT): {'設定済' if RESULT_WEBHOOK_URL else '未設定'}")
+
     if not os.path.exists(PENDING_RESULTS_FILE) and not os.path.exists(PENDING_PICKUPS_FILE):
         print("☕ 追跡対象のデータが存在しません。")
         return
@@ -175,7 +191,7 @@ def check_all_results():
                 )
 
                 if winning_combo:
-                    print(f"    🏁 結果取得成功: {display_venue} {rno}R -> 3連単 {winning_combo} ({payout:,}円)")
+                    print(f"    🏁 結果取得成功: {display_venue} {rno}R -> 確定: {winning_combo} ({payout:,}円) | 推奨: {recommended_combos}")
                     is_hit = False
                     for combo in recommended_combos:
                         if not combo or combo == "対象なし":
@@ -186,7 +202,7 @@ def check_all_results():
                             is_hit = True
                             break
 
-                        # ② フォーメーション出目（例: "3-142-1425"）の展開判定
+                        # ② フォーメーション出目（例: "3-145-1456"）の展開判定
                         parts = combo.replace("=", "-").split("-")
                         if len(parts) == 3:
                             head, r2_list, r3_list = parts[0], list(parts[1]), list(parts[2])
@@ -208,6 +224,7 @@ def check_all_results():
                         # ① 全的中ログチャンネルへ送信（通常・鉄板すべての的中）
                         send_discord_text(
                             webhook_url=ALL_RESULT_WEBHOOK_URL,
+                            label="全的中ログ",
                             title=f"🎯【的中報告】 {display_venue} {rno}R",
                             description=f"⚡ {alert_type} アラート配信のレースで見事的中しました！",
                             fields=fields,
@@ -217,6 +234,7 @@ def check_all_results():
                         if is_manshu:
                             send_discord_text(
                                 webhook_url=RESULT_WEBHOOK_URL,
+                                label="万舟速報",
                                 title=f"🎆【万舟的中！】 {display_venue} {rno}R",
                                 description=f"⚡ {alert_type} アラート配信のレースで見事万舟的中しました！",
                                 fields=fields,
