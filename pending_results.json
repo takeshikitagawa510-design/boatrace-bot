@@ -1,26 +1,4 @@
 {
-  "20261119_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
-    ]
-  },
-  "20261119_biwako_sg_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako_sg",
-    "rno": 5,
-    "venue_jp": "biwako_sg",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
-    ]
-  },
   "20261119_戸田_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 5,
@@ -41,6 +19,17 @@
     "recommended_combos": [
       "3-456-4561",
       "4-356-3561"
+    ]
+  },
+  "20261119_福岡_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 5,
+    "venue_jp": "福岡",
+    "date": "20261119",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-124-1246",
+      "4-132-1326"
     ]
   }
 }
