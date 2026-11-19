@@ -1,24 +1,13 @@
 {
-  "20261119_福岡_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 11,
-    "venue_jp": "福岡",
+  "20261119_桐生_3_rate": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 3,
+    "venue_jp": "桐生",
     "date": "20261119",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-346-3461",
-      "3-246-2461"
-    ]
-  },
-  "20261119_戸田_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 12,
-    "venue_jp": "戸田",
-    "date": "20261119",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-162-1624",
-      "6-132-1324"
+      "4-651-6513",
+      "6-451-4513"
     ]
   }
 }
