@@ -1,28 +1,4 @@
 {
-  "20261119_宮島_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 2,
-    "venue_jp": "宮島",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-561-5613",
-      "5-261-2613"
-    ]
-  },
-  "20261119_宮島_2_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 2,
-    "venue_jp": "宮島",
-    "date": "20261119",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-6",
-      "1-2-5",
-      "1-6-2",
-      "1-5-2"
-    ]
-  },
   "20261119_戸田_1_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 1,
@@ -32,6 +8,17 @@
     "recommended_combos": [
       "4-162-1625",
       "6-142-1425"
+    ]
+  },
+  "20261119_平和島_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 1,
+    "venue_jp": "平和島",
+    "date": "20261119",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-462-4621",
+      "4-362-3621"
     ]
   }
 }
