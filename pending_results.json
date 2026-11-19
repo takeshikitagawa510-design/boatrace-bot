@@ -10,17 +10,6 @@
       "3-124-1246"
     ]
   },
-  "20261119_宮島_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/miyajima",
-    "rno": 11,
-    "venue_jp": "宮島",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-165-1652",
-      "6-135-1352"
-    ]
-  },
   "20261119_戸田_11_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 11,
@@ -30,6 +19,39 @@
     "recommended_combos": [
       "3-145-1452",
       "4-135-1352"
+    ]
+  },
+  "20261119_びわこ_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 11,
+    "venue_jp": "びわこ",
+    "date": "20261119",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
+  },
+  "20261119_biwako_sg_11_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako_sg",
+    "rno": 11,
+    "venue_jp": "biwako_sg",
+    "date": "20261119",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
+  },
+  "20261119_大村_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 1,
+    "venue_jp": "大村",
+    "date": "20261119",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-345-3456",
+      "3-245-2456"
     ]
   }
 }
