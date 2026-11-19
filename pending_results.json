@@ -1,26 +1,4 @@
 {
-  "20261119_biwako_sg_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako_sg",
-    "rno": 7,
-    "venue_jp": "biwako_sg",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-413-4135",
-      "4-213-2135"
-    ]
-  },
-  "20261119_びわこ_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 7,
-    "venue_jp": "びわこ",
-    "date": "20261119",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-413-4135",
-      "4-213-2135"
-    ]
-  },
   "20261119_戸田_7_rate": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 7,
