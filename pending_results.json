@@ -1,1 +1,15 @@
-{}
+{
+  "20261119_丸亀_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 11,
+    "venue_jp": "丸亀",
+    "date": "20261119",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-5",
+      "1-6-2",
+      "1-5-2"
+    ]
+  }
+}
