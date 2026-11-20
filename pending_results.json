@@ -1,1 +1,15 @@
-{}
+{
+  "20261120_大村_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 10,
+    "venue_jp": "大村",
+    "date": "20261120",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-3",
+      "1-6-4",
+      "1-3-6",
+      "1-4-6"
+    ]
+  }
+}
