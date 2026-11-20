@@ -1,13 +1,24 @@
 {
-  "20261120_芦屋_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 10,
-    "venue_jp": "芦屋",
+  "20261120_尼崎_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 7,
+    "venue_jp": "尼崎",
     "date": "20261120",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "3-456-4562",
-      "4-356-3562"
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20261120_平和島_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 7,
+    "venue_jp": "平和島",
+    "date": "20261120",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
     ]
   }
 }
