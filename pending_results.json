@@ -35,5 +35,18 @@
       "1-4-2",
       "1-5-2"
     ]
+  },
+  "20261121_三国_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 1,
+    "venue_jp": "三国",
+    "date": "20261121",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-2",
+      "1-5-4",
+      "1-2-5",
+      "1-4-5"
+    ]
   }
 }
