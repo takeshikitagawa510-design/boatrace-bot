@@ -1,28 +1,4 @@
 {
-  "20261121_鳴門_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 1,
-    "venue_jp": "鳴門",
-    "date": "20261121",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-165-1653",
-      "6-125-1253"
-    ]
-  },
-  "20261121_鳴門_1_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 1,
-    "venue_jp": "鳴門",
-    "date": "20261121",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-6",
-      "1-2-5",
-      "1-6-2",
-      "1-5-2"
-    ]
-  },
   "20261121_芦屋_1_tettan": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 1,
