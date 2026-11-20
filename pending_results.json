@@ -1,13 +1,13 @@
 {
-  "20261120_福岡_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 9,
-    "venue_jp": "福岡",
+  "20261120_平和島_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/heiwajima",
+    "rno": 10,
+    "venue_jp": "平和島",
     "date": "20261120",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
+      "3-146-1465",
+      "4-136-1365"
     ]
   }
 }
