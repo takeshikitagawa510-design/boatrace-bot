@@ -1,1 +1,24 @@
-{}
+{
+  "20261120_丸亀_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
+    "rno": 2,
+    "venue_jp": "丸亀",
+    "date": "20261120",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  },
+  "20261120_marugame_sg_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/marugame_sg",
+    "rno": 2,
+    "venue_jp": "marugame_sg",
+    "date": "20261120",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1346",
+      "3-124-1246"
+    ]
+  }
+}
