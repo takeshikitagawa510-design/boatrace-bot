@@ -22,5 +22,18 @@
       "1-6-2",
       "1-5-2"
     ]
+  },
+  "20261121_芦屋_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 1,
+    "venue_jp": "芦屋",
+    "date": "20261121",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-4",
+      "1-2-5",
+      "1-4-2",
+      "1-5-2"
+    ]
   }
 }
