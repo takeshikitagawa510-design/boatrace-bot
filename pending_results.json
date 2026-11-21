@@ -1,15 +1,4 @@
 {
-  "20261121_三国_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 5,
-    "venue_jp": "三国",
-    "date": "20261121",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-561-5613",
-      "5-461-4613"
-    ]
-  },
   "20261121_宮島_2_rate": {
     "clean_url": "https://boatrace-shinsum.com/miyajima",
     "rno": 2,
@@ -30,6 +19,19 @@
     "recommended_combos": [
       "2-156-1563",
       "5-126-1263"
+    ]
+  },
+  "20261121_鳴門_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 6,
+    "venue_jp": "鳴門",
+    "date": "20261121",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-6",
+      "1-2-4",
+      "1-6-4"
     ]
   }
 }
