@@ -1,17 +1,4 @@
 {
-  "20261121_芦屋_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 12,
-    "venue_jp": "芦屋",
-    "date": "20261121",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-6-4",
-      "1-6-2",
-      "1-4-6",
-      "1-2-6"
-    ]
-  },
   "20261121_三国_12_rate": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 12,
@@ -23,15 +10,17 @@
       "5-261-2613"
     ]
   },
-  "20261121_戸田_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
+  "20261121_尼崎_9_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 9,
-    "venue_jp": "戸田",
+    "venue_jp": "尼崎",
     "date": "20261121",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "4-123-1236",
-      "6-142-1423"
+      "1-5-2",
+      "1-5-4",
+      "1-2-5",
+      "1-4-5"
     ]
   }
 }
