@@ -33,5 +33,27 @@
       "2-145-1453",
       "4-125-1253"
     ]
+  },
+  "20261121_多摩川_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 12,
+    "venue_jp": "多摩川",
+    "date": "20261121",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-562-5621",
+      "5-462-4621"
+    ]
+  },
+  "20261121_大村_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/omura",
+    "rno": 2,
+    "venue_jp": "大村",
+    "date": "20261121",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-156-1564",
+      "5-126-1264"
+    ]
   }
 }
