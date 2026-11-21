@@ -1,13 +1,15 @@
 {
-  "20261121_桐生_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 9,
-    "venue_jp": "桐生",
+  "20261121_蒲郡_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/gamagori",
+    "rno": 10,
+    "venue_jp": "蒲郡",
     "date": "20261121",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "2-143-1436",
-      "4-123-1236"
+      "1-4-2",
+      "1-4-5",
+      "1-2-4",
+      "1-5-4"
     ]
   }
 }
