@@ -10,28 +10,6 @@
       "5-136-1364"
     ]
   },
-  "20261121_平和島_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/heiwajima",
-    "rno": 7,
-    "venue_jp": "平和島",
-    "date": "20261121",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-142-1425",
-      "4-132-1325"
-    ]
-  },
-  "20261121_福岡_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 7,
-    "venue_jp": "福岡",
-    "date": "20261121",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "データ不足により算出不可",
-      "対象なし"
-    ]
-  },
   "20261121_三国_11_tettan": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 11,
