@@ -1,1 +1,26 @@
-{}
+{
+  "20261122_尼崎_5_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 5,
+    "venue_jp": "尼崎",
+    "date": "20261122",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-5",
+      "1-4-2",
+      "1-5-4",
+      "1-2-4"
+    ]
+  },
+  "20261122_多摩川_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 5,
+    "venue_jp": "多摩川",
+    "date": "20261122",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3614",
+      "3-261-2614"
+    ]
+  }
+}
