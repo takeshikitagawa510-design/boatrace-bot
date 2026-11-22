@@ -22,5 +22,27 @@
       "2-354-3541",
       "3-254-2541"
     ]
+  },
+  "20261122_戸田_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 1,
+    "venue_jp": "戸田",
+    "date": "20261122",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
+  },
+  "20261122_宮島_2_rate": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 2,
+    "venue_jp": "宮島",
+    "date": "20261122",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-613-6135",
+      "6-213-2135"
+    ]
   }
 }
