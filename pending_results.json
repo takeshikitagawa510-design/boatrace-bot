@@ -20,5 +20,18 @@
       "4-562-5621",
       "5-462-4621"
     ]
+  },
+  "20261123_尼崎_8_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 8,
+    "venue_jp": "尼崎",
+    "date": "20261123",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-6",
+      "1-4-2",
+      "1-6-4",
+      "1-2-4"
+    ]
   }
 }
