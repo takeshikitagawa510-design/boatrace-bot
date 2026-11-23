@@ -1,1 +1,15 @@
-{}
+{
+  "20261123_鳴門_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/naruto",
+    "rno": 3,
+    "venue_jp": "鳴門",
+    "date": "20261123",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-6",
+      "1-4-2",
+      "1-6-4",
+      "1-2-4"
+    ]
+  }
+}
