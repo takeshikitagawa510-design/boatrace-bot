@@ -1,1 +1,26 @@
-{}
+{
+  "20261124_三国_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 1,
+    "venue_jp": "三国",
+    "date": "20261124",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-146-1463",
+      "4-126-1263"
+    ]
+  },
+  "20261124_三国_1_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 1,
+    "venue_jp": "三国",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-4",
+      "1-2-6",
+      "1-4-2",
+      "1-6-2"
+    ]
+  }
+}
