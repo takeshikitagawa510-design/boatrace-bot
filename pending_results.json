@@ -9,5 +9,29 @@
       "3-154-1542",
       "5-134-1342"
     ]
+  },
+  "20261123_びわこ_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 12,
+    "venue_jp": "びわこ",
+    "date": "20261123",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-164-1645",
+      "6-124-1245"
+    ]
+  },
+  "20261123_多摩川_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tamagawa",
+    "rno": 12,
+    "venue_jp": "多摩川",
+    "date": "20261123",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-4",
+      "1-2-5",
+      "1-4-2",
+      "1-5-2"
+    ]
   }
 }
