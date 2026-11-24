@@ -1,13 +1,13 @@
 {
-  "20261124_福岡_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 4,
-    "venue_jp": "福岡",
+  "20261124_芦屋_9_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 9,
+    "venue_jp": "芦屋",
     "date": "20261124",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "🌟 超抜シグナル到来！",
     "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
+      "2-135-1356",
+      "3-125-1256"
     ]
   }
 }
