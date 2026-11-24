@@ -1,28 +1,4 @@
 {
-  "20261124_三国_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 12,
-    "venue_jp": "三国",
-    "date": "20261124",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-126-1263",
-      "6-142-1423"
-    ]
-  },
-  "20261124_三国_12_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/mikuni",
-    "rno": 12,
-    "venue_jp": "三国",
-    "date": "20261124",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-4-2",
-      "1-4-6",
-      "1-2-4",
-      "1-6-4"
-    ]
-  },
   "20261124_福岡_9_rate": {
     "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 9,
@@ -32,6 +8,32 @@
     "recommended_combos": [
       "2-136-1364",
       "3-126-1264"
+    ]
+  },
+  "20261124_多摩川_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tamakawa",
+    "rno": 10,
+    "venue_jp": "多摩川",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-4",
+      "1-6-5",
+      "1-4-5"
+    ]
+  },
+  "20261124_常滑_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 10,
+    "venue_jp": "常滑",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-4",
+      "1-6-5",
+      "1-4-5"
     ]
   }
 }
