@@ -1,26 +1,4 @@
 {
-  "20261124_常滑_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 1,
-    "venue_jp": "常滑",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-563-5634",
-      "5-263-2634"
-    ]
-  },
-  "20261124_tokoname_sg_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
-    "rno": 1,
-    "venue_jp": "tokoname_sg",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-563-5634",
-      "5-263-2634"
-    ]
-  },
   "20261124_芦屋_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/ashiya",
     "rno": 5,
@@ -54,6 +32,17 @@
     "recommended_combos": [
       "3-156-1564",
       "5-136-1364"
+    ]
+  },
+  "20261124_福岡_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/fukuoka",
+    "rno": 1,
+    "venue_jp": "福岡",
+    "date": "20261124",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-165-1652",
+      "6-145-1452"
     ]
   }
 }
