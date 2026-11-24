@@ -1,26 +1,4 @@
 {
-  "20261124_福岡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 2,
-    "venue_jp": "福岡",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-153-1536",
-      "5-123-1236"
-    ]
-  },
-  "20261124_尼崎_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 2,
-    "venue_jp": "尼崎",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-145-1453",
-      "4-125-1253"
-    ]
-  },
   "20261124_常滑_3_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 3,
