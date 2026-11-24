@@ -9,5 +9,31 @@
       "3-145-1452",
       "4-135-1352"
     ]
+  },
+  "20261124_びわこ_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 12,
+    "venue_jp": "びわこ",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-4",
+      "1-2-5",
+      "1-4-2",
+      "1-5-2"
+    ]
+  },
+  "20261124_尼崎_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 11,
+    "venue_jp": "尼崎",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-2",
+      "1-6-4",
+      "1-2-6",
+      "1-4-6"
+    ]
   }
 }
