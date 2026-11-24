@@ -44,5 +44,29 @@
       "2-563-5634",
       "5-263-2634"
     ]
+  },
+  "20261124_芦屋_5_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 5,
+    "venue_jp": "芦屋",
+    "date": "20261124",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-164-1643",
+      "6-124-1243"
+    ]
+  },
+  "20261124_芦屋_5_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 5,
+    "venue_jp": "芦屋",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-4",
+      "1-6-2",
+      "1-4-2"
+    ]
   }
 }
