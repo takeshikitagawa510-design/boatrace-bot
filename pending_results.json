@@ -1,15 +1,4 @@
 {
-  "20261124_福岡_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/fukuoka",
-    "rno": 1,
-    "venue_jp": "福岡",
-    "date": "20261124",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-165-1652",
-      "6-145-1452"
-    ]
-  },
   "20261124_徳山_6_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 6,
@@ -36,15 +25,28 @@
       "1-2-6"
     ]
   },
-  "20261124_びわこ_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 2,
-    "venue_jp": "びわこ",
+  "20261124_三国_6_rate": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 6,
+    "venue_jp": "三国",
     "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-146-1465",
-      "4-126-1265"
+      "2-145-1456",
+      "4-125-1256"
+    ]
+  },
+  "20261124_三国_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/mikuni",
+    "rno": 6,
+    "venue_jp": "三国",
+    "date": "20261124",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-2",
+      "1-4-5",
+      "1-2-4",
+      "1-5-4"
     ]
   }
 }
