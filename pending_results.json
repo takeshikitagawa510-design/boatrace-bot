@@ -1,28 +1,4 @@
 {
-  "20261124_芦屋_10_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 10,
-    "venue_jp": "芦屋",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-154-1543",
-      "5-124-1243"
-    ]
-  },
-  "20261124_芦屋_10_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 10,
-    "venue_jp": "芦屋",
-    "date": "20261124",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-5",
-      "1-2-4",
-      "1-5-2",
-      "1-4-2"
-    ]
-  },
   "20261124_常滑_7_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 7,
