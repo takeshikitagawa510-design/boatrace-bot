@@ -1,15 +1,4 @@
 {
-  "20261124_戸田_4_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 4,
-    "venue_jp": "戸田",
-    "date": "20261124",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
-    ]
-  },
   "20261124_福岡_4_rate": {
     "clean_url": "https://boatrace-shinsum.com/fukuoka",
     "rno": 4,
@@ -19,17 +8,6 @@
     "recommended_combos": [
       "2-136-1365",
       "3-126-1265"
-    ]
-  },
-  "20261124_びわこ_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 5,
-    "venue_jp": "びわこ",
-    "date": "20261124",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-531-5316",
-      "5-231-2316"
     ]
   }
 }
