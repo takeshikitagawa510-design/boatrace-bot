@@ -1,15 +1,4 @@
 {
-  "20261125_下関_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
-    "rno": 1,
-    "venue_jp": "下関",
-    "date": "20261125",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "5-123-1234",
-      "6-152-1523"
-    ]
-  },
   "20261125_宮島_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/miyajima",
     "rno": 12,
