@@ -24,5 +24,29 @@
       "1-2-6",
       "1-4-6"
     ]
+  },
+  "20261125_徳山_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 12,
+    "venue_jp": "徳山",
+    "date": "20261125",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-2-6",
+      "1-2-3",
+      "1-6-2",
+      "1-3-2"
+    ]
+  },
+  "20261125_芦屋_12_rate": {
+    "clean_url": "https://boatrace-shinsum.com/ashiya",
+    "rno": 12,
+    "venue_jp": "芦屋",
+    "date": "20261125",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-513-5134",
+      "5-213-2134"
+    ]
   }
 }
