@@ -1,26 +1,4 @@
 {
-  "20261125_芦屋_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/ashiya",
-    "rno": 12,
-    "venue_jp": "芦屋",
-    "date": "20261125",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-513-5134",
-      "5-213-2134"
-    ]
-  },
-  "20261125_tokoname_sg_9_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
-    "rno": 9,
-    "venue_jp": "tokoname_sg",
-    "date": "20261125",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-124-1245",
-      "4-132-1325"
-    ]
-  },
   "20261125_三国_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/mikuni",
     "rno": 12,
