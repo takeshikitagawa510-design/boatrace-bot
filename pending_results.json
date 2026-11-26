@@ -1,15 +1,4 @@
 {
-  "20261126_若松_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 5,
-    "venue_jp": "若松",
-    "date": "20261126",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20261126_下関_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/shimonoseki",
     "rno": 5,
