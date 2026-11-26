@@ -55,5 +55,16 @@
       "1-4-2",
       "1-3-2"
     ]
+  },
+  "20261126_びわこ_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/biwako",
+    "rno": 7,
+    "venue_jp": "びわこ",
+    "date": "20261126",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "3-156-1562",
+      "5-136-1362"
+    ]
   }
 }
