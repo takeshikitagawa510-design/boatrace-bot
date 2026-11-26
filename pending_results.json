@@ -32,39 +32,17 @@
       "5-124-1246"
     ]
   },
-  "20261126_常滑_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname",
-    "rno": 1,
-    "venue_jp": "常滑",
-    "date": "20261126",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-361-3615",
-      "3-261-2615"
-    ]
-  },
-  "20261126_tokoname_sg_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
-    "rno": 1,
-    "venue_jp": "tokoname_sg",
-    "date": "20261126",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-361-3615",
-      "3-261-2615"
-    ]
-  },
-  "20261126_徳山_5_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/tokuyama",
-    "rno": 5,
-    "venue_jp": "徳山",
+  "20261126_宮島_2_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/miyajima",
+    "rno": 2,
+    "venue_jp": "宮島",
     "date": "20261126",
     "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "1-2-3",
+      "1-6-2",
+      "1-6-3",
       "1-2-6",
-      "1-3-2",
-      "1-6-2"
+      "1-3-6"
     ]
   }
 }
