@@ -1,13 +1,15 @@
 {
-  "20261126_若松_11_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
+  "20261126_丸亀_11_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/marugame",
     "rno": 11,
-    "venue_jp": "若松",
+    "venue_jp": "丸亀",
     "date": "20261126",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "alert_type": "厳選イン逃げ鉄板",
     "recommended_combos": [
-      "3-145-1456",
-      "4-135-1356"
+      "1-5-2",
+      "1-5-6",
+      "1-2-5",
+      "1-6-5"
     ]
   }
 }
