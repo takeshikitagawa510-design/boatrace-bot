@@ -44,5 +44,27 @@
       "1-4-3",
       "1-2-3"
     ]
+  },
+  "20261126_常滑_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 1,
+    "venue_jp": "常滑",
+    "date": "20261126",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3615",
+      "3-261-2615"
+    ]
+  },
+  "20261126_tokoname_sg_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
+    "rno": 1,
+    "venue_jp": "tokoname_sg",
+    "date": "20261126",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "2-361-3615",
+      "3-261-2615"
+    ]
   }
 }
