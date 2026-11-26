@@ -1,1 +1,13 @@
-{}
+{
+  "20261126_下関_10_rate": {
+    "clean_url": "https://boatrace-shinsum.com/shimonoseki",
+    "rno": 10,
+    "venue_jp": "下関",
+    "date": "20261126",
+    "alert_type": "🔥 イン波乱警戒シグナル！",
+    "recommended_combos": [
+      "4-561-5613",
+      "5-461-4613"
+    ]
+  }
+}
