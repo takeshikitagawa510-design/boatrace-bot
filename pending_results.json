@@ -22,5 +22,27 @@
       "4-123-1236",
       "6-142-1423"
     ]
+  },
+  "20261127_tokoname_sg_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
+    "rno": 7,
+    "venue_jp": "tokoname_sg",
+    "date": "20261127",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
+  },
+  "20261127_常滑_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 7,
+    "venue_jp": "常滑",
+    "date": "20261127",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-134-1345",
+      "3-124-1245"
+    ]
   }
 }
