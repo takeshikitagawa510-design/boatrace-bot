@@ -9,5 +9,18 @@
       "2-361-3615",
       "3-261-2615"
     ]
+  },
+  "20261127_徳山_3_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 3,
+    "venue_jp": "徳山",
+    "date": "20261127",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-4-3",
+      "1-4-5",
+      "1-3-4",
+      "1-5-4"
+    ]
   }
 }
