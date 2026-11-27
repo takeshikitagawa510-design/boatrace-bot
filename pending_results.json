@@ -1,26 +1,13 @@
 {
-  "20261127_若松_5_tettan": {
+  "20261127_若松_6_rate": {
     "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 5,
+    "rno": 6,
     "venue_jp": "若松",
-    "date": "20261127",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-2-6",
-      "1-2-5",
-      "1-6-2",
-      "1-5-2"
-    ]
-  },
-  "20261127_蒲郡_5_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 5,
-    "venue_jp": "蒲郡",
     "date": "20261127",
     "alert_type": "🔥 イン波乱警戒シグナル！",
     "recommended_combos": [
-      "2-136-1364",
-      "3-126-1264"
+      "3-156-1564",
+      "5-136-1364"
     ]
   }
 }
