@@ -33,27 +33,5 @@
       "1-6-2",
       "1-4-2"
     ]
-  },
-  "20261127_大村_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/omura",
-    "rno": 1,
-    "venue_jp": "大村",
-    "date": "20261127",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-632-6325",
-      "6-432-4325"
-    ]
-  },
-  "20261127_若松_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 1,
-    "venue_jp": "若松",
-    "date": "20261127",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "3-145-1452",
-      "4-135-1352"
-    ]
   }
 }
