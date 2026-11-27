@@ -1,26 +1,4 @@
 {
-  "20261127_蒲郡_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 12,
-    "venue_jp": "蒲郡",
-    "date": "20261127",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "4-156-1563",
-      "5-146-1463"
-    ]
-  },
-  "20261127_若松_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/wakamatsu",
-    "rno": 12,
-    "venue_jp": "若松",
-    "date": "20261127",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-416-4163",
-      "4-216-2163"
-    ]
-  },
   "20261127_桐生_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/kiryu",
     "rno": 12,
