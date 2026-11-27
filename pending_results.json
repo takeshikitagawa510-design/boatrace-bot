@@ -10,30 +10,6 @@
       "3-261-2615"
     ]
   },
-  "20261127_びわこ_1_rate": {
-    "clean_url": "https://boatrace-shinsum.com/biwako",
-    "rno": 1,
-    "venue_jp": "びわこ",
-    "date": "20261127",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-156-1563",
-      "5-126-1263"
-    ]
-  },
-  "20261127_鳴門_5_tettan": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 5,
-    "venue_jp": "鳴門",
-    "date": "20261127",
-    "alert_type": "厳選イン逃げ鉄板",
-    "recommended_combos": [
-      "1-4-5",
-      "1-4-6",
-      "1-5-4",
-      "1-6-4"
-    ]
-  },
   "20261127_徳山_5_rate": {
     "clean_url": "https://boatrace-shinsum.com/tokuyama",
     "rno": 5,
@@ -43,6 +19,17 @@
     "recommended_combos": [
       "3-142-1425",
       "4-132-1325"
+    ]
+  },
+  "20261127_尼崎_1_rate": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 1,
+    "venue_jp": "尼崎",
+    "date": "20261127",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "3-615-6154",
+      "6-315-3154"
     ]
   }
 }
