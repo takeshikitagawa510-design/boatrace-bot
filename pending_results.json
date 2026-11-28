@@ -1,15 +1,4 @@
 {
-  "20261128_戸田_12_rate": {
-    "clean_url": "https://boatrace-shinsum.com/toda",
-    "rno": 12,
-    "venue_jp": "戸田",
-    "date": "20261128",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-135-1356",
-      "3-125-1256"
-    ]
-  },
   "20261128_常滑_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 12,
@@ -21,17 +10,6 @@
       "1-3-5",
       "1-2-3",
       "1-5-3"
-    ]
-  },
-  "20261128_桐生_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/kiryu",
-    "rno": 2,
-    "venue_jp": "桐生",
-    "date": "20261128",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "5-643-6431",
-      "6-543-5431"
     ]
   },
   "20261128_尼崎_12_tettan": {
