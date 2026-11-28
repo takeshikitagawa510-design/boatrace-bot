@@ -1,1 +1,15 @@
-{}
+{
+  "20261128_桐生_6_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/kiryu",
+    "rno": 6,
+    "venue_jp": "桐生",
+    "date": "20261128",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-5-6",
+      "1-5-2",
+      "1-6-5",
+      "1-2-5"
+    ]
+  }
+}
