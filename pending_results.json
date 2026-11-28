@@ -1,15 +1,4 @@
 {
-  "20261128_尼崎_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/amagasaki",
-    "rno": 7,
-    "venue_jp": "尼崎",
-    "date": "20261128",
-    "alert_type": "🌟 超抜シグナル到来！",
-    "recommended_combos": [
-      "2-134-1345",
-      "3-124-1245"
-    ]
-  },
   "20261128_戸田_7_tettan": {
     "clean_url": "https://boatrace-shinsum.com/toda",
     "rno": 7,
@@ -21,6 +10,28 @@
       "1-6-2",
       "1-4-6",
       "1-2-6"
+    ]
+  },
+  "20261128_tokoname_sg_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname_sg",
+    "rno": 8,
+    "venue_jp": "tokoname_sg",
+    "date": "20261128",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
+    ]
+  },
+  "20261128_常滑_8_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokoname",
+    "rno": 8,
+    "venue_jp": "常滑",
+    "date": "20261128",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-145-1453",
+      "4-125-1253"
     ]
   }
 }
