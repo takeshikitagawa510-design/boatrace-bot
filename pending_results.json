@@ -21,17 +21,6 @@
       "3-124-1245"
     ]
   },
-  "20261128_鳴門_7_rate": {
-    "clean_url": "https://boatrace-shinsum.com/naruto",
-    "rno": 7,
-    "venue_jp": "鳴門",
-    "date": "20261128",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-134-1346",
-      "3-124-1246"
-    ]
-  },
   "20261128_尼崎_3_rate": {
     "clean_url": "https://boatrace-shinsum.com/amagasaki",
     "rno": 3,
@@ -52,6 +41,17 @@
     "recommended_combos": [
       "5-136-1362",
       "6-153-1532"
+    ]
+  },
+  "20261128_徳山_7_rate": {
+    "clean_url": "https://boatrace-shinsum.com/tokuyama",
+    "rno": 7,
+    "venue_jp": "徳山",
+    "date": "20261128",
+    "alert_type": "🌟 超抜シグナル到来！",
+    "recommended_combos": [
+      "2-136-1364",
+      "3-126-1264"
     ]
   }
 }
