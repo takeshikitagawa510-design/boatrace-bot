@@ -10,17 +10,6 @@
       "3-125-1256"
     ]
   },
-  "20261128_蒲郡_2_rate": {
-    "clean_url": "https://boatrace-shinsum.com/gamagori",
-    "rno": 2,
-    "venue_jp": "蒲郡",
-    "date": "20261128",
-    "alert_type": "🔥 イン波乱警戒シグナル！",
-    "recommended_combos": [
-      "2-136-1365",
-      "3-126-1265"
-    ]
-  },
   "20261128_常滑_12_tettan": {
     "clean_url": "https://boatrace-shinsum.com/tokoname",
     "rno": 12,
@@ -43,6 +32,19 @@
     "recommended_combos": [
       "5-643-6431",
       "6-543-5431"
+    ]
+  },
+  "20261128_尼崎_12_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/amagasaki",
+    "rno": 12,
+    "venue_jp": "尼崎",
+    "date": "20261128",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-6-4",
+      "1-6-5",
+      "1-4-6",
+      "1-5-6"
     ]
   }
 }
