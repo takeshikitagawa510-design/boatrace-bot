@@ -11,5 +11,18 @@
       "1-5-4",
       "1-3-4"
     ]
+  },
+  "20261128_戸田_10_tettan": {
+    "clean_url": "https://boatrace-shinsum.com/toda",
+    "rno": 10,
+    "venue_jp": "戸田",
+    "date": "20261128",
+    "alert_type": "厳選イン逃げ鉄板",
+    "recommended_combos": [
+      "1-3-2",
+      "1-3-4",
+      "1-2-3",
+      "1-4-3"
+    ]
   }
 }
